@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>groSharey</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Itim&family=Josefin+Sans:wght@400;600&family=Outfit:wght@400&display=swap" rel="stylesheet">
+<style>
+:root{
+  color-scheme: light;
+  --navy:#1a1856; --forest:#2a6100; --green:#47a152; --mint:#dbfacf; --white:#fff; --red:#b00000; --gray:#d9d9d9;
+  --display:'Itim','Chewy',cursive; --body:'Josefin Sans',system-ui,sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--green);font-family:var(--body);color:var(--navy);overflow:hidden}
+button{font:inherit;color:inherit;cursor:pointer}
+.screen{position:absolute;inset:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px) 0;display:none;padding:16px;flex-direction:column}
+.screen.active{display:flex;animation:fade .25s ease}
+@keyframes fade{from{opacity:0}to{opacity:1}}
+.card{background:var(--mint);border:6px solid var(--white);border-radius:36px;padding:24px}
+h1,h2,.display{font-family:var(--display);color:var(--forest);margin:0;font-weight:400}
+.title-top{font-family:var(--display);color:var(--mint);text-align:center;font-size:1.6rem;margin:4px 0 12px}
+.btn{background:var(--mint);border:5px solid var(--forest);color:var(--forest);font-family:var(--display);font-size:1.6rem;border-radius:18px;padding:14px 8px;min-width:150px}
+.btn:hover{background:var(--white)}
+.plus{width:56px;height:56px;border-radius:50%;border:0;background:var(--forest);color:#fff;font-size:2.2rem;line-height:1;display:grid;place-items:center;flex:none}
+.plus:hover{background:var(--navy)}
+
+/* login */
+#login{align-items:center;justify-content:center}
+#login .card{width:min(470px,100%);text-align:center;padding:44px 24px 80px}
+#login .welcome{font-size:1.7rem;font-weight:600;margin:0}
+#login h1{font-size:clamp(3rem,10vw,4.6rem);margin:14px 0 30px}
+#login p.tag{font-size:1.6rem;font-weight:600;line-height:1.1;margin:0 0 64px}
+.google{display:inline-flex;align-items:center;gap:14px;background:#fff;border:1px solid #999;border-radius:12px;padding:20px 34px;font-family:'Outfit',sans-serif;font-size:1.4rem;color:#222}
+
+/* main */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:4px 20px 12px;color:var(--mint);font-family:var(--display);font-size:1.5rem}
+.topbar button{background:none;border:0;color:inherit;font-family:inherit;font-size:inherit;display:flex;gap:18px;align-items:center}
+.main-grid{flex:1;min-height:0;display:grid;grid-template-columns:minmax(220px,28%) 1fr;grid-template-rows:auto 1fr;gap:12px}
+.friends{grid-row:1/3;display:flex;flex-direction:column;align-items:center;padding:20px 10px}
+.friends h2{font-size:2.6rem;margin-bottom:10px}
+.flist{width:100%;overflow:auto;flex:0 1 auto}
+.friend{display:flex;width:100%;justify-content:space-between;align-items:center;background:none;border:0;border-top:3px solid var(--green);padding:26px 30px;font-size:1.7rem;font-weight:600;border-radius:0;text-align:left}
+.friend:last-child{border-bottom:3px solid var(--green)}
+.friend.sel{background:#fff;border-radius:30px;border-color:transparent}
+.badge{background:var(--red);color:var(--mint);font-size:1.2rem;font-weight:400;padding:4px 12px;border-radius:99px}
+.friends .plus{margin-top:26px}
+.owe{display:flex;align-items:center;justify-content:space-around;flex-wrap:wrap;gap:12px;padding:20px}
+.owe h2{font-size:clamp(1.8rem,4vw,2.7rem)}
+.owe .amt{font-size:clamp(3rem,8vw,5.5rem);color:var(--red);font-family:var(--body);margin-top:8px}
+.owe .amt.ok{color:var(--forest);font-size:2.4rem}
+.pay{text-align:center;font-size:1.6rem;font-weight:600}
+.paypal{display:block;margin-top:6px;background:#f5b52a;border:0;border-radius:10px;padding:12px 40px;font:italic 800 1.8rem Arial,sans-serif;color:#1a3b8f}
+.log{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;padding:20px}
+.log h2{font-size:clamp(2rem,4vw,3rem)}
+.choices{display:flex;align-items:center;gap:28px;flex-wrap:wrap;justify-content:center}
+.choice{background:#fff;border:6px solid var(--green);border-radius:20px;width:min(240px,38vw);height:170px;font-size:1.7rem;font-weight:600;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;line-height:1}
+.choice:hover{border-color:var(--forest)}
+.or{font-weight:600;font-size:1.5rem}
+
+/* scan */
+#scan .card{flex:1;min-height:0;display:flex;padding:40px 60px}
+.frame{flex:1;background:var(--gray);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;color:#222}
+.frame .lbl{font-family:var(--display);color:#000;font-size:1.5rem;min-height:1.5em}
+.actions{display:flex;justify-content:center;align-items:center;gap:60px;padding:18px 0 6px}
+.shutter{width:72px;height:72px;border-radius:50%;background:var(--mint);border:6px solid var(--forest);outline:4px solid var(--mint);outline-offset:-1px;padding:0}
+.shutter:active{transform:scale(.92)}
+.stage2,.stage1{display:none}
+#scan[data-stage="1"] .stage1,#scan[data-stage="2"] .stage2{display:flex}
+#scan[data-stage="1"] .lbl{visibility:hidden}
+
+/* manage */
+.manage-body{flex:1;min-height:0;overflow:auto;display:grid;grid-template-columns:minmax(300px,42%) 1fr;gap:20px;align-content:start}
+.items{padding:20px 16px 28px;display:flex;flex-direction:column;align-items:center;min-height:0}
+.items h2,.spacer{font-size:2.6rem;height:72px;display:flex;align-items:center;justify-content:center}
+.row{display:flex;align-items:center;gap:8px;height:84px;width:100%;padding:0 12px;border-top:3px solid var(--green);border-radius:0}
+.row:last-of-type{border-bottom:3px solid var(--green)}
+.row:focus-within{background:#fff;border-radius:26px;border-color:transparent}
+.row input{font:600 1.35rem var(--body);color:var(--navy);background:#fff;border:2px solid var(--green);border-radius:10px;padding:8px 10px;min-width:0;outline:none}
+.row:focus-within input{border-color:var(--mint);background:var(--mint)}
+.row input:hover{border-color:var(--forest)}
+.row input:focus{border-color:var(--forest);box-shadow:0 0 0 3px rgba(71,161,82,.35)}
+.row .name{flex:1}
+.price-wrap{position:relative;width:110px;flex:none}
+.price-wrap span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-weight:600;font-size:1.35rem;pointer-events:none}
+.price-wrap input{width:100%;padding-left:24px;text-align:right}
+.del{background:none;border:0;color:var(--red);font-size:1.6rem;width:30px;flex:none;opacity:.55}
+.del:hover{opacity:1}
+.items .plus{margin-top:22px}
+.total{margin-top:14px;font-weight:600;font-size:1.3rem;align-self:flex-end;padding-right:16px}
+.empty{padding:28px 10px;font-size:1.25rem;font-weight:600;text-align:center;opacity:.7}
+.assign{display:flex;flex-direction:column;padding-top:16px}
+.arow{height:84px;display:flex;align-items:center;gap:12px;flex-wrap:nowrap;margin-top:0}
+.arow:first-of-type{margin-top:0}
+.av{width:60px;height:60px;border-radius:50%;border:6px solid var(--navy);background:var(--mint);font:600 1.35rem var(--body);color:var(--navy);display:grid;place-items:center;padding:0;flex:none}
+.av:hover{border-color:var(--red)}
+.arow .plus{width:44px;height:44px;font-size:1.8rem}
+.footer{display:flex;justify-content:flex-end;gap:40px;padding:14px 24px 6px}
+
+/* modal */
+.overlay{position:fixed;inset:0;background:rgba(26,24,86,.55);display:none;align-items:center;justify-content:center;z-index:50;padding:16px}
+.overlay.open{display:flex;animation:fade .15s ease}
+.modal{width:min(420px,100%);max-height:90%;overflow:auto;text-align:center}
+.modal h2{font-size:2rem;margin-bottom:12px}
+.opt{display:flex;align-items:center;gap:14px;width:100%;background:#fff;border:3px solid var(--green);border-radius:16px;padding:10px 14px;margin-bottom:10px;font-size:1.35rem;font-weight:600;text-align:left}
+.opt .av{width:44px;height:44px;border-width:4px;font-size:1rem}
+.opt .chk{margin-left:auto;width:28px;height:28px;border:3px solid var(--green);border-radius:8px;display:grid;place-items:center;color:#fff;font-size:1.1rem}
+.opt.on{border-color:var(--forest);background:var(--mint)}
+.opt.on .chk{background:var(--forest);border-color:var(--forest)}
+.newf{display:flex;gap:8px;margin:14px 0}
+.newf input{flex:1;min-width:0;font:600 1.2rem var(--body);padding:10px;border:2px solid var(--green);border-radius:10px;color:var(--navy)}
+.newf .btn{min-width:0;font-size:1.2rem;padding:6px 14px;border-width:3px}
+
+/* confirmed */
+#confirmed{align-items:center;justify-content:center;text-align:center;gap:50px}
+#confirmed h1{color:#fff;font-size:clamp(2.6rem,8vw,4.6rem);line-height:1.1;animation:pop .6s cubic-bezier(.2,1.4,.4,1) both}
+#confirmed svg{width:120px;height:120px}
+#confirmed .ring{stroke-dasharray:340;stroke-dashoffset:340;animation:draw .7s .3s ease forwards}
+#confirmed .tick{stroke-dasharray:80;stroke-dashoffset:80;animation:draw .4s .9s ease forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+
+@media (max-width:720px){
+  .main-grid{grid-template-columns:1fr;grid-template-rows:auto auto auto;overflow:auto}
+  .friends{grid-row:auto}
+  .manage-body{grid-template-columns:1fr}
+  .spacer{display:none}
+  .assign{display:none}
+  .row{flex-wrap:wrap;height:auto;padding:8px 12px}
+  #scan .card{padding:16px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN (auth handled by another team member: call go('main') once signed in) -->
+<section class="screen" id="login">
+  <div class="card">
+    <p class="welcome">Welcome to</p>
+    <h1>groSharey</h1>
+    <p class="tag">A reliable grocery<br>price-splitting app!</p>
+    <button class="google" onclick="go('main')">
+      <svg width="34" height="34" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.6l6.7-6.7C35.7 2.4 30.2 0 24 0 14.6 0 6.5 5.4 2.6 13.2l7.8 6.1C12.3 13.6 17.7 9.5 24 9.5z"/><path fill="#4285F4" d="M46.5 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.7c-.6 3-2.3 5.4-4.8 7.1l7.5 5.8c4.4-4.1 7.1-10.1 7.1-17.4z"/><path fill="#FBBC05" d="M10.4 28.7A14.5 14.5 0 0 1 9.5 24c0-1.6.3-3.2.8-4.7l-7.8-6.1A24 24 0 0 0 0 24c0 3.9.9 7.5 2.6 10.8l7.8-6.1z"/><path fill="#34A853" d="M24 48c6.5 0 11.9-2.1 15.9-5.8l-7.5-5.8c-2.1 1.4-4.9 2.3-8.4 2.3-6.3 0-11.7-4.1-13.6-9.8l-7.8 6.1C6.500 42.600 14.600 48 24 48z"/></svg>
+      Continue with Google
+    </button>
+  </div>
+</section>
+
+<!-- MAIN -->
+<section class="screen" id="main">
+  <div class="topbar">
+    <span>(logo)</span>
+    <button onclick="go('login')">Log Out
+      <svg width="40" height="40" viewBox="0 0 40 40" fill="none" stroke="#dbfacf" stroke-width="2.5" stroke-linecap="round"><circle cx="20" cy="13" r="6"/><path d="M7 35c0-8 5-12 13-12s13 4 13 12"/></svg>
+    </button>
+  </div>
+  <div class="main-grid">
+    <div class="card friends">
+      <h2>Friends</h2>
+      <div class="flist" id="flist"></div>
+      <button class="plus" aria-label="Add friend" onclick="openModal('add')">+</button>
+    </div>
+    <div class="card owe" id="owe"></div>
+    <div class="card log">
+      <h2>Log a grocery run!</h2>
+      <div class="choices">
+        <button class="choice" onclick="startScan()">Scan Receipt
+          <svg width="64" height="64" viewBox="0 0 64 64" fill="none" stroke="#000" stroke-width="5" stroke-linejoin="round" stroke-linecap="round"><path d="M12 8h30v10h8v38l-6-5-6 5-6-5-6 5-6-5-6 5z"/><path d="M20 24h14M20 34h14M20 44h14" /></svg>
+        </button>
+        <span class="or">OR</span>
+        <button class="choice" onclick="manualEntry()">Manual<br>Entry</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SCAN RECEIPT (stage 1 = live camera, stage 2 = still frame / confirm) -->
+<section class="screen" id="scan" data-stage="1">
+  <div class="title-top">Scan Receipt</div>
+  <div class="card">
+    <div class="frame" id="camera">
+      <svg width="100" height="100" viewBox="0 0 100 100" fill="none" stroke="#222" stroke-width="3" stroke-linejoin="round"><path d="M10 30h18l6-10h32l6 10h18v48H10z" transform="scale(1) translate(0,0)" /><circle cx="50" cy="54" r="16"/></svg>
+      <div class="lbl">(still frame)</div>
+    </div>
+  </div>
+  <div class="actions stage1">
+    <button class="btn" onclick="go('main')">Back</button>
+    <button class="shutter" aria-label="Take photo" onclick="setStage(2)"></button>
+  </div>
+  <div class="actions stage2">
+    <button class="btn" onclick="setStage(1)">Cancel</button>
+    <button class="btn" onclick="confirmScan()">Confirm</button>
+  </div>
+</section>
+
+<!-- MANAGE ITEMS & GROUP MEMBERS -->
+<section class="screen" id="manage">
+  <div class="title-top">Assign Friends</div>
+  <div class="manage-body">
+    <div class="card items">
+      <h2>Items</h2>
+      <div id="itemRows" style="width:100%"></div>
+      <button class="plus" aria-label="Add item" onclick="addItem()">+</button>
+      <div class="total" id="total"></div>
+    </div>
+    <div class="assign"><div class="spacer"></div><div id="assignRows"></div></div>
+  </div>
+  <div class="footer">
+    <button class="btn" onclick="manageBack()">Back</button>
+    <button class="btn" onclick="confirmItems()">Confirm</button>
+  </div>
+</section>
+
+<!-- CONFIRMED -->
+<section class="screen" id="confirmed" style="background:var(--green)">
+  <h1>Your groceries<br>were logged!</h1>
+  <svg viewBox="0 0 120 120" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round">
+    <path class="ring" d="M60 3a57 57 0 1 0 57 57"/><path class="tick" d="M38 62l19 19 46-46"/>
+  </svg>
+</section>
+
+<!-- friend picker modal -->
+<div class="overlay" id="overlay" onclick="if(event.target===this)closeModal()">
+  <div class="card modal" id="modal"></div>
+</div>
+
+<script>
+/* ---------- state ---------- */
+const friends=[{id:1,name:'John',ini:'JW',owe:5},{id:2,name:'Jane',ini:'JD',owe:0},{id:3,name:'Jude',ini:'JV',owe:1}];
+let selFriend=1, items=[], origin='main', modalMode=null, modalRow=null, modalPick=new Set(), nextId=1, timer=null;
+const $=id=>document.getElementById(id);
+const money=n=>'$'+(+n||0).toFixed(2);
+const initials=n=>n.trim().split(/\s+/).map(w=>w[0]).join('').slice(0,2).toUpperCase();
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------- navigation ---------- */
+function go(name){
+  clearTimeout(timer);
+  document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('active',s.id===name));
+  if(name==='main')renderMain();
+  if(name==='manage')renderManage();
+}
+function setStage(n){ $('scan').dataset.stage=n; }
+function startScan(){ origin='scan'; setStage(1); go('scan'); }
+function manualEntry(){ origin='main'; items=[]; go('manage'); }
+function manageBack(){ go(origin==='scan'?'scan':'main'); if(origin==='scan')setStage(2); }
+function confirmScan(){
+  // HOOK: the receipt-scanning teammate should replace this stub with parsed items
+  items=[{id:nextId++,name:'Item 1',price:'4.99',friends:[1]},{id:nextId++,name:'Item 2',price:'4.99',friends:[1,3]},{id:nextId++,name:'Item 3',price:'4.99',friends:[3]}];
+  go('manage');
+}
+function confirmItems(){
+  go('confirmed');
+  timer=setTimeout(()=>go('main'),2600);
+}
+
+/* ---------- main view ---------- */
+function renderMain(){
+  $('flist').innerHTML=friends.map(f=>`<button class="friend ${f.id===selFriend?'sel':''}" onclick="selFriend=${f.id};renderMain()"><span>${esc(f.name)}</span>${f.owe>0?`<span class="badge">${money(f.owe)}</span>`:''}</button>`).join('');
+  const f=friends.find(x=>x.id===selFriend);
+  $('owe').innerHTML=f?(f.owe>0
+   ?`<div><h2>You owe ${esc(f.name)}</h2><div class="amt">${money(f.owe)}</div></div><div class="pay">pay with<button class="paypal">PayPal</button></div>`
+   :`<div><h2>You and ${esc(f.name)}</h2><div class="amt ok">are all settled up!</div></div>`):'<h2>Add a friend to get started</h2>';
+}
+
+/* ---------- manage items ---------- */
+function renderManage(){
+  $('itemRows').innerHTML=items.length?items.map(it=>`
+    <div class="row">
+      <input class="name" value="${esc(it.name)}" placeholder="Item name" aria-label="Item name" oninput="upd(${it.id},'name',this.value)">
+      <div class="price-wrap"><span>$</span><input value="${esc(it.price)}" inputmode="decimal" placeholder="0.00" aria-label="Price" oninput="upd(${it.id},'price',this.value)" onblur="this.value=fmt(this.value);upd(${it.id},'price',this.value)"></div>
+      <button class="del" aria-label="Remove item" onclick="delItem(${it.id})">✕</button>
+    </div>`).join(''):'<div class="empty">No items yet.<br>Tap + to add one.</div>';
+  $('assignRows').innerHTML=items.map(it=>`<div class="arow">${it.friends.map(fid=>{const f=friends.find(x=>x.id===fid);return f?`<button class="av" title="Remove ${esc(f.name)}" onclick="unassign(${it.id},${fid})">${f.ini}</button>`:''}).join('')}<button class="plus" aria-label="Assign friends" onclick="openModal('assign',${it.id})">+</button></div>`).join('');
+  total();
+}
+function fmt(v){const n=parseFloat(String(v).replace(/[^0-9.]/g,''));return isNaN(n)?'':n.toFixed(2)}
+function total(){ $('total').textContent=items.length?'Total: '+money(items.reduce((s,i)=>s+(parseFloat(i.price)||0),0)):''; }
+function upd(id,k,v){ items.find(i=>i.id===id)[k]=v; total(); }
+function addItem(){ items.push({id:nextId++,name:'',price:'',friends:[]}); renderManage(); const r=document.querySelectorAll('#itemRows .name'); r[r.length-1]?.focus(); }
+function delItem(id){ items=items.filter(i=>i.id!==id); renderManage(); }
+function unassign(id,fid){ const it=items.find(i=>i.id===id); it.friends=it.friends.filter(x=>x!==fid); renderManage(); }
+
+/* ---------- popup ---------- */
+function openModal(mode,row){
+  modalMode=mode; modalRow=row;
+  modalPick=new Set(mode==='assign'?items.find(i=>i.id===row).friends:[]);
+  drawModal(); $('overlay').classList.add('open');
+}
+function closeModal(){ $('overlay').classList.remove('open'); }
+function drawModal(){
+  const assign=modalMode==='assign';
+  $('modal').innerHTML=`<h2>${assign?'Who shares this item?':'Add a friend'}</h2>`+
+   (assign?friends.map(f=>`<button class="opt ${modalPick.has(f.id)?'on':''}" onclick="togglePick(${f.id})"><span class="av">${f.ini}</span>${esc(f.name)}<span class="chk">${modalPick.has(f.id)?'✓':''}</span></button>`).join(''):'')+
+   `<div class="newf"><input id="newName" placeholder="New friend's name" onkeydown="if(event.key==='Enter')newFriend()"><button class="btn" onclick="newFriend()">Add</button></div>`+
+   `<div style="display:flex;gap:12px;justify-content:center"><button class="btn" onclick="closeModal()">${assign?'Cancel':'Close'}</button>${assign?'<button class="btn" onclick="applyPick()">Done</button>':''}</div>`;
+}
+function togglePick(id){ modalPick.has(id)?modalPick.delete(id):modalPick.add(id); drawModal(); }
+function newFriend(){
+  const v=$('newName').value.trim(); if(!v)return;
+  const f={id:Date.now(),name:v,ini:initials(v),owe:0}; friends.push(f);
+  if(modalMode==='assign')modalPick.add(f.id); else {selFriend=f.id;renderMain();}
+  drawModal(); if(modalMode==='add')$('newName').focus();
+}
+function applyPick(){
+  items.find(i=>i.id===modalRow).friends=[...modalPick]; closeModal(); renderManage();
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+
+go('login');
+</script>
+</body>
+</html>
