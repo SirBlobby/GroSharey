@@ -15,9 +15,8 @@ Monorepo template with a Python Flask backend and an Expo (React Native + React 
 ```
 package.json                    Root scripts (bun)
 backend/
-  pyproject.toml                Python dependencies (uv)
+  pyproject.toml                Python dependencies (uv) and Vercel entrypoint
   uv.lock                       Locked Python versions
-  api/index.py                  Vercel entry point
   server/
     main.py                     App factory
     config.py                   Environment settings

@@ -12,3 +12,6 @@ dependencies = [
     "pymongo==4.19.0",
     "python-dotenv==1.2.4",
 ]
+
+[tool.vercel]
+entrypoint = "server.main:app"

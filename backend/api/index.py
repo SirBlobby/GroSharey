@@ -1,7 +1,0 @@
-import sys
-from pathlib import Path
-
-backend_root = Path(__file__).resolve().parent.parent
-sys.path.append(str(backend_root))
-
-from server.main import app
