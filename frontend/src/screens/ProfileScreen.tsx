@@ -24,7 +24,6 @@ export default function ProfileScreen({ username, onBack }: ProfileScreenProps) 
         <View style={styles.profileDetails}>
           <ProfilePicture profile={profile} size={120} />
           <Text style={styles.detailText}>@{profile.username}</Text>
-          <Text style={styles.detailText}>Account ID: {profile.id}</Text>
         </View>
       )}
       <PrimaryButton label="Back" onPress={onBack} />
