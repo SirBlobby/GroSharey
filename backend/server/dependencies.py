@@ -26,4 +26,4 @@ def get_profile_service() -> ProfileService:
 
 @lru_cache
 def get_receipt_service() -> ReceiptService:
-    return ReceiptService(settings.gemini_api_key, settings.gemini_model)
+    return ReceiptService(settings.gemini_api_key, settings.gemini_model, settings.gemini_fallback_model)

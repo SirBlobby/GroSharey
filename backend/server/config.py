@@ -24,6 +24,7 @@ class Settings:
     jwt_expiration_minutes: int = int(os.getenv("JWT_EXPIRATION_MINUTES", "10080"))
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
+    gemini_fallback_model: str = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-flash-lite-latest")
 
 
 def validate_settings(current_settings: Settings) -> None:

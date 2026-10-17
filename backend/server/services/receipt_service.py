@@ -60,9 +60,10 @@ def add_item_ids(receipt: Receipt) -> ParsedReceipt:
 
 
 class ReceiptService:
-    def __init__(self, gemini_api_key: str, gemini_model: str):
+    def __init__(self, gemini_api_key: str, gemini_model: str, gemini_fallback_model: str):
         self.gemini_api_key = gemini_api_key
-        self.gemini_model = gemini_model
+        # Free-tier quotas are per model, so the fallback draws on a separate allowance.
+        self.gemini_models = list(dict.fromkeys(model for model in (gemini_model, gemini_fallback_model) if model))
         self.gemini_client: genai.Client | None = None
 
     def get_gemini_client(self) -> genai.Client:
@@ -79,28 +80,37 @@ class ReceiptService:
         if content_type is None:
             raise BadRequestError("Receipt image must be JPEG, PNG, or WEBP")
 
-        try:
-            response = self.get_gemini_client().models.generate_content(
-                model=self.gemini_model,
-                contents=[
-                    types.Part.from_bytes(data=image_bytes, mime_type=content_type),
-                    "Transcribe this receipt.",
-                ],
-                config=types.GenerateContentConfig(
-                    system_instruction=SYSTEM_PROMPT,
-                    # Forces the reply to be JSON matching the Receipt schema.
-                    response_mime_type="application/json",
-                    response_schema=Receipt,
-                ),
-            )
-        except gemini_errors.APIError as error:
-            if error.code == 429:
-                raise RateLimitError("Too many receipts at once. Try again in a minute.")
-            logger.exception("Gemini request failed")
-            raise ExternalServiceError("Couldn't read the receipt right now. Try again.")
-
+        response = self.request_receipt_from_gemini(image_bytes, content_type)
         if response.prompt_feedback and response.prompt_feedback.block_reason:
             raise BadRequestError("This image couldn't be processed. Try a different photo.")
         if not isinstance(response.parsed, Receipt):
             raise BadRequestError("Couldn't read a receipt in this image. Try a clearer photo.")
         return add_item_ids(response.parsed)
+
+    def request_receipt_from_gemini(self, image_bytes: bytes, content_type: str) -> types.GenerateContentResponse:
+        """Tries each model once. Only moves on when Gemini is overloaded (5xx); rate limits
+        and bad requests stop immediately so retries don't burn free-tier quota."""
+        client = self.get_gemini_client()
+        for model in self.gemini_models:
+            try:
+                return client.models.generate_content(
+                    model=model,
+                    contents=[
+                        types.Part.from_bytes(data=image_bytes, mime_type=content_type),
+                        "Transcribe this receipt.",
+                    ],
+                    config=types.GenerateContentConfig(
+                        system_instruction=SYSTEM_PROMPT,
+                        # Forces the reply to be JSON matching the Receipt schema.
+                        response_mime_type="application/json",
+                        response_schema=Receipt,
+                    ),
+                )
+            except gemini_errors.ServerError as error:
+                logger.warning("Gemini model %s unavailable (%s %s)", model, error.code, error.status)
+            except gemini_errors.APIError as error:
+                if error.code == 429:
+                    raise RateLimitError("Too many receipts at once. Try again in a minute.")
+                logger.exception("Gemini request to %s failed", model)
+                raise ExternalServiceError("Couldn't read the receipt right now. Try again.")
+        raise ExternalServiceError("Receipt scanning is busy right now. Try again in a few minutes.")

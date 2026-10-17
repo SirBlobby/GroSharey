@@ -186,6 +186,7 @@ uv run python scripts/parse_receipt.py ../sample-receipts/costco.jpg
 | `JWT_EXPIRATION_MINUTES` | Token lifetime, default 10080 (7 days) |
 | `GEMINI_API_KEY` | Google Gemini key for receipt scanning, free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
 | `GEMINI_MODEL` | Gemini model for receipt scanning, default `gemini-flash-latest` |
+| `GEMINI_FALLBACK_MODEL` | Model tried once when `GEMINI_MODEL` is overloaded, default `gemini-flash-lite-latest` |
 
 Generate a secret key with `openssl rand -hex 32`.
 
