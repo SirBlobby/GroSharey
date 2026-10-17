@@ -11,3 +11,7 @@ class UnauthorizedError(Exception):
 
 class ConflictError(Exception):
     pass
+
+
+class BadRequestError(Exception):
+    pass

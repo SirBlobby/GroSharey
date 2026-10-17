@@ -1,5 +1,5 @@
-import AuthForm from "../components/AuthForm";
 import AuthLayout from "../components/AuthLayout";
+import LogInForm from "../components/LogInForm";
 import { useAuth } from "../hooks/useAuth";
 
 type LogInScreenProps = {
@@ -11,7 +11,7 @@ export default function LogInScreen({ onShowSignUp }: LogInScreenProps) {
 
   return (
     <AuthLayout title="Log In" switchPageLabel="Need an account? Create one" onSwitchPage={onShowSignUp}>
-      <AuthForm submitLabel="Log In" onSubmit={logIn} />
+      <LogInForm onSubmit={logIn} />
     </AuthLayout>
   );
 }

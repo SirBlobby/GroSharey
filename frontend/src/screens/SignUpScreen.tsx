@@ -1,5 +1,5 @@
-import AuthForm from "../components/AuthForm";
 import AuthLayout from "../components/AuthLayout";
+import SignUpForm from "../components/SignUpForm";
 import { useAuth } from "../hooks/useAuth";
 
 type SignUpScreenProps = {
@@ -11,7 +11,7 @@ export default function SignUpScreen({ onShowLogIn }: SignUpScreenProps) {
 
   return (
     <AuthLayout title="Create Account" switchPageLabel="Already have an account? Log in" onSwitchPage={onShowLogIn}>
-      <AuthForm submitLabel="Create Account" onSubmit={signUp} />
+      <SignUpForm onSubmit={signUp} />
     </AuthLayout>
   );
 }

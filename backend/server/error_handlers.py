@@ -1,7 +1,7 @@
 from flask import Flask, jsonify
 from pydantic import ValidationError
 
-from server.errors import ConflictError, NotFoundError, UnauthorizedError
+from server.errors import BadRequestError, ConflictError, NotFoundError, UnauthorizedError
 
 
 def format_validation_message(error: ValidationError) -> str:
@@ -10,6 +10,10 @@ def format_validation_message(error: ValidationError) -> str:
         field_name = ".".join(str(location_part) for location_part in error_detail["loc"])
         messages.append(f"{field_name}: {error_detail['msg']}")
     return "; ".join(messages)
+
+
+def handle_bad_request(error: BadRequestError):
+    return jsonify({"detail": str(error)}), 400
 
 
 def handle_not_found(error: NotFoundError):
@@ -29,6 +33,7 @@ def handle_validation_error(error: ValidationError):
 
 
 def register_error_handlers(application: Flask) -> None:
+    application.register_error_handler(BadRequestError, handle_bad_request)
     application.register_error_handler(NotFoundError, handle_not_found)
     application.register_error_handler(UnauthorizedError, handle_unauthorized)
     application.register_error_handler(ConflictError, handle_conflict)

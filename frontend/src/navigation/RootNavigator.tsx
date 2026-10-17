@@ -2,10 +2,10 @@ import { useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { useAuth } from "../hooks/useAuth";
-import HomeScreen from "../screens/HomeScreen";
 import LogInScreen from "../screens/LogInScreen";
 import SignUpScreen from "../screens/SignUpScreen";
 import { colors } from "../theme/colors";
+import AppNavigator from "./AppNavigator";
 
 type AuthPage = "logIn" | "signUp";
 
@@ -22,7 +22,7 @@ export default function RootNavigator() {
   }
 
   if (currentUser) {
-    return <HomeScreen />;
+    return <AppNavigator />;
   }
 
   if (authPage === "signUp") {

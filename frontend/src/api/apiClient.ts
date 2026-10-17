@@ -32,10 +32,16 @@ async function sendRequest<ResponseType>(path: string, options: RequestInit = {}
   return response.json() as Promise<ResponseType>;
 }
 
+export function buildApiUrl(path: string): string {
+  return `${apiBaseUrl}${path}`;
+}
+
 export const apiClient = {
   get: <ResponseType>(path: string) => sendRequest<ResponseType>(path),
   post: <ResponseType>(path: string, body: unknown) =>
     sendRequest<ResponseType>(path, { method: "POST", body: JSON.stringify(body) }),
+  put: <ResponseType>(path: string, body: unknown) =>
+    sendRequest<ResponseType>(path, { method: "PUT", body: JSON.stringify(body) }),
   patch: <ResponseType>(path: string, body: unknown) =>
     sendRequest<ResponseType>(path, { method: "PATCH", body: JSON.stringify(body) }),
   delete: <ResponseType>(path: string) => sendRequest<ResponseType>(path, { method: "DELETE" }),

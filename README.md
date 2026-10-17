@@ -27,7 +27,7 @@ backend/
     error_handlers.py           Error to HTTP response mapping
     models/                     Pydantic schemas
     repositories/               MongoDB data access
-    services/                   Business logic, passwords, tokens
+    services/                   Business logic, passwords, tokens, image compression
     routes/                     HTTP endpoints
 frontend/
   package.json                  JavaScript dependencies (bun)
@@ -41,6 +41,8 @@ frontend/
     context/                    Auth state provider
     hooks/                      Data hooks
     navigation/                 Shows auth or app screens
+    linking/                    Profile QR code links
+    media/                      Image picking, cropping math, and crop export
     screens/                    Screens
     components/                 UI components
     storage/                    Token storage (secure store on native, localStorage on web)
@@ -58,12 +60,25 @@ Run from the project root.
 | `bun run dev` | Run backend and frontend together |
 | `bun run dev:backend` | Run only the backend on port 8000 |
 | `bun run dev:frontend` | Run only the frontend web app |
+| `bun run dev:ios` | Run backend and the iOS simulator together |
+| `bun run dev:android` | Run backend and the Android emulator together |
+| `bun run dev:mobile` | Run backend and Expo (scan the QR code with Expo Go) |
+| `bun run ios` | Run only the app in the iOS simulator |
+| `bun run android` | Run only the app in the Android emulator |
+| `bun run mobile` | Run only Expo for a physical device with Expo Go |
+| `bun run stop` | Stop anything still running on ports 8000 (backend) and 8081 (Expo) |
 | `bun run build:web` | Build the frontend into `frontend/dist` |
 | `bun run preview:web` | Serve the built frontend locally |
 | `bun run typecheck` | Type check the frontend |
 | `bun run test:health` | Check that the backend is running |
 
 Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env` before running.
+
+### Mobile Preview
+
+- iOS simulator requires macOS with Xcode. Android emulator requires Android Studio.
+- A physical phone or the Android emulator cannot reach `localhost` on your computer. Set `EXPO_PUBLIC_API_URL` in `frontend/.env` to your computer's LAN address, for example `http://192.168.1.20:8000`. The Android emulator can also use `http://10.0.2.2:8000`.
+- The local backend listens on all network interfaces so phones on the same network can reach it.
 
 ## Backend
 
@@ -108,6 +123,9 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | POST | `/api/auth/signup` | No | Create an account, returns token and user |
 | POST | `/api/auth/login` | No | Log in, returns token and user |
 | GET | `/api/auth/me` | Yes | Current user |
+| GET | `/api/profiles/<username>` | Yes | Public profile (id, username, display name, picture URL) |
+| PUT | `/api/profiles/me/picture` | Yes | Upload profile picture as `{"image_base64": "..."}` |
+| GET | `/api/profiles/<username>/picture` | No | Profile picture image |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 
@@ -125,7 +143,24 @@ def get_example():
     current_user = g.current_user
 ```
 
-On the frontend, every screen except the auth screen is shown only when logged in. Use `useAuth()` to read `currentUser` or call `logOut()`.
+On the frontend, every screen except the log in and create account screens is shown only when logged in. Use `useAuth()` to read `currentUser` or call `logOut()`.
+
+## Accounts and Profiles
+
+Each account has an `id` (MongoDB ObjectId), a unique `username` (3 to 30 lowercase letters, numbers, or underscores), a `display_name`, and an email used to log in.
+
+### QR Codes
+
+The My QR Code screen shows a QR code linking to `EXPO_PUBLIC_APP_URL/?user=<username>`. Scanning it with any phone camera opens the web app on that user's profile, after logging in if needed. The home screen can also look up a profile by username.
+
+### Profile Pictures
+
+1. The user picks an image and crops it to a square in the `ImageCropper` component (drag to position, zoom buttons).
+2. The crop is exported as PNG (lossless) and scaled down to at most 1024 by 1024 pixels.
+3. The backend strips metadata, applies orientation, and re-encodes it as lossless WebP at maximum compression effort.
+4. Images are stored in the MongoDB `profile_pictures` collection and served with long-lived cache headers.
+
+Uploads are limited to 3 MB to stay under the Vercel request size limit.
 
 ## Backend Environment Variables
 
@@ -156,7 +191,7 @@ Create two Vercel projects from this repository.
 | Project  | Root Directory | Framework Preset | Environment Variables |
 |----------|----------------|------------------|-----------------------|
 | Backend  | `backend`      | Flask            | All backend variables above, with `ENVIRONMENT=production` |
-| Frontend | `frontend`     | Other            | `EXPO_PUBLIC_API_URL` (Config type, backend URL) |
+| Frontend | `frontend`     | Other            | `EXPO_PUBLIC_API_URL` (backend URL) and `EXPO_PUBLIC_APP_URL` (frontend URL), both Config type |
 
 The backend installs from `pyproject.toml` and `uv.lock`. The frontend installs with `bun install` and builds with `bunx expo export --platform web`, as set in `frontend/vercel.json`.
 

@@ -8,6 +8,14 @@
     "web": {
       "bundler": "metro",
       "output": "single"
-    }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "GroSharey uses your photos to set your profile picture."
+        }
+      ]
+    ]
   }
 }

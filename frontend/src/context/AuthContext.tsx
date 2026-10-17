@@ -2,14 +2,15 @@ import { createContext, ReactNode, useEffect, useState } from "react";
 
 import { authApi } from "../api/authApi";
 import { getAccessToken, removeAccessToken, saveAccessToken } from "../storage/tokenStorage";
-import { AuthCredentials, AuthResponse, User } from "../types/auth";
+import { AuthResponse, LogInCredentials, SignUpDetails, User } from "../types/auth";
 
 type AuthContextValue = {
   currentUser: User | null;
   isLoading: boolean;
-  signUp: (credentials: AuthCredentials) => Promise<void>;
-  logIn: (credentials: AuthCredentials) => Promise<void>;
+  signUp: (signUpDetails: SignUpDetails) => Promise<void>;
+  logIn: (credentials: LogInCredentials) => Promise<void>;
   logOut: () => Promise<void>;
+  updateCurrentUser: (updatedUser: User) => void;
 };
 
 export const AuthContext = createContext<AuthContextValue | null>(null);
@@ -40,11 +41,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setCurrentUser(authResponse.user);
   }
 
-  async function signUp(credentials: AuthCredentials) {
-    await completeAuthentication(await authApi.signUp(credentials));
+  async function signUp(signUpDetails: SignUpDetails) {
+    await completeAuthentication(await authApi.signUp(signUpDetails));
   }
 
-  async function logIn(credentials: AuthCredentials) {
+  async function logIn(credentials: LogInCredentials) {
     await completeAuthentication(await authApi.logIn(credentials));
   }
 
@@ -54,7 +55,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ currentUser, isLoading, signUp, logIn, logOut }}>
+    <AuthContext.Provider
+      value={{ currentUser, isLoading, signUp, logIn, logOut, updateCurrentUser: setCurrentUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

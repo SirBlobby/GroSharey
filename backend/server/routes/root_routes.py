@@ -17,6 +17,9 @@ def get_api_overview():
                 "sign_up": "POST /api/auth/signup",
                 "log_in": "POST /api/auth/login",
                 "current_user": "GET /api/auth/me",
+                "profile": "GET /api/profiles/<username>",
+                "profile_picture": "GET /api/profiles/<username>/picture",
+                "upload_profile_picture": "PUT /api/profiles/me/picture",
             },
         }
     )

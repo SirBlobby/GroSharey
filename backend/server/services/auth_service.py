@@ -3,16 +3,13 @@ from server.models.user_models import AuthResponse, LogInRequest, SignUpRequest,
 from server.repositories.user_repository import UserRepository
 from server.services.password_service import hash_password, verify_password
 from server.services.token_service import create_access_token, read_user_id_from_token
-
-
-def convert_to_public_user(stored_user: StoredUser) -> User:
-    return User(**stored_user.model_dump(exclude={"password_hash"}))
+from server.services.user_mapper import convert_to_user
 
 
 def build_auth_response(stored_user: StoredUser) -> AuthResponse:
     return AuthResponse(
         access_token=create_access_token(stored_user.id),
-        user=convert_to_public_user(stored_user),
+        user=convert_to_user(stored_user),
     )
 
 
@@ -23,7 +20,12 @@ class AuthService:
     def sign_up(self, sign_up_data: SignUpRequest) -> AuthResponse:
         normalized_email = sign_up_data.email.lower()
         password_hash = hash_password(sign_up_data.password)
-        stored_user = self.user_repository.create(normalized_email, password_hash)
+        stored_user = self.user_repository.create(
+            email=normalized_email,
+            username=sign_up_data.username,
+            display_name=sign_up_data.display_name,
+            password_hash=password_hash,
+        )
         return build_auth_response(stored_user)
 
     def log_in(self, log_in_data: LogInRequest) -> AuthResponse:
@@ -37,4 +39,4 @@ class AuthService:
         stored_user = self.user_repository.find_by_id(user_id)
         if stored_user is None:
             raise UnauthorizedError("User no longer exists")
-        return convert_to_public_user(stored_user)
+        return convert_to_user(stored_user)
