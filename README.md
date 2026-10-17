@@ -8,6 +8,7 @@ Monorepo template with a Python Flask backend and an Expo (React Native + React 
 |------|----------|---------|
 | [uv](https://docs.astral.sh/uv/) | Python packages and virtual environment | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
 | [Bun](https://bun.sh/) | JavaScript packages and scripts | `curl -fsSL https://bun.sh/install \| bash` |
+| [MongoDB](https://www.mongodb.com/) | Database | Local install or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster |
 
 ## Structure
 
@@ -20,11 +21,14 @@ backend/
   server/
     main.py                     App factory
     config.py                   Environment settings
+    database.py                 MongoDB connection
+    dependencies.py             Service wiring
+    authentication.py           require_authentication decorator
     errors.py                   Domain errors
     error_handlers.py           Error to HTTP response mapping
     models/                     Pydantic schemas
-    repositories/               Data access
-    services/                   Business logic
+    repositories/               MongoDB data access
+    services/                   Business logic, passwords, tokens
     routes/                     HTTP endpoints
 frontend/
   package.json                  JavaScript dependencies (bun)
@@ -35,9 +39,13 @@ frontend/
   src/
     config/                     Environment values
     api/                        HTTP client and endpoint calls
+    context/                    Auth state provider
     hooks/                      Data hooks
+    navigation/                 Shows auth or app screens
     screens/                    Screens
     components/                 UI components
+    storage/                    Token storage (secure store on native, localStorage on web)
+    types/                      Shared types
     theme/                      Colors and spacing
 ```
 
@@ -92,6 +100,48 @@ bun run web
 | Remove a package | `bun remove <package>` |
 | Align Expo package versions | `bunx expo install --fix` |
 
+## Authentication
+
+Email and password accounts stored in the MongoDB `users` collection. Passwords are hashed with Argon2. The backend returns a JWT that the frontend sends as `Authorization: Bearer <token>`.
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| POST | `/api/auth/signup` | No | Create an account, returns token and user |
+| POST | `/api/auth/login` | No | Log in, returns token and user |
+| GET | `/api/auth/me` | Yes | Current user |
+| GET | `/api/health` | No | Health check |
+| GET | `/` | No | API name, status, and endpoint list |
+
+Protect a backend route:
+
+```python
+from flask import g
+
+from server.authentication import require_authentication
+
+
+@example_blueprint.get("")
+@require_authentication
+def get_example():
+    current_user = g.current_user
+```
+
+On the frontend, every screen except the auth screen is shown only when logged in. Use `useAuth()` to read `currentUser` or call `logOut()`.
+
+## Backend Environment Variables
+
+| Variable | Description |
+|----------|-------------|
+| `APP_NAME` | API name |
+| `ENVIRONMENT` | `development` or `production` |
+| `ALLOWED_ORIGINS` | Comma separated frontend URLs |
+| `MONGODB_URI` | MongoDB connection string |
+| `MONGODB_DATABASE_NAME` | Database name |
+| `JWT_SECRET_KEY` | Long random string, required when `ENVIRONMENT=production` |
+| `JWT_EXPIRATION_MINUTES` | Token lifetime, default 10080 (7 days) |
+
+Generate a secret key with `openssl rand -hex 32`.
+
 ## Adding a service
 
 1. Model in `backend/server/models/`
@@ -106,9 +156,11 @@ Create two Vercel projects from this repository.
 
 | Project  | Root Directory | Framework Preset | Environment Variables |
 |----------|----------------|------------------|-----------------------|
-| Backend  | `backend`      | Flask            | `ALLOWED_ORIGINS`, `APP_NAME`, `ENVIRONMENT` |
+| Backend  | `backend`      | Flask            | All backend variables above, with `ENVIRONMENT=production` |
 | Frontend | `frontend`     | Other            | `EXPO_PUBLIC_API_URL` (Config type, backend URL) |
 
 The backend installs from `pyproject.toml` and `uv.lock`. The frontend installs with `bun install` and builds with `bunx expo export --platform web`, as set in `frontend/vercel.json`.
 
 Commit `backend/uv.lock`, `bun.lock`, and `frontend/bun.lock` so Vercel installs the same versions.
+
+For MongoDB Atlas, allow access from anywhere (`0.0.0.0/0`) under Network Access, since Vercel functions do not have fixed IP addresses.

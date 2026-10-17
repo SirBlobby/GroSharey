@@ -1,15 +1,18 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 
-import HomeScreen from "./src/screens/HomeScreen";
+import { AuthProvider } from "./src/context/AuthContext";
+import RootNavigator from "./src/navigation/RootNavigator";
 import { colors } from "./src/theme/colors";
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <HomeScreen />
-      <StatusBar style="dark" />
-    </View>
+    <AuthProvider>
+      <View style={styles.container}>
+        <RootNavigator />
+        <StatusBar style="dark" />
+      </View>
+    </AuthProvider>
   );
 }
 

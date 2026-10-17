@@ -1,12 +1,22 @@
 import { apiBaseUrl } from "../config/environment";
+import { getAccessToken } from "../storage/tokenStorage";
 
 type ErrorResponseBody = {
   detail?: string;
 };
 
+async function buildRequestHeaders(): Promise<Record<string, string>> {
+  const requestHeaders: Record<string, string> = { "Content-Type": "application/json" };
+  const accessToken = await getAccessToken();
+  if (accessToken) {
+    requestHeaders.Authorization = `Bearer ${accessToken}`;
+  }
+  return requestHeaders;
+}
+
 async function sendRequest<ResponseType>(path: string, options: RequestInit = {}): Promise<ResponseType> {
   const response = await fetch(`${apiBaseUrl}/api${path}`, {
-    headers: { "Content-Type": "application/json" },
+    headers: await buildRequestHeaders(),
     ...options,
   });
 
