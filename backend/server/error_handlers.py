@@ -1,7 +1,14 @@
 from flask import Flask, jsonify
 from pydantic import ValidationError
 
-from server.errors import BadRequestError, ConflictError, NotFoundError, UnauthorizedError
+from server.errors import (
+    BadRequestError,
+    ConflictError,
+    ExternalServiceError,
+    NotFoundError,
+    RateLimitError,
+    UnauthorizedError,
+)
 
 
 def format_validation_message(error: ValidationError) -> str:
@@ -28,6 +35,14 @@ def handle_conflict(error: ConflictError):
     return jsonify({"detail": str(error)}), 409
 
 
+def handle_rate_limit(error: RateLimitError):
+    return jsonify({"detail": str(error)}), 429
+
+
+def handle_external_service_error(error: ExternalServiceError):
+    return jsonify({"detail": str(error)}), 502
+
+
 def handle_validation_error(error: ValidationError):
     return jsonify({"detail": format_validation_message(error)}), 400
 
@@ -37,4 +52,6 @@ def register_error_handlers(application: Flask) -> None:
     application.register_error_handler(NotFoundError, handle_not_found)
     application.register_error_handler(UnauthorizedError, handle_unauthorized)
     application.register_error_handler(ConflictError, handle_conflict)
+    application.register_error_handler(RateLimitError, handle_rate_limit)
+    application.register_error_handler(ExternalServiceError, handle_external_service_error)
     application.register_error_handler(ValidationError, handle_validation_error)

@@ -15,3 +15,11 @@ class ConflictError(Exception):
 
 class BadRequestError(Exception):
     pass
+
+
+class RateLimitError(Exception):
+    pass
+
+
+class ExternalServiceError(Exception):
+    pass

@@ -16,3 +16,6 @@ dist/
 web-build/
 
 .DS_Store
+
+# Real receipts can contain card digits; keep test images out of git
+sample-receipts/

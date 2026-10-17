@@ -22,6 +22,8 @@ class Settings:
     mongodb_database_name: str = os.getenv("MONGODB_DATABASE_NAME", "grosharey")
     jwt_secret_key: str = os.getenv("JWT_SECRET_KEY", DEVELOPMENT_JWT_SECRET_KEY)
     jwt_expiration_minutes: int = int(os.getenv("JWT_EXPIRATION_MINUTES", "10080"))
+    gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
+    gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 
 
 def validate_settings(current_settings: Settings) -> None:

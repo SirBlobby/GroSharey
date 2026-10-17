@@ -126,6 +126,7 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | GET | `/api/profiles/<username>` | Yes | Public profile (id, username, display name, picture URL) |
 | PUT | `/api/profiles/me/picture` | Yes | Upload profile picture as `{"image_base64": "..."}` |
 | GET | `/api/profiles/<username>/picture` | No | Profile picture image |
+| POST | `/api/receipts/parse` | Yes | Read a receipt photo sent as `{"image_base64": "..."}`, returns items and totals as JSON |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 
@@ -162,6 +163,16 @@ The My QR Code screen shows a QR code linking to `EXPO_PUBLIC_APP_URL/?user=<use
 
 Uploads are limited to 3 MB to stay under the Vercel request size limit.
 
+## Receipt Scanning
+
+`POST /api/receipts/parse` sends the receipt image to Google Gemini and returns the store, date, line items, subtotal, tax, and total. Each item gets an `id` (`item_1`, `item_2`, ...) for assigning roommates, and `warnings` lists any totals that don't add up so the user can double-check before splitting.
+
+To try it on an image without the frontend, put the image in `sample-receipts/` (ignored by git, since receipts can show card digits) and run from `backend/`:
+
+```
+uv run python scripts/parse_receipt.py ../sample-receipts/costco.jpg
+```
+
 ## Backend Environment Variables
 
 | Variable | Description |
@@ -173,6 +184,8 @@ Uploads are limited to 3 MB to stay under the Vercel request size limit.
 | `MONGODB_DATABASE_NAME` | Database name |
 | `JWT_SECRET_KEY` | Long random string, required when `ENVIRONMENT=production` |
 | `JWT_EXPIRATION_MINUTES` | Token lifetime, default 10080 (7 days) |
+| `GEMINI_API_KEY` | Google Gemini key for receipt scanning, free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
+| `GEMINI_MODEL` | Gemini model for receipt scanning, default `gemini-flash-latest` |
 
 Generate a secret key with `openssl rand -hex 32`.
 
