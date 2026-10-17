@@ -1,0 +1,19 @@
+{
+  "name": "grosharey",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "setup": "bun install && bun run setup:backend && bun run setup:frontend",
+    "setup:backend": "cd backend && python -m venv .venv && .venv/bin/pip install -r requirements.txt",
+    "setup:frontend": "cd frontend && bun install && bunx expo install --fix",
+    "dev": "concurrently --names backend,frontend --prefix-colors blue,green \"bun run dev:backend\" \"bun run dev:frontend\"",
+    "dev:backend": "cd backend && .venv/bin/flask --app server.main run --debug --port 8000",
+    "dev:frontend": "cd frontend && bun run web",
+    "build:web": "cd frontend && bun run build:web",
+    "preview:web": "bunx serve frontend/dist --single",
+    "test:health": "curl -s http://localhost:8000/api/health"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.6"
+  }
+}
