@@ -21,9 +21,19 @@ groceries between roommates, so every purchased line item matters.
 
 - Include every purchased item. Do not include subtotal, tax, total, payment, change, \
 or loyalty-points lines as items.
-- Coupons, member savings, or discount lines that apply to an item go into that item's \
-`discount`, and `total_price` is the amount after the discount. A discount that applies \
-to the whole order (not one item) goes in `notes`.
+- The price printed on an item's line is the price before any discount. Coupons, \
+instant savings, and member discounts are printed as their own line, usually right below \
+the item, often with a trailing minus or the item's number (e.g. "/982859 4.00-"). \
+Put the discount in that item's `discount` and set `total_price` = printed price - discount. \
+Do not list discount lines as items. A discount that applies to the whole order (not one \
+item) goes in `notes`.
+- Only use prices printed on the receipt. If no per-unit price is printed, unit_price is \
+null; never back-calculate one.
+- Copy any tax marker letter printed after an item's price (e.g. A, E, T, N) into \
+`tax_code` exactly as printed. Don't interpret it; markers mean different things at \
+different stores. Use null if there is none.
+- Check your work: the items' total_price values should add up to the printed subtotal. \
+If they don't, re-check discounts and missed lines before answering.
 - Weighed items (e.g. "1.32 lb @ $0.59/lb"): quantity = weight, unit_price = per-unit price.
 - Store item codes and abbreviations ("ORG BNNA", "GV 2% MLK") go in raw_text verbatim; \
 write a clear expanded name in `name`.

@@ -14,7 +14,10 @@ class ReceiptItem(BaseModel):
     unit_price: float | None = Field(description="Price per unit/lb if printed, else null.")
     discount: float = Field(description="Total discount/coupon applied to this item as a positive number, 0 if none.")
     total_price: float = Field(description="Final price paid for this line after discounts.")
-    taxable: bool | None = Field(description="True/false if the receipt marks tax status, else null.")
+    tax_code: str | None = Field(
+        description="Tax marker letter printed next to the price (e.g. 'E', 'A', 'T'), copied as-is. "
+        "Null if none is printed."
+    )
     category: str = Field(
         description="One of: produce, meat_seafood, dairy, bakery, pantry, frozen, beverages, snacks, "
         "household, personal_care, other."
