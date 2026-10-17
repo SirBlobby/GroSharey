@@ -7,4 +7,4 @@ export const colors = {
   textSecondary: "#5f6368",
   border: "#dadce0",
   danger: "#c62828",
-};
+} as const;

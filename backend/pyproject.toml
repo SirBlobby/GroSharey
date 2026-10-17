@@ -1,0 +1,10 @@
+[project]
+name = "grosharey-backend"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = [
+    "flask==3.1.3",
+    "flask-cors==6.0.5",
+    "pydantic==2.14.1",
+    "python-dotenv==1.2.4",
+]
