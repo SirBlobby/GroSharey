@@ -1,10 +1,24 @@
+from urllib.parse import quote, urlencode
+
 from server.errors import BadRequestError, NotFoundError
 from server.models.friend_models import Friend
 from server.models.user_models import StoredUser
 from server.repositories.friendship_repository import FriendshipRepository
+from server.repositories.payment_repository import PaymentRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.user_mapper import convert_to_public_profile
+
+PAYMENT_NOTE = "GroSharey groceries"
+
+
+def build_venmo_pay_url(venmo_username: str, amount: float) -> str:
+    query = urlencode({"txn": "pay", "amount": f"{amount:.2f}", "note": PAYMENT_NOTE})
+    return f"https://venmo.com/{quote(venmo_username)}?{query}"
+
+
+def build_paypal_pay_url(paypal_username: str, amount: float) -> str:
+    return f"https://paypal.me/{quote(paypal_username)}/{amount:.2f}"
 
 
 class FriendService:
@@ -13,10 +27,12 @@ class FriendService:
         user_repository: UserRepository,
         friendship_repository: FriendshipRepository,
         split_repository: SplitRepository,
+        payment_repository: PaymentRepository,
     ):
         self.user_repository = user_repository
         self.friendship_repository = friendship_repository
         self.split_repository = split_repository
+        self.payment_repository = payment_repository
 
     def find_user_by_username(self, username: str) -> StoredUser:
         stored_user = self.user_repository.find_by_username(username)
@@ -24,16 +40,50 @@ class FriendService:
             raise NotFoundError("User", username)
         return stored_user
 
+    def calculate_balances_in_cents(self, user_id: str) -> dict[str, int]:
+        """other user id -> cents they owe user_id (negative when user_id owes them).
+
+        Summed from saved splits and payments every time, never stored."""
+        balances: dict[str, int] = {}
+        additions_and_subtractions = (
+            (self.split_repository.sum_owed_to_payer(user_id), 1),
+            (self.split_repository.sum_owed_by_user(user_id), -1),
+            (self.payment_repository.sum_paid_to_user(user_id), -1),
+            (self.payment_repository.sum_paid_by_user(user_id), 1),
+        )
+        for cents_by_user_id, sign in additions_and_subtractions:
+            for other_user_id, cents in cents_by_user_id.items():
+                if other_user_id != user_id:
+                    balances[other_user_id] = balances.get(other_user_id, 0) + sign * cents
+        return balances
+
+    def get_balance_in_cents(self, user_id: str, friend_id: str) -> int:
+        return self.calculate_balances_in_cents(user_id).get(friend_id, 0)
+
     def build_friends(self, user_id: str, friend_users: list[StoredUser]) -> list[Friend]:
-        owed_to_user = self.split_repository.sum_owed_to_payer(user_id)
-        owed_by_user = self.split_repository.sum_owed_by_user(user_id)
-        friends = [
-            Friend(
-                **convert_to_public_profile(friend_user).model_dump(),
-                balance=(owed_to_user.get(friend_user.id, 0) - owed_by_user.get(friend_user.id, 0)) / 100,
+        balances = self.calculate_balances_in_cents(user_id)
+        friends = []
+        for friend_user in friend_users:
+            balance = balances.get(friend_user.id, 0) / 100
+            amount_you_owe = -balance if balance < 0 else 0
+            friends.append(
+                Friend(
+                    **convert_to_public_profile(friend_user).model_dump(),
+                    balance=balance,
+                    venmo_username=friend_user.venmo_username,
+                    paypal_username=friend_user.paypal_username,
+                    venmo_pay_url=(
+                        build_venmo_pay_url(friend_user.venmo_username, amount_you_owe)
+                        if amount_you_owe and friend_user.venmo_username
+                        else None
+                    ),
+                    paypal_pay_url=(
+                        build_paypal_pay_url(friend_user.paypal_username, amount_you_owe)
+                        if amount_you_owe and friend_user.paypal_username
+                        else None
+                    ),
+                )
             )
-            for friend_user in friend_users
-        ]
         return sorted(friends, key=lambda friend: friend.display_name.lower())
 
     def list_friends(self, user_id: str) -> list[Friend]:

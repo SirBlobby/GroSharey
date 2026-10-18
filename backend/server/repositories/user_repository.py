@@ -17,6 +17,8 @@ def convert_document_to_user(user_document: dict) -> StoredUser:
         password_hash=user_document["password_hash"],
         created_at=user_document["created_at"],
         profile_picture_version=user_document.get("profile_picture_version"),
+        venmo_username=user_document.get("venmo_username"),
+        paypal_username=user_document.get("paypal_username"),
     )
 
 
@@ -73,5 +75,14 @@ class UserRepository:
         self.users_collection.update_one(
             {"_id": ObjectId(user_id)},
             {"$set": {"profile_picture_version": picture_version}},
+        )
+        return self.find_by_id(user_id)
+
+    def set_payment_handles(
+        self, user_id: str, venmo_username: str | None, paypal_username: str | None
+    ) -> StoredUser | None:
+        self.users_collection.update_one(
+            {"_id": ObjectId(user_id)},
+            {"$set": {"venmo_username": venmo_username, "paypal_username": paypal_username}},
         )
         return self.find_by_id(user_id)

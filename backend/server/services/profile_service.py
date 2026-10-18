@@ -1,6 +1,7 @@
 import time
 
 from server.errors import NotFoundError
+from server.models.payment_models import PaymentHandlesUpdate
 from server.models.user_models import PublicProfile, StoredUser, User
 from server.repositories.profile_picture_repository import ProfilePictureRepository
 from server.repositories.user_repository import UserRepository
@@ -40,3 +41,11 @@ class ProfileService:
         if profile_picture is None:
             raise NotFoundError("Profile picture", username)
         return profile_picture
+
+    def update_payment_handles(self, user_id: str, handles: PaymentHandlesUpdate) -> User:
+        updated_user = self.user_repository.set_payment_handles(
+            user_id, handles.venmo_username, handles.paypal_username
+        )
+        if updated_user is None:
+            raise NotFoundError("User", user_id)
+        return convert_to_user(updated_user)

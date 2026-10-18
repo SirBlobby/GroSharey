@@ -30,6 +30,8 @@ def client(monkeypatch):
         dependencies.get_split_repository,
         dependencies.get_friend_service,
         dependencies.get_split_service,
+        dependencies.get_payment_repository,
+        dependencies.get_payment_service,
     ):
         dependency.cache_clear()
     yield app.test_client()
@@ -145,3 +147,84 @@ def test_removing_a_friend(client):
     client.post("/api/friends", json={"username": "alex"}, headers=sachi)
     assert client.delete("/api/friends/alex", headers=sachi).status_code == 204
     assert client.get("/api/friends", headers=sachi).json == []
+
+
+def owe_sachi_for_ice_cream(client) -> tuple[dict, dict]:
+    """Sachi pays for a $10 item that Alex owes her for."""
+    sachi = sign_up(client, "sachi")
+    alex = sign_up(client, "alex")
+    client.post("/api/friends", json={"username": "alex"}, headers=sachi)
+    client.post(
+        "/api/splits",
+        json={
+            "receipt": {"items": [{"id": "item_1", "name": "Ice Cream", "total_price": 10.00}]},
+            "assignments": {"item_1": ["alex"]},
+        },
+        headers=sachi,
+    )
+    return sachi, alex
+
+
+def test_payment_lowers_balance_for_both_sides(client):
+    sachi, alex = owe_sachi_for_ice_cream(client)
+
+    response = client.post(
+        "/api/payments",
+        json={"friend_username": "sachi", "amount": 4.00, "direction": "paid", "method": "venmo"},
+        headers=alex,
+    )
+    assert response.status_code == 201
+    assert response.json["from_username"] == "alex"
+    assert response.json["to_username"] == "sachi"
+    assert friends_by_username(client, sachi)["alex"]["balance"] == 6.00
+    assert friends_by_username(client, alex)["sachi"]["balance"] == -6.00
+
+    # Sachi records the rest from her side.
+    client.post(
+        "/api/payments",
+        json={"friend_username": "alex", "amount": 6.00, "direction": "received", "method": "cash"},
+        headers=sachi,
+    )
+    assert friends_by_username(client, sachi)["alex"]["balance"] == 0
+    assert len(client.get("/api/payments", headers=alex).json) == 2
+
+
+def test_overpaying_is_rejected(client):
+    sachi, alex = owe_sachi_for_ice_cream(client)
+    response = client.post(
+        "/api/payments", json={"friend_username": "sachi", "amount": 10.01, "direction": "paid"}, headers=alex
+    )
+    assert response.status_code == 400
+    assert "only owes" in response.json["detail"]
+    # Sachi doesn't owe Alex anything, so she can't "pay" him.
+    response = client.post(
+        "/api/payments", json={"friend_username": "alex", "amount": 1.00, "direction": "paid"}, headers=sachi
+    )
+    assert response.status_code == 400
+
+
+def test_pay_links_appear_only_for_the_person_who_owes(client):
+    sachi, alex = owe_sachi_for_ice_cream(client)
+    response = client.put(
+        "/api/profiles/me/payment-handles",
+        json={"venmo_username": "@sachi-v", "paypal_username": "sachiv"},
+        headers=sachi,
+    )
+    assert response.status_code == 200
+    assert response.json["venmo_username"] == "sachi-v"
+
+    sachi_for_alex = friends_by_username(client, alex)["sachi"]
+    assert sachi_for_alex["venmo_pay_url"] == (
+        "https://venmo.com/sachi-v?txn=pay&amount=10.00&note=GroSharey+groceries"
+    )
+    assert sachi_for_alex["paypal_pay_url"] == "https://paypal.me/sachiv/10.00"
+    # Alex owes Sachi, not the other way round, so Sachi sees no pay links for Alex.
+    assert friends_by_username(client, sachi)["alex"]["venmo_pay_url"] is None
+
+
+def test_invalid_payment_handle_is_rejected(client):
+    sachi = sign_up(client, "sachi")
+    response = client.put(
+        "/api/profiles/me/payment-handles", json={"venmo_username": "not valid!"}, headers=sachi
+    )
+    assert response.status_code == 400

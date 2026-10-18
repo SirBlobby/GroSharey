@@ -21,4 +21,6 @@ def convert_to_user(stored_user: StoredUser) -> User:
         **convert_to_public_profile(stored_user).model_dump(),
         email=stored_user.email,
         created_at=stored_user.created_at,
+        venmo_username=stored_user.venmo_username,
+        paypal_username=stored_user.paypal_username,
     )

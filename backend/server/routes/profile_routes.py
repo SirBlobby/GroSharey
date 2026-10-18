@@ -2,6 +2,7 @@ from flask import Blueprint, Response, g, jsonify, request
 
 from server.authentication import require_authentication
 from server.dependencies import get_profile_service
+from server.models.payment_models import PaymentHandlesUpdate
 from server.models.profile_picture_models import ProfilePictureUpload
 
 profile_blueprint = Blueprint("profiles", __name__, url_prefix="/api/profiles")
@@ -14,6 +15,14 @@ ONE_YEAR_IN_SECONDS = 60 * 60 * 24 * 365
 def upload_profile_picture():
     upload_data = ProfilePictureUpload.model_validate(request.get_json(silent=True) or {})
     updated_user = get_profile_service().upload_profile_picture(g.current_user.id, upload_data.image_base64)
+    return jsonify(updated_user.model_dump(mode="json"))
+
+
+@profile_blueprint.put("/me/payment-handles")
+@require_authentication
+def update_payment_handles():
+    handles = PaymentHandlesUpdate.model_validate(request.get_json(silent=True) or {})
+    updated_user = get_profile_service().update_payment_handles(g.current_user.id, handles)
     return jsonify(updated_user.model_dump(mode="json"))
 
 

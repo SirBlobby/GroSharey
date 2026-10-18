@@ -13,5 +13,10 @@ class AddFriendRequest(BaseModel):
 
 
 class Friend(PublicProfile):
-    # Positive: they owe you. Negative: you owe them.
+    # Positive: they owe you. Negative: you owe them. Includes recorded payments.
     balance: float
+    venmo_username: str | None = None
+    paypal_username: str | None = None
+    # Set only when you owe this friend and they've added that handle; opens the payment with the amount filled in.
+    venmo_pay_url: str | None = None
+    paypal_pay_url: str | None = None

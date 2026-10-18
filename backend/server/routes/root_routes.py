@@ -27,6 +27,9 @@ def get_api_overview():
                 "remove_friend": "DELETE /api/friends/<username>",
                 "save_split": "POST /api/splits",
                 "list_splits": "GET /api/splits",
+                "record_payment": "POST /api/payments",
+                "list_payments": "GET /api/payments",
+                "update_payment_handles": "PUT /api/profiles/me/payment-handles",
             },
         }
     )

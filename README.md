@@ -133,6 +133,9 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | DELETE | `/api/friends/<username>` | Yes | Remove a friend (past splits are kept) |
 | POST | `/api/splits` | Yes | Confirm and save a split, same body as the preview |
 | GET | `/api/splits` | Yes | Your 50 most recent splits, as payer or participant |
+| POST | `/api/payments` | Yes | Record a settle-up payment: `{"friend_username": "alex", "amount": 7.07, "direction": "received", "method": "venmo"}` |
+| GET | `/api/payments` | Yes | Your 50 most recent payments |
+| PUT | `/api/profiles/me/payment-handles` | Yes | Set `{"venmo_username": "...", "paypal_username": "..."}` so friends get pay buttons |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 
@@ -191,7 +194,13 @@ The logged-in user is the payer, and everyone assigned must be the payer or one 
 
 ### Friends and Balances
 
-Friendships are mutual and stored in the `friendships` collection. Saved splits go in the `splits` collection, one document per receipt. Balances are not stored; `GET /api/friends` adds them up from the saved splits, so the history always explains the totals.
+Friendships are mutual and stored in the `friendships` collection. Saved splits go in the `splits` collection, one document per receipt. Payments go in the `payments` collection. Balances are not stored; `GET /api/friends` adds them up from saved splits and payments, so the history always explains the totals.
+
+### Settling Up
+
+`POST /api/payments` records money changing hands. `direction` is `"paid"` (you paid the friend) or `"received"` (the friend paid you), and either friend can record it. Amounts over what's owed are rejected as likely typos.
+
+When you owe a friend who has set their Venmo or PayPal.me name, their entry in `GET /api/friends` includes `venmo_pay_url` and `paypal_pay_url`, which open the payment with the amount filled in. Opening a link doesn't record anything; record the payment afterwards with `POST /api/payments`.
 
 ## Backend Environment Variables
 

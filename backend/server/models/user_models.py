@@ -39,6 +39,8 @@ class StoredUser(BaseModel):
     password_hash: str
     created_at: datetime
     profile_picture_version: int | None = None
+    venmo_username: str | None = None
+    paypal_username: str | None = None
 
 
 class PublicProfile(BaseModel):
@@ -51,6 +53,8 @@ class PublicProfile(BaseModel):
 class User(PublicProfile):
     email: str
     created_at: datetime
+    venmo_username: str | None = None
+    paypal_username: str | None = None
 
 
 class AuthResponse(BaseModel):

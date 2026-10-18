@@ -3,11 +3,13 @@ from functools import lru_cache
 from server.config import settings
 from server.database import get_database
 from server.repositories.friendship_repository import FriendshipRepository
+from server.repositories.payment_repository import PaymentRepository
 from server.repositories.profile_picture_repository import ProfilePictureRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.auth_service import AuthService
 from server.services.friend_service import FriendService
+from server.services.payment_service import PaymentService
 from server.services.profile_service import ProfileService
 from server.services.receipt_service import ReceiptService
 from server.services.split_service import SplitService
@@ -44,8 +46,20 @@ def get_split_repository() -> SplitRepository:
 
 
 @lru_cache
+def get_payment_repository() -> PaymentRepository:
+    return PaymentRepository(get_database())
+
+
+@lru_cache
 def get_friend_service() -> FriendService:
-    return FriendService(get_user_repository(), get_friendship_repository(), get_split_repository())
+    return FriendService(
+        get_user_repository(), get_friendship_repository(), get_split_repository(), get_payment_repository()
+    )
+
+
+@lru_cache
+def get_payment_service() -> PaymentService:
+    return PaymentService(get_friendship_repository(), get_payment_repository(), get_friend_service())
 
 
 @lru_cache
