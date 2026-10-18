@@ -1,11 +1,11 @@
 .manage { overflow: auto; }
 .manage-layout {
-  flex: 1; min-height: 0;
+  flex: 1 0 auto;
   display: grid; gap: 12px; align-items: start;
   grid-template-columns: 1fr minmax(280px, 360px);
 }
 
-.manage-main { min-height: 0; max-height: 100%; overflow: auto; display: flex; flex-direction: column; gap: 12px; }
+.manage-main { display: flex; flex-direction: column; gap: 12px; }
 .items { padding: 22px 24px; display: flex; flex-direction: column; gap: 12px; }
 
 .receipt-details-form { display: flex; flex-direction: column; gap: 12px; padding: 22px 24px; }
@@ -112,7 +112,6 @@
 
 @media (max-width: 820px) {
   .manage-layout { grid-template-columns: 1fr; }
-  .manage-main { max-height: none; overflow: visible; }
   .receipt-fields { grid-template-columns: 1fr 1fr; }
   .receipt-field--wide { grid-column: span 2; }
   .row-fields { flex-wrap: wrap; }
@@ -172,3 +171,11 @@
 .item-picker-all { width: 100%; margin-bottom: 10px; font-size: 1.2rem; padding: 8px; }
 .item-picker-name { flex: 1; }
 .item-picker-price { font-weight: 600; }
+
+.receipt-detail--empty { opacity: 0.7; }
+.receipt-details-edit {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
+  background: var(--mint); border: 2px solid var(--forest); border-radius: 10px;
+  padding: 4px 10px; font-weight: 600; font-size: 0.95rem; color: var(--forest);
+}
+.receipt-details-edit:hover { background: var(--forest); color: var(--mint); }

@@ -4,6 +4,8 @@ import type { ReceiptDetails } from "../../services/splits";
 import { formatPrice } from "../../utils";
 import { CalendarIcon, LocationIcon, StoreIcon } from "../icons";
 
+export const STORE_NAME_INPUT_ID = "receipt-store-name";
+
 type ReceiptDetailsFormProps = {
   receiptDetails: ReceiptDetails;
   onChange: (changes: Partial<ReceiptDetails>) => void;
@@ -45,6 +47,7 @@ export default function ReceiptDetailsForm({ receiptDetails, onChange }: Receipt
             <StoreIcon /> Store
           </span>
           <input
+            id={STORE_NAME_INPUT_ID}
             value={receiptDetails.storeName ?? ""}
             placeholder="Wegmans"
             onChange={(event) => onChange({ storeName: readTextOrNull(event.target.value) })}

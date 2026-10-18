@@ -4,8 +4,9 @@ import type { ReceiptDetails, SplitPayment, UpfrontPayment } from "../services/s
 import { estimateShares, sumItemPrices } from "../services/splitEstimate";
 import type { Friend, Item } from "../types";
 import { formatReceiptDate, money } from "../utils";
-import { CalendarIcon, CheckIcon, LocationIcon, StoreIcon, ViewReceiptIcon } from "./icons";
+import { CalendarIcon, CheckIcon, EditIcon, LocationIcon, StoreIcon, ViewReceiptIcon } from "./icons";
 import ItemPickerModal from "./manage/ItemPickerModal";
+import { STORE_NAME_INPUT_ID } from "./manage/ReceiptDetailsForm";
 import PayerPicker from "./manage/PayerPicker";
 import PersonShareRow from "./manage/PersonShareRow";
 import ReceiptViewerModal from "./ReceiptViewerModal";
@@ -26,6 +27,12 @@ type SplitSummaryProps = {
 
 function buildMapsUrl(address: string): string {
   return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(address)}`;
+}
+
+function focusReceiptDetailsForm() {
+  const storeNameInput = document.getElementById(STORE_NAME_INPUT_ID);
+  storeNameInput?.scrollIntoView({ behavior: "smooth", block: "center" });
+  storeNameInput?.focus({ preventScroll: true });
 }
 
 export default function SplitSummary({
@@ -58,30 +65,34 @@ export default function SplitSummary({
   return (
     <aside className="card split-summary">
       <h2>Summary</h2>
-      {(receiptDetails.storeName || receiptDetails.storeAddress || receiptDetails.purchaseDate) && (
-        <div className="receipt-details">
-          {receiptDetails.storeName && (
-            <span className="receipt-detail">
-              <StoreIcon /> {receiptDetails.storeName}
-            </span>
-          )}
-          {receiptDetails.storeAddress && (
-            <a
-              className="receipt-detail receipt-location"
-              href={buildMapsUrl(receiptDetails.storeAddress)}
-              target="_blank"
-              rel="noreferrer"
-            >
-              <LocationIcon /> {receiptDetails.storeAddress}
-            </a>
-          )}
-          {receiptDetails.purchaseDate && (
-            <span className="receipt-detail">
-              <CalendarIcon /> {formatReceiptDate(receiptDetails.purchaseDate)}
-            </span>
-          )}
-        </div>
-      )}
+      <div className="receipt-details">
+        {!receiptDetails.storeName && !receiptDetails.storeAddress && !receiptDetails.purchaseDate && (
+          <span className="receipt-detail receipt-detail--empty">No store, location, or date yet</span>
+        )}
+        {receiptDetails.storeName && (
+          <span className="receipt-detail">
+            <StoreIcon /> {receiptDetails.storeName}
+          </span>
+        )}
+        {receiptDetails.storeAddress && (
+          <a
+            className="receipt-detail receipt-location"
+            href={buildMapsUrl(receiptDetails.storeAddress)}
+            target="_blank"
+            rel="noreferrer"
+          >
+            <LocationIcon /> {receiptDetails.storeAddress}
+          </a>
+        )}
+        {receiptDetails.purchaseDate && (
+          <span className="receipt-detail">
+            <CalendarIcon /> {formatReceiptDate(receiptDetails.purchaseDate)}
+          </span>
+        )}
+        <button type="button" className="receipt-details-edit" onClick={focusReceiptDetailsForm}>
+          <EditIcon /> Edit store, location, and date
+        </button>
+      </div>
 
       {receiptDetails.receiptImageId && (
         <button type="button" className="btn view-receipt-button" onClick={() => setIsReceiptOpen(true)}>
