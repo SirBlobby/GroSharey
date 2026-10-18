@@ -77,3 +77,5 @@ export const MarkReadIcon = () => <Icon icon="mdi:email-open-outline" width="1em
 export const ListIcon = () => <Icon icon="mdi:format-list-checks" width="1em" aria-hidden="true" />;
 
 export const EqualSplitIcon = () => <Icon icon="mdi:division" width="1em" aria-hidden="true" />;
+
+export const EditIcon = () => <Icon icon="mdi:pencil-outline" width="1em" aria-hidden="true" />;

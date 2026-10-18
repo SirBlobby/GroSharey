@@ -52,7 +52,7 @@
 }
 .choice:hover { border-color: var(--forest); }
 .or { font-weight: 600; font-size: 1.5rem; }
-.home-details { min-height: 0; display: flex; flex-direction: column; gap: 12px; }
+.home-details { min-height: 0; display: flex; flex-direction: column; gap: 12px; padding: 6px 6px 16px; margin: -6px; }
 .home-lower {
   flex: 1; min-height: 0;
   display: grid; gap: 12px;
