@@ -32,7 +32,7 @@ Living with roommates means shared groceries, and shared groceries mean someone 
 
 1. **Make a shared list.** Start a group with your roommates and add what everyone needs. Each item remembers who asked for it.
 2. **Scan the receipt.** Snap a photo and groSharey reads every item, discount, and tax marker. Pick your group and AI assigns each item to the person who wanted it, then crosses it off the list.
-3. **Settle up.** Everyone sees what they owe. Pay with one tap on Venmo or PayPal, and your roommate confirms they got it.
+3. **Settle up.** Everyone sees what they owe. Pay with one tap on Venmo or PayPal, nudge anyone who forgets, and your roommate confirms they got it.
 
 ## Features
 
@@ -48,17 +48,25 @@ Living with roommates means shared groceries, and shared groceries mean someone 
 - **Penny-exact splits** where tax lands only on taxed items and leftover cents are shared fairly
 - **Partial payments and overpaying**, with credit kept for the next run
 - **Payment confirmation** so a payment only counts once the person who got paid confirms it
-- **Payment reminders** with one tap, sent in the app and by email
+- **Payment reminders** with one tap, sent in the app and by email, at most once a day per friend so nobody gets spammed
 - **Item disputes** for anything you didn't actually get
 - **Group budgets** with a progress bar and alerts before you go over
 - **Monthly PDF reports** for reimbursements
 
 ### Talk to it
-- **Voice assistant** powered by Gemini and ElevenLabs. Say "add eggs for Sam to the apartment list", "we're out of coffee", "I'm heading to Costco", or "who owes me money?" and it handles it and answers out loud.
+- **Voice assistant** powered by Gemini and ElevenLabs that can run almost the whole app. Try:
+  - "Add eggs and two bags of chips for Sam to the apartment list"
+  - "We're running low on coffee" or "we used up the milk"
+  - "I'm heading to Costco"
+  - "Set our budget to $300 a month"
+  - "Who owes me money?" or "remind Sam to pay me"
+  - "I never got the olive oil from the Costco run"
+
+  It asks before anything risky, like deleting a list or recording a payment, and answers out loud. You can also type.
 
 ### Friends and accounts
 - **Add roommates by QR code** with the in-app scanner, or by username or email
-- **Notifications and emails** when you're added to a split, someone buys your item, or a friend pays you back
+- **Notifications and branded emails** when you're added to a split, someone buys your item, a friend pays you back, or someone sends a reminder
 - **Split history** with the receipt photo for every grocery run
 - **Audit log** of everything that happened on your account
 - **Built for everyone** with dark mode, high contrast, text sizes, reduce motion, and color blindness friendly palettes

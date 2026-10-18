@@ -42,7 +42,7 @@ export const LANDING_STEPS: LandingStep[] = [
   },
   {
     title: "Settle up",
-    description: "Everyone sees exactly what they owe. Pay with one tap on Venmo or PayPal, and your roommate confirms they got it.",
+    description: "Everyone sees exactly what they owe. Pay with one tap on Venmo or PayPal, nudge anyone who forgets, and your roommate confirms they got it.",
   },
 ];
 
@@ -60,7 +60,7 @@ export const LANDING_FEATURES: LandingFeature[] = [
   {
     icon: <MicrophoneIcon />,
     title: "Voice assistant",
-    description: "Say \"add eggs for Sam\" or \"who owes me money?\" and groSharey answers out loud.",
+    description: "Run the whole app by talking. Add items, mark the coffee as low, start a trip, set a budget, or ask who owes what, and groSharey answers out loud.",
   },
   {
     icon: <GroupsIcon />,
@@ -90,7 +90,7 @@ export const LANDING_FEATURES: LandingFeature[] = [
   {
     icon: <ReminderIcon />,
     title: "Payment reminders",
-    description: "Nudge a roommate who still owes you with one tap. They get a notification and an email with a pay link.",
+    description: "Nudge a roommate who still owes you with one tap. They get a notification and an email with a pay link, at most once a day.",
   },
   {
     icon: <DisputeIcon />,
@@ -115,7 +115,7 @@ export const LANDING_FEATURES: LandingFeature[] = [
   {
     icon: <BellAlertIcon />,
     title: "Notifications",
-    description: "Get notified in the app and by email when you're added to a split, someone buys your item, or a roommate pays you back.",
+    description: "Get notified in the app and by branded email when you're added to a split, someone buys your item, or a roommate pays you back.",
   },
   {
     icon: <ShoppingListIcon />,
