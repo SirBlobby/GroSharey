@@ -68,3 +68,8 @@ h1, h2 { font-family: var(--display); color: var(--forest); margin: 0; font-weig
 button:disabled { opacity: 0.6; cursor: default; }
 .btn:disabled:hover { background: var(--mint); }
 .error-text { color: var(--red); font-weight: 600; margin: 8px 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+html[data-text-size="large"] { font-size: 112.5%; }
+html[data-reduce-motion="true"] *, html[data-reduce-motion="true"] *::before, html[data-reduce-motion="true"] *::after {
+  animation-duration: 0.01s !important; transition-duration: 0.01s !important;
+}

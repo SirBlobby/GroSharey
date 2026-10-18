@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import type { Friend } from '../types';
 import { readErrorMessage } from '../utils';
 import Avatar from './Avatar';
+import { CheckIcon } from './icons';
 import '../styles/modal.css';
 
 interface Props {
@@ -65,7 +66,7 @@ export default function FriendModal({
               <button key={f.username} type="button" className={`opt ${on ? 'on' : ''}`} aria-pressed={on} onClick={() => toggle(f.username)}>
                 <Avatar friend={f} />
                 {f.name}
-                <span className="chk">{on ? '✓' : ''}</span>
+                <span className="chk">{on && <CheckIcon />}</span>
               </button>
             );
           })}

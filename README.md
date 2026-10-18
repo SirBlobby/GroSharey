@@ -65,9 +65,10 @@ Files ending in `.web.tsx` are used on web instead of the file with the same nam
 | Scan a receipt | `ScanReceiptScreen.tsx` |
 | Edit items and assign friends | `ManageItemsScreen.tsx` |
 | Grocery run saved | `ConfirmedScreen.tsx` |
-| Account, QR code, and profiles | `HomeScreen.tsx`, `MyQrCodeScreen.tsx`, `ProfileScreen.tsx` inside `CardScreen` |
+| Settings menu with Profile, Friends, Appearance, Account, and App Info | `SettingsScreen.tsx`, `components/settings/` |
+| Another user's profile with Add Friend | `FriendProfileScreen.tsx` |
 
-The iOS and Android apps still use the basic account screens.
+The iOS and Android apps still use the basic account screens. Web icons come from [Iconify](https://iconify.design/) through `@iconify/react` and are collected in `src/components/icons.tsx`.
 
 ## Root Commands
 

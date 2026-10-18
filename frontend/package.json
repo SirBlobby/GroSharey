@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@expo/metro-runtime": "~57.0.17",
+    "@iconify/react": "^6.0.0",
     "expo": "~57.0.30",
     "expo-image-manipulator": "~57.0.21",
     "expo-image-picker": "~57.0.20",

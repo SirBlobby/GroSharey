@@ -1,7 +1,7 @@
 import type { ScanStage } from '../types';
 import type { ScannedReceipt } from '../services/receipt';
 import type { useReceiptScanner } from '../hooks/useReceiptScanner';
-import { CameraIcon } from '../components/icons';
+import { CameraIcon, UploadIcon } from '../components/icons';
 import '../styles/scan.css';
 
 interface Props {
@@ -46,7 +46,7 @@ export default function ScanReceiptScreen({ scanner, onBack, onConfirm }: Props)
             disabled={isReading}
             onClick={() => scanner.scan('camera')}
           />
-          <button type="button" className="btn" onClick={() => scanner.scan('library')} disabled={isReading}>Upload</button>
+          <button type="button" className="btn" onClick={() => scanner.scan('library')} disabled={isReading}><UploadIcon /> Upload</button>
         </div>
       ) : (
         <div className="actions">

@@ -1,18 +1,17 @@
 import { useState } from "react";
 
-import CardScreen from "../components/CardScreen";
+import { SettingsSection } from "../components/settings/settingsSections";
 import { useAuth } from "../hooks/useAuth";
 import { useFriends } from "../hooks/useFriends";
 import { useGroceryRun } from "../hooks/useGroceryRun";
 import { useReceiptScanner } from "../hooks/useReceiptScanner";
 import { clearSharedUsername, readSharedUsername } from "../linking/sharedProfile";
 import ConfirmedScreen from "../screens/ConfirmedScreen";
-import HomeScreen from "../screens/HomeScreen";
+import FriendProfileScreen from "../screens/FriendProfileScreen";
 import MainScreen from "../screens/MainScreen";
 import ManageItemsScreen from "../screens/ManageItemsScreen";
-import MyQrCodeScreen from "../screens/MyQrCodeScreen";
-import ProfileScreen from "../screens/ProfileScreen";
 import ScanReceiptScreen from "../screens/ScanReceiptScreen";
+import SettingsScreen from "../screens/SettingsScreen";
 import { convertUserToFriend } from "../services/friends";
 
 type AppPage =
@@ -20,13 +19,12 @@ type AppPage =
   | { name: "scan" }
   | { name: "manage" }
   | { name: "confirmed" }
-  | { name: "account" }
-  | { name: "myQrCode" }
-  | { name: "profile"; username: string };
+  | { name: "settings"; section: SettingsSection }
+  | { name: "profile"; username: string; returnPage: "main" | "settings" };
 
 function getInitialPage(): AppPage {
   const sharedUsername = readSharedUsername();
-  return sharedUsername ? { name: "profile", username: sharedUsername } : { name: "main" };
+  return sharedUsername ? { name: "profile", username: sharedUsername, returnPage: "main" } : { name: "main" };
 }
 
 export default function AppNavigator() {
@@ -44,6 +42,11 @@ export default function AppNavigator() {
     clearSharedUsername();
     friendList.refreshFriends();
     setCurrentPage({ name: "main" });
+  }
+
+  function showSettings(section: SettingsSection) {
+    friendList.refreshFriends();
+    setCurrentPage({ name: "settings", section });
   }
 
   function startScan() {
@@ -94,26 +97,24 @@ export default function AppNavigator() {
       );
     case "confirmed":
       return <ConfirmedScreen onDone={showMain} />;
-    case "account":
+    case "settings":
       return (
-        <CardScreen title="My Account" onBack={showMain}>
-          <HomeScreen
-            onShowMyQrCode={() => setCurrentPage({ name: "myQrCode" })}
-            onFindProfile={(username) => setCurrentPage({ name: "profile", username })}
-          />
-        </CardScreen>
-      );
-    case "myQrCode":
-      return (
-        <CardScreen title="My QR Code">
-          <MyQrCodeScreen onBack={() => setCurrentPage({ name: "account" })} />
-        </CardScreen>
+        <SettingsScreen
+          activeSection={currentPage.section}
+          onSelectSection={(section) => setCurrentPage({ name: "settings", section })}
+          friends={friendList.friends}
+          onAddFriend={friendList.addFriend}
+          onRemoveFriend={friendList.removeFriend}
+          onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "settings" })}
+          onBack={showMain}
+        />
       );
     case "profile":
       return (
-        <CardScreen title="Profile">
-          <ProfileScreen username={currentPage.username} onBack={showMain} />
-        </CardScreen>
+        <FriendProfileScreen
+          username={currentPage.username}
+          onBack={currentPage.returnPage === "settings" ? () => showSettings("friends") : showMain}
+        />
       );
     default:
       return (
@@ -126,7 +127,7 @@ export default function AppNavigator() {
           onSettleUp={friendList.settleUp}
           onScan={startScan}
           onManual={startManualEntry}
-          onShowAccount={() => setCurrentPage({ name: "account" })}
+          onShowSettings={() => showSettings("profile")}
           onLogout={logOut}
         />
       );

@@ -60,4 +60,4 @@
   background: #008cff; padding: 12px 40px;
   font: italic 800 1.8rem Arial, sans-serif; color: #fff;
 }
-.settle { display: block; margin-top: 12px; width: 100%; font-size: 1.3rem; }
+.settle { display: flex; margin-top: 12px; width: 100%; font-size: 1.3rem; }

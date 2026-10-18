@@ -1,5 +1,6 @@
 import type { Item } from '../types';
 import { formatPrice } from '../utils';
+import { CloseIcon } from './icons';
 
 interface Props {
   item: Item;
@@ -30,7 +31,7 @@ export default function ItemRow({ item, autoFocus, onChange, onDelete }: Props) 
           onBlur={(e) => onChange({ price: formatPrice(e.target.value) })}
         />
       </div>
-      <button type="button" className="del" aria-label="Remove item" onClick={onDelete}>✕</button>
+      <button type="button" className="del" aria-label="Remove item" onClick={onDelete}><CloseIcon /></button>
     </div>
   );
 }

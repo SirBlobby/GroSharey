@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Friend } from '../types';
 import { money } from '../utils';
-import { ReceiptIcon, UserIcon } from '../components/icons';
+import { LogOutIcon, ReceiptIcon, UserIcon } from '../components/icons';
 import BalanceCard from '../components/BalanceCard';
 import FriendModal from '../components/FriendModal';
 import '../styles/main.css';
@@ -15,12 +15,12 @@ interface Props {
   onSettleUp: (friend: Friend) => Promise<void>;
   onScan: () => void;
   onManual: () => void;
-  onShowAccount: () => void;
+  onShowSettings: () => void;
   onLogout: () => void;
 }
 
 export default function MainScreen({
-  friends, selectedFriend, errorMessage, onSelectFriend, onAddFriend, onSettleUp, onScan, onManual, onShowAccount, onLogout,
+  friends, selectedFriend, errorMessage, onSelectFriend, onAddFriend, onSettleUp, onScan, onManual, onShowSettings, onLogout,
 }: Props) {
   const [adding, setAdding] = useState(false);
 
@@ -29,8 +29,8 @@ export default function MainScreen({
       <div className="topbar">
         <span>groSharey</span>
         <div className="topbar-actions">
-          <button type="button" onClick={onLogout}>Log Out</button>
-          <button type="button" aria-label="My account" onClick={onShowAccount}><UserIcon /></button>
+          <button type="button" onClick={onLogout}>Log Out <LogOutIcon /></button>
+          <button type="button" aria-label="Settings" onClick={onShowSettings}><UserIcon /></button>
         </div>
       </div>
 

@@ -36,6 +36,10 @@ export async function addFriendByUsername(username: string): Promise<Friend> {
   return convertToFriend(await friendsApi.addFriend(username));
 }
 
+export async function removeFriendByUsername(username: string): Promise<void> {
+  await friendsApi.removeFriend(username);
+}
+
 export async function settleBalance(friend: Friend): Promise<void> {
   await paymentsApi.recordPayment({
     friend_username: friend.username,

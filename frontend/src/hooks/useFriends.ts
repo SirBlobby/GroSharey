@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { addFriendByUsername, loadFriends, settleBalance } from "../services/friends";
+import { addFriendByUsername, loadFriends, removeFriendByUsername, settleBalance } from "../services/friends";
 import type { Friend } from "../types";
 import { readErrorMessage } from "../utils";
 
@@ -36,6 +36,12 @@ export function useFriends() {
     return addedFriend;
   }
 
+  async function removeFriend(username: string): Promise<void> {
+    await removeFriendByUsername(username);
+    setFriends((currentFriends) => currentFriends.filter((friend) => friend.username !== username));
+    setSelectedUsername((currentUsername) => (currentUsername === username ? null : currentUsername));
+  }
+
   async function settleUp(friend: Friend): Promise<void> {
     await settleBalance(friend);
     await refreshFriends();
@@ -49,6 +55,7 @@ export function useFriends() {
     errorMessage,
     selectFriend: setSelectedUsername,
     addFriend,
+    removeFriend,
     settleUp,
     refreshFriends,
   };
