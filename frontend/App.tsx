@@ -11,7 +11,7 @@ import { useNativeCameras } from "./src/native/useNativeCameras";
 import { useNativeVoice } from "./src/native/useNativeVoice";
 import WebApp from "./src/WebApp";
 
-const DEFAULT_PAGE_COLOR = "#25a18e";
+const DEFAULT_PAGE_COLOR = "#47a152";
 
 const DOM_HOST_FALLBACK_SCRIPT = [
   `window.$$EXPO_DOM_HOST_OS = window.$$EXPO_DOM_HOST_OS || ${JSON.stringify(Platform.OS)};`,
