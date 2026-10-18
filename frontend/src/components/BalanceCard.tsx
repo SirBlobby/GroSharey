@@ -23,7 +23,7 @@ export default function BalanceCard({ friend, onSettleUp, header }: BalanceCardP
     return (
       <div className="card owe">
         {header}
-        <div>
+        <div className="balance-summary">
           <h2>You and {friend.name}</h2>
           <div className="amt ok">are all settled up!</div>
         </div>
@@ -37,7 +37,7 @@ export default function BalanceCard({ friend, onSettleUp, header }: BalanceCardP
   return (
     <div className="card owe">
       {header}
-      <div>
+      <div className="balance-summary">
         <h2>{youOweFriend ? `You owe ${friend.name}` : `${friend.name} owes you`}</h2>
         <div className={`amt ${youOweFriend ? "" : "owed-to-you"}`}>{money(Math.abs(friend.balance))}</div>
       </div>

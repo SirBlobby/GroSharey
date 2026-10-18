@@ -1,6 +1,6 @@
 .av {
   width: 60px; height: 60px; flex: none; aspect-ratio: 1;
-  border-radius: 50%;
+  border-radius: 25%;
   border: 6px solid var(--navy);
   background: var(--mint);
   font: 600 1.35rem var(--body);

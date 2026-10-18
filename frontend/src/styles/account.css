@@ -4,7 +4,7 @@
 
 .profile-avatar {
   width: 130px; height: 130px; flex: none;
-  border-radius: 50%; border: 6px solid var(--navy);
+  border-radius: 25%; border: 6px solid var(--navy);
   background: var(--white); object-fit: cover;
 }
 .profile-avatar--initial {

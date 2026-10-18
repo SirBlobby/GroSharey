@@ -86,7 +86,7 @@ export default function ImageCropper({ image, isSaving, errorMessage, onCancel, 
           <Text style={styles.hint}>Drag to position. Use the buttons to zoom.</Text>
           <View style={styles.cropFrame} {...panResponder.panHandlers}>
             <Image source={{ uri: image.uri }} style={[styles.image, imagePlacementStyle]} />
-            <View style={styles.circleGuide} />
+            <View style={styles.pictureShapeGuide} />
           </View>
           <View style={styles.buttonRow}>
             <View style={styles.buttonSlot}>
@@ -146,9 +146,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     pointerEvents: "none",
   },
-  circleGuide: {
+  pictureShapeGuide: {
     ...StyleSheet.absoluteFillObject,
-    borderRadius: CROP_FRAME_SIZE / 2,
+    borderRadius: CROP_FRAME_SIZE / 4,
     borderWidth: 2,
     borderColor: colors.onPrimary,
     pointerEvents: "none",

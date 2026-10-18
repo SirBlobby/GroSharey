@@ -33,11 +33,11 @@
   .owe { flex-direction: column; align-items: stretch; text-align: left; gap: 14px; padding: 14px; }
   .owe:has(.friend-overview) { padding: 14px; }
   .owe h2 { font-size: 1.6rem; }
-  .owe .amt { font-size: 2.6rem; margin-top: 4px; }
+  .owe .amt { font-size: 2.6rem; }
   .owe .amt.ok { font-size: 1.6rem; }
   .pay { text-align: left; font-size: 1.2rem; }
   .paypal, .venmo { padding: 10px 20px; font-size: 1.4rem; }
-  .friend-overview .av { width: 60px; height: 60px; border-width: 4px; font-size: 1.2rem; }
+  .friend-overview .av { width: 110px; height: 110px; border-width: 5px; font-size: 2rem; }
   .friend-overview-name { font-size: 1.7rem; }
   .payment-amount { width: 110px; }
 
