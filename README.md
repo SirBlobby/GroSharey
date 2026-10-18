@@ -127,6 +127,7 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | PUT | `/api/profiles/me/picture` | Yes | Upload profile picture as `{"image_base64": "..."}` |
 | GET | `/api/profiles/<username>/picture` | No | Profile picture image |
 | POST | `/api/receipts/parse` | Yes | Read a receipt photo sent as `{"image_base64": "..."}`, returns items and totals as JSON |
+| POST | `/api/receipts/split` | Yes | Split a parsed receipt between roommates, returns what each person owes the logged-in payer |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 
@@ -172,6 +173,16 @@ To try it on an image without the frontend, put the image in `sample-receipts/` 
 ```
 uv run python scripts/parse_receipt.py ../sample-receipts/costco.jpg
 ```
+
+### Splitting
+
+`POST /api/receipts/split` takes the parsed receipt plus who shares each item:
+
+```json
+{"receipt": {...}, "assignments": {"item_1": ["alex", "sam"], "item_2": ["sachi"]}}
+```
+
+The logged-in user is the payer. Each item's price is split evenly between its people, and tax goes only on items the receipt taxed, found by matching the tax total against each group of tax codes (the letters after prices). If that is ambiguous, tax is spread across all items by price and `tax_note` says so. All math is in cents, so everyone's totals add up exactly to the receipt.
 
 ## Backend Environment Variables
 

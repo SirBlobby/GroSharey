@@ -21,6 +21,7 @@ def get_api_overview():
                 "profile_picture": "GET /api/profiles/<username>/picture",
                 "upload_profile_picture": "PUT /api/profiles/me/picture",
                 "parse_receipt": "POST /api/receipts/parse",
+                "split_receipt": "POST /api/receipts/split",
             },
         }
     )
