@@ -75,7 +75,11 @@ def get_friend_service() -> FriendService:
 @lru_cache
 def get_payment_service() -> PaymentService:
     return PaymentService(
-        get_friendship_repository(), get_payment_repository(), get_friend_service(), get_audit_log_service()
+        get_friendship_repository(),
+        get_payment_repository(),
+        get_friend_service(),
+        get_audit_log_service(),
+        get_notification_service(),
     )
 
 

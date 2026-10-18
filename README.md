@@ -223,7 +223,7 @@ Friendships are mutual and stored in the `friendships` collection. Saved splits 
 
 ### Email Notifications
 
-Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the payer's profile in the web app. `emailed_usernames` in the response says who was emailed. If email isn't configured or sending fails, the split is still saved; the error is only logged.
+Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the payer's profile in the web app. `emailed_usernames` in the response says who was emailed. Recording a payment with `direction: "paid"` emails the person who got paid ("Alex paid you $7.07"), with what's still owed; `recipient_emailed` in the response says whether it went out. Payments recorded as `"received"` send nothing, since the person recording them already knows. If email isn't configured or sending fails, the split is still saved; the error is only logged.
 
 ### Settling Up
 
@@ -247,7 +247,7 @@ When you owe a friend who has set their Venmo or PayPal.me name, their entry in 
 | `EMAIL_SENDER_ADDRESS` | Gmail address that sends "you owe" emails; leave blank to skip emails |
 | `EMAIL_APP_PASSWORD` | 16-character Gmail app password from [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) (needs 2-Step Verification) |
 | `SMTP_HOST` / `SMTP_PORT` | Email server, default `smtp.gmail.com` / `587` |
-| `APP_URL` | Frontend URL for links in emails, same as the frontend's `EXPO_PUBLIC_APP_URL` |
+| `APP_URL` | Frontend URL for links in emails, default `https://grosharey-frontend.vercel.app` |
 | `GEMINI_FALLBACK_MODEL` | Model tried once when `GEMINI_MODEL` is overloaded, default `gemini-flash-lite-latest` |
 
 Generate a secret key with `openssl rand -hex 32`.
