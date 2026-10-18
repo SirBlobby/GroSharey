@@ -7,7 +7,12 @@
     "userInterfaceStyle": "light",
     "web": {
       "bundler": "metro",
-      "output": "single"
+      "output": "single",
+      "name": "groSharey",
+      "shortName": "groSharey",
+      "description": "Scan a receipt, assign items to roommates, and everyone sees what they owe.",
+      "themeColor": "#47a152",
+      "backgroundColor": "#47a152"
     },
     "plugins": [
       [

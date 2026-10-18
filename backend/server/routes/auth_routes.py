@@ -21,6 +21,13 @@ def log_in():
     return jsonify(auth_response.model_dump(mode="json"))
 
 
+@auth_blueprint.post("/logout")
+@require_authentication
+def log_out():
+    get_auth_service().log_out(g.current_user)
+    return "", 204
+
+
 @auth_blueprint.get("/me")
 @require_authentication
 def get_current_user():

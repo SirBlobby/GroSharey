@@ -2,7 +2,9 @@ import { useState } from 'react';
 import type { Friend } from '../types';
 import { money } from '../utils';
 import { HistoryIcon, LogOutIcon, ReceiptIcon, UserIcon } from '../components/icons';
+import Avatar from '../components/Avatar';
 import BalanceCard from '../components/BalanceCard';
+import Logo from '../components/Logo';
 import FriendModal from '../components/FriendModal';
 import '../styles/main.css';
 
@@ -28,7 +30,7 @@ export default function MainScreen({
   return (
     <section className="screen">
       <div className="topbar">
-        <span>groSharey</span>
+        <span className="brand"><Logo className="brand-logo" />groSharey</span>
         <div className="topbar-actions">
           <button type="button" onClick={onShowHistory}>History <HistoryIcon /></button>
           <button type="button" onClick={onLogout}>Log Out <LogOutIcon /></button>
@@ -48,7 +50,10 @@ export default function MainScreen({
                 className={`friend ${f.username === selectedFriend?.username ? 'sel' : ''}`}
                 onClick={() => onSelectFriend(f.username)}
               >
-                <span>{f.name}</span>
+                <span className="friend-identity">
+                  <Avatar friend={f} />
+                  <span>{f.name}</span>
+                </span>
                 {f.balance < 0 && <span className="badge">{money(-f.balance)}</span>}
                 {f.balance > 0 && <span className="badge badge--owed">{money(f.balance)}</span>}
               </button>

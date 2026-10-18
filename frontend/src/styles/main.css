@@ -20,8 +20,10 @@
 .friend {
   display: flex; width: 100%; justify-content: space-between; align-items: center;
   background: none; border: 0; border-top: 3px solid var(--green);
-  padding: 26px 30px; font-size: 1.7rem; font-weight: 600; text-align: left;
+  padding: 14px 20px; font-size: 1.7rem; font-weight: 600; text-align: left;
 }
+.friend-identity { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.friend .av { width: 48px; height: 48px; border-width: 4px; font-size: 1.05rem; }
 .friend:last-child { border-bottom: 3px solid var(--green); }
 .friend.sel { background: #fff; border-radius: 30px; border-color: transparent; }
 .badge { background: var(--red); color: var(--mint); font-size: 1.2rem; font-weight: 400; padding: 4px 10px; border-radius: 10px; }

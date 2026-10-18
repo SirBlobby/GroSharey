@@ -18,26 +18,20 @@ COSTCO_RECEIPT = {
 }
 
 
+def clear_dependency_caches():
+    for name in dir(dependencies):
+        dependency = getattr(dependencies, name)
+        if callable(dependency) and hasattr(dependency, "cache_clear"):
+            dependency.cache_clear()
+
+
 @pytest.fixture
 def client(monkeypatch):
     fake_database = mongomock.MongoClient()["grosharey_test"]
     monkeypatch.setattr(dependencies, "get_database", lambda: fake_database)
-    for dependency in (
-        dependencies.get_user_repository,
-        dependencies.get_auth_service,
-        dependencies.get_profile_service,
-        dependencies.get_friendship_repository,
-        dependencies.get_split_repository,
-        dependencies.get_friend_service,
-        dependencies.get_split_service,
-        dependencies.get_payment_repository,
-        dependencies.get_payment_service,
-        dependencies.get_notification_service,
-    ):
-        dependency.cache_clear()
+    clear_dependency_caches()
     yield app.test_client()
-    for dependency in (dependencies.get_user_repository, dependencies.get_auth_service):
-        dependency.cache_clear()
+    clear_dependency_caches()
 
 
 def sign_up(client, username: str) -> dict:

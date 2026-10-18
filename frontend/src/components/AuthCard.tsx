@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
 
+import Logo from "./Logo";
 import "../styles/login.css";
 
 type AuthCardProps = {
@@ -12,6 +13,7 @@ export default function AuthCard({ switchPageLabel, onSwitchPage, children }: Au
   return (
     <section className="screen login">
       <div className="card">
+        <Logo className="login-logo" />
         <p className="welcome">Welcome to</p>
         <h1>groSharey</h1>
         <p className="tag">

@@ -22,6 +22,7 @@ from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.audit_log_service import AuditLogService
+from server.services.audit_messages import describe_added_to_split, describe_saved_split
 from server.services.notification_service import NotificationService
 from server.services.receipt_image_service import ReceiptImageService
 
@@ -232,12 +233,11 @@ class SplitService:
         return saved_split.model_copy(update={"emailed_usernames": emailed_usernames})
 
     def record_saved_split(self, saved_split: SavedSplit, payer: User, user_ids_by_username: dict[str, str]) -> None:
-        store_label = saved_split.store_name or "a grocery run"
         self.audit_log_service.record(
             payer.id,
             "splits",
             "saved_split",
-            f"Saved a split for {store_label} totaling ${saved_split.total:.2f}",
+            describe_saved_split(saved_split.store_name, saved_split.total),
             payer.username,
         )
         for person in saved_split.people:
@@ -247,7 +247,7 @@ class SplitService:
                 user_ids_by_username[person.username],
                 "splits",
                 "added_to_split",
-                f"@{payer.username} added you to a split for {store_label}, you owe ${person.owes:.2f}",
+                describe_added_to_split(payer.username, saved_split.store_name, person.owes),
                 payer.username,
             )
 

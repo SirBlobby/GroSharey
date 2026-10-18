@@ -92,6 +92,8 @@ Run from the project root.
 | `bun run preview:web` | Serve the built frontend locally |
 | `bun run typecheck` | Type check the frontend |
 | `bun run test:health` | Check that the backend is running |
+| `bun run test:backend` | Run the backend tests (uses an in-memory database) |
+| `bun run backfill:audit-log` | Add audit log entries for friendships, splits, and payments made before the audit log existed (safe to run more than once) |
 
 Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env` before running.
 

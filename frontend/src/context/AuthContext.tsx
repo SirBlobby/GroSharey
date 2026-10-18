@@ -50,6 +50,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logOut() {
+    await authApi.logOut().catch(() => null);
     await removeAccessToken();
     setCurrentUser(null);
   }

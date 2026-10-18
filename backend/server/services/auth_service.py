@@ -45,6 +45,9 @@ class AuthService:
         self.audit_log_service.record(stored_user.id, "account", "logged_in", "Logged in", stored_user.username)
         return build_auth_response(stored_user)
 
+    def log_out(self, current_user: User) -> None:
+        self.audit_log_service.record(current_user.id, "account", "logged_out", "Logged out", current_user.username)
+
     def get_user_from_token(self, access_token: str) -> User:
         user_id = read_user_id_from_token(access_token)
         stored_user = self.user_repository.find_by_id(user_id)

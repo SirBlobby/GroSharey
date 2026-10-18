@@ -4,6 +4,7 @@ from server.models.user_models import User
 from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.payment_repository import PaymentRepository
 from server.services.audit_log_service import AuditLogService
+from server.services.audit_messages import describe_payment
 from server.services.friend_service import FriendService
 
 
@@ -39,7 +40,7 @@ class PaymentService:
             )
 
         payment = self.payment_repository.create(payer, recipient, amount_cents, payment_request.method, current_user)
-        payment_summary = f"${amount_cents / 100:.2f} payment from @{payer.username} to @{recipient.username}"
+        payment_summary = describe_payment(amount_cents, payer.username, recipient.username)
         self.audit_log_service.record(
             current_user.id, "payments", "recorded_payment", f"You recorded a {payment_summary}", current_user.username
         )

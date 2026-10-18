@@ -89,7 +89,7 @@ def get_notification_service() -> NotificationService:
 
 @lru_cache
 def get_receipt_image_service() -> ReceiptImageService:
-    return ReceiptImageService(ReceiptImageRepository(get_database()), get_split_repository())
+    return ReceiptImageService(ReceiptImageRepository(get_database()), get_split_repository(), get_audit_log_service())
 
 
 @lru_cache
