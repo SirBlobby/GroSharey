@@ -79,3 +79,7 @@ export const ListIcon = () => <Icon icon="mdi:format-list-checks" width="1em" ar
 export const EqualSplitIcon = () => <Icon icon="mdi:division" width="1em" aria-hidden="true" />;
 
 export const EditIcon = () => <Icon icon="mdi:pencil-outline" width="1em" aria-hidden="true" />;
+
+export const ShowPasswordIcon = () => <Icon icon="mdi:eye-outline" width="1em" aria-hidden="true" />;
+
+export const HidePasswordIcon = () => <Icon icon="mdi:eye-off-outline" width="1em" aria-hidden="true" />;

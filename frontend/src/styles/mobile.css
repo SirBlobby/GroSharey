@@ -1,0 +1,112 @@
+@media (max-width: 720px) {
+  html { font-size: 14px; }
+
+  .screen { padding: 8px 8px 16px; overflow-y: auto; }
+  .main-grid, .home-lower, .settings-layout, .history-panel { flex: none; overflow: visible; }
+  .home-details { overflow: visible; padding: 0; margin: 0; }
+  .settings-panel, .settings-menu, .history-list, .home-lower .shared-splits, .manager-list { overflow: visible; }
+  .card { border-width: 4px; padding: 14px; box-shadow: 0 0 0 2px var(--forest); }
+  .card h2 { font-size: 1.8rem; }
+  .title-top { font-size: 1.3rem; margin: 2px 0 8px; }
+
+  .topbar { padding: 2px 6px 10px; font-size: 1.2rem; gap: 8px; }
+  .topbar-actions { gap: 10px; }
+  .topbar button { gap: 6px; }
+  .topbar-label { display: none; }
+  .brand { font-size: 1.6rem; gap: 8px; }
+  .brand-logo { width: 42px; height: 42px; }
+
+  .btn { min-width: 0; font-size: 1.25rem; padding: 10px 14px; border-width: 4px; }
+  .footer { gap: 12px; padding: 10px 4px 4px; }
+  .footer .btn { flex: 1; }
+  .plus { width: 48px; height: 48px; font-size: 1.9rem; }
+
+  .main-grid { gap: 10px; }
+  .friends { padding: 14px 10px; }
+  .friends h2 { font-size: 1.8rem; margin-bottom: 6px; }
+  .friends .plus { margin-top: 14px; }
+  .flist { max-height: 40vh; }
+  .friend { font-size: 1.3rem; padding: 8px 12px; }
+  .friend .av { width: 38px; height: 38px; border-width: 3px; font-size: 0.85rem; }
+  .badge { font-size: 1rem; }
+
+  .owe { flex-direction: column; align-items: stretch; text-align: left; gap: 14px; padding: 14px; }
+  .owe:has(.friend-overview) { padding: 14px; }
+  .owe h2 { font-size: 1.6rem; }
+  .owe .amt { font-size: 2.6rem; margin-top: 4px; }
+  .owe .amt.ok { font-size: 1.6rem; }
+  .pay { text-align: left; font-size: 1.2rem; }
+  .paypal, .venmo { padding: 10px 20px; font-size: 1.4rem; }
+  .friend-overview .av { width: 60px; height: 60px; border-width: 4px; font-size: 1.2rem; }
+  .friend-overview-name { font-size: 1.7rem; }
+  .payment-amount { width: 110px; }
+
+  .log { gap: 14px; padding: 16px; }
+  .log h2 { font-size: 1.7rem; }
+  .choices, .home-lower > .log:only-child .choices { flex-direction: column; align-items: stretch; width: 100%; gap: 10px; }
+  .choice, .home-lower .choice, .home-lower > .log:only-child .choice {
+    width: 100%; height: auto; padding: 14px; flex-direction: row; justify-content: center; gap: 14px; font-size: 1.3rem;
+  }
+  .choice svg { width: 36px; height: 36px; }
+  .home-lower > .log:only-child .or::before, .home-lower > .log:only-child .or::after { display: block; }
+  .or { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
+  .or::before, .or::after { content: ""; flex: 1; height: 3px; background: var(--green); }
+
+  .history-card { padding: 12px; }
+  .history-store, .history-total { font-size: 1.4rem; }
+  .history-header h2, .shared-splits .history-header h2 { font-size: 1.6rem; }
+  .shared-splits, .history-panel { padding: 14px; }
+
+  .items, .split-summary, .receipt-details-form { padding: 14px; }
+  .items-header { flex-wrap: wrap; }
+  .items-header h2, .receipt-details-form h2, .split-summary h2 { font-size: 1.7rem; }
+  .row { padding: 10px; }
+  .row input { font-size: 1.1rem; }
+  .price-wrap { width: 96px; }
+  .receipt-fields { grid-template-columns: 1fr 1fr; }
+  .receipt-field--wide { grid-column: span 2; }
+  .person-share-top { flex-wrap: wrap; }
+
+  .scan-card { padding: 10px; }
+  .actions { gap: 14px; flex-wrap: wrap; }
+
+  .settings-layout { gap: 10px; }
+  .settings-menu { gap: 10px; }
+  .settings-user { padding-bottom: 10px; }
+  .settings-panel { padding: 14px; }
+  .settings-panel h2 { font-size: 1.8rem; }
+  .profile-tile { padding: 18px 14px; }
+  .profile-tile-name { font-size: 1.9rem; }
+  .profile-stats { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .profile-stat dd { font-size: 1.3rem; }
+  .detail-list { grid-template-columns: 1fr; gap: 2px; }
+  .detail-list dd { margin-bottom: 8px; }
+  .find-row { flex-wrap: wrap; }
+  .find-row input { flex-basis: 100%; }
+  .find-row .btn { flex: 1; }
+  .manager-row { padding: 10px; gap: 10px; }
+  .manager-row-name { font-size: 1.25rem; }
+  .audit-header { flex-wrap: wrap; }
+
+  .friend-profile-card { padding: 18px 14px; }
+  .friend-profile-name { font-size: 2rem; }
+  .friend-profile-invite { padding: 16px; }
+
+  .login .card { padding: 24px 16px 20px; }
+  .login h1 { margin: 6px 0 14px; }
+  .login .tag { font-size: 1.3rem; margin-bottom: 18px; }
+  .login-logo { width: 84px; height: 84px; }
+
+  .overlay { padding: 8px; align-items: flex-end; }
+  .modal { max-height: 85vh; }
+  .modal h2 { font-size: 1.6rem; }
+  .opt { font-size: 1.15rem; padding: 8px 10px; }
+
+  .notification-panel {
+    position: fixed; top: 60px; left: 8px; right: 8px; width: auto; max-height: calc(100vh - 80px);
+  }
+  .notification-toasts { right: 8px; left: 8px; bottom: 8px; width: auto; }
+
+  .pagination { padding: 8px; gap: 8px; }
+  .pagination-button { padding: 4px 8px; font-size: 0.95rem; }
+}

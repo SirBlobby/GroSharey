@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { useDeviceActions } from "../context/DeviceActionsContext";
 import { captureReceiptImage, ReceiptImageSource } from "../media/receiptImage";
 import { parseReceipt, ScannedReceipt } from "../services/receipt";
 
@@ -11,11 +12,13 @@ export function useReceiptScanner() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [imageUri, setImageUri] = useState<string | null>(null);
   const [scannedReceipt, setScannedReceipt] = useState<ScannedReceipt | null>(null);
+  const deviceActions = useDeviceActions();
+  const captureImage = deviceActions.captureReceiptImage ?? captureReceiptImage;
 
   async function scan(source: ReceiptImageSource): Promise<ScannedReceipt | null> {
     setErrorMessage(null);
     try {
-      const receiptImage = await captureReceiptImage(source);
+      const receiptImage = await captureImage(source);
       if (!receiptImage) {
         return null;
       }

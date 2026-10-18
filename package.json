@@ -10,7 +10,7 @@
     "dev:ios": "bash scripts/with-backend.sh ios",
     "dev:android": "bash scripts/with-backend.sh android",
     "dev:mobile": "bash scripts/with-backend.sh mobile",
-    "stop": "lsof -ti tcp:8000,8081 | xargs -r kill",
+    "stop": "lsof -ti tcp:8000,8081 | xargs -r sh -c 'kill -CONT \"$@\"; kill \"$@\"' stop",
     "dev:backend": "cd backend && uv run flask --app server.main run --debug --host 0.0.0.0 --port 8000",
     "dev:frontend": "cd frontend && bun run web",
     "ios": "cd frontend && bun run ios",

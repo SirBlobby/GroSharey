@@ -1,10 +1,9 @@
 import { useState } from "react";
-import { ActivityIndicator, StyleSheet, View } from "react-native";
 
+import Logo from "../components/Logo";
 import { useAuth } from "../hooks/useAuth";
 import LogInScreen from "../screens/LogInScreen";
 import SignUpScreen from "../screens/SignUpScreen";
-import { colors } from "../theme/colors";
 import AppNavigator from "./AppNavigator";
 
 type AuthPage = "logIn" | "signUp";
@@ -15,9 +14,10 @@ export default function RootNavigator() {
 
   if (isLoading) {
     return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator color={colors.primary} />
-      </View>
+      <section className="screen loading-screen" aria-busy="true">
+        <Logo className="loading-logo" />
+        <p>Loading...</p>
+      </section>
     );
   }
 
@@ -31,11 +31,3 @@ export default function RootNavigator() {
 
   return <LogInScreen onShowSignUp={() => setAuthPage("signUp")} />;
 }
-
-const styles = StyleSheet.create({
-  loadingContainer: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

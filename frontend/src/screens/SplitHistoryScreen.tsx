@@ -29,7 +29,7 @@ export default function SplitHistoryScreen({ people, onBack }: SplitHistoryScree
       <div className="topbar">
         <span>Split History</span>
         <button type="button" onClick={onBack}>
-          <BackIcon /> Back to Home
+          <BackIcon /> <span className="topbar-label">Back to Home</span>
         </button>
       </div>
 

@@ -8,13 +8,13 @@
 .history-count {
   background: var(--forest); color: var(--mint);
   font-weight: 600; font-size: 1.2rem;
-  padding: 4px 12px; border-radius: 10px;
+  padding: 4px 12px; border-radius: var(--radius-small);
 }
 .history-list { list-style: none; margin: 0; padding: 2px 2px 8px; overflow: auto; min-height: 0; display: flex; flex-direction: column; gap: 12px; }
 
 .history-card {
   display: flex; flex-direction: column; gap: 12px;
-  background: #fff; border: 3px solid var(--green); border-radius: 22px; padding: 16px 18px;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium); padding: 16px 18px;
 }
 .history-card:hover { border-color: var(--forest); }
 .history-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
@@ -28,17 +28,17 @@
 .history-people { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
 .history-people .av { width: 40px; height: 40px; border-width: 4px; font-size: 0.95rem; }
 .history-unknown-person {
-  padding: 4px 8px; border: 2px solid var(--green); border-radius: 10px;
+  padding: 4px 8px; border: 2px solid var(--green); border-radius: var(--radius-small);
   font-weight: 600; font-size: 0.95rem;
 }
-.history-your-part { padding: 4px 10px; border-radius: 10px; color: var(--mint); font-weight: 600; font-size: 1.05rem; }
+.history-your-part { padding: 4px 10px; border-radius: var(--radius-small); color: var(--mint); font-weight: 600; font-size: 1.05rem; }
 .history-owe { background: var(--red); }
 .history-owed { background: var(--blue); }
 
 .history-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .history-button {
   display: inline-flex; align-items: center; gap: 6px;
-  background: var(--mint); border: 3px solid var(--forest); border-radius: 12px;
+  background: var(--mint); border: 3px solid var(--forest); border-radius: var(--radius-small);
   padding: 6px 12px; font-weight: 600; font-size: 1.05rem; color: var(--forest);
 }
 .history-button:hover { background: var(--forest); color: var(--mint); }
@@ -48,7 +48,7 @@
   padding-top: 12px; border-top: 3px solid var(--mint);
 }
 .history-payer { margin: 0; font-weight: 600; }
-.history-person { border: 2px solid var(--green); border-radius: 14px; overflow: hidden; }
+.history-person { border: 2px solid var(--green); border-radius: var(--radius-medium); overflow: hidden; }
 .history-person-header {
   display: flex; justify-content: space-between; gap: 12px;
   background: var(--mint); padding: 8px 12px; font-weight: 600; font-size: 1.15rem;

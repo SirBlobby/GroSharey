@@ -44,8 +44,8 @@ export default function MainScreen({
         <span className="brand"><Logo className="brand-logo" />groSharey</span>
         <div className="topbar-actions">
           <NotificationBell notificationCenter={notificationCenter} onOpenNotification={onOpenNotification} />
-          <button type="button" onClick={onShowHistory}>History <HistoryIcon /></button>
-          <button type="button" onClick={onLogout}>Log Out <LogOutIcon /></button>
+          <button type="button" aria-label="History" onClick={onShowHistory}><span className="topbar-label">History</span> <HistoryIcon /></button>
+          <button type="button" aria-label="Log Out" onClick={onLogout}><span className="topbar-label">Log Out</span> <LogOutIcon /></button>
           <button type="button" aria-label="Settings" onClick={onShowSettings}><UserIcon /></button>
         </div>
       </div>

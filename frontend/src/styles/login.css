@@ -6,7 +6,7 @@
 .login .tag { font-size: 1.6rem; font-weight: 600; line-height: 1.1; margin: 0 0 32px; }
 .google {
   display: inline-flex; align-items: center; gap: 14px;
-  background: #fff; border: 1px solid #999; border-radius: 12px;
+  background: #fff; border: 1px solid #999; border-radius: var(--radius-small);
   padding: 20px 34px;
   font-family: 'Outfit', sans-serif; font-size: 1.4rem; color: #222;
 }
@@ -14,7 +14,7 @@
 .auth-field { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 1.2rem; }
 .auth-field input {
   font: 600 1.2rem var(--body); color: var(--navy);
-  background: #fff; border: 2px solid var(--green); border-radius: 10px; padding: 10px 12px;
+  background: #fff; border: 2px solid var(--green); border-radius: var(--radius-small); padding: 10px 12px;
 }
 .auth-field input:focus { border-color: var(--forest); outline: none; box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
 .auth-form .btn { margin-top: 8px; }
@@ -22,3 +22,12 @@
   margin-top: 20px; background: none; border: 0;
   font-weight: 600; font-size: 1.1rem; color: var(--forest); text-decoration: underline;
 }
+.password-wrap { position: relative; display: flex; }
+.password-wrap input { flex: 1; min-width: 0; padding-right: 52px; }
+.password-toggle {
+  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+  display: grid; place-items: center; width: 40px; height: 34px;
+  background: var(--mint); border: 2px solid var(--green); border-radius: var(--radius-small);
+  color: var(--forest); font-size: 1.3rem;
+}
+.password-toggle:hover { border-color: var(--forest); background: #fff; }

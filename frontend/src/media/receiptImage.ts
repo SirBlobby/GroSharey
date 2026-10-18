@@ -56,3 +56,11 @@ export async function captureReceiptImage(source: ReceiptImageSource): Promise<R
   }
   return { uri: savedImage.uri, base64: savedImage.base64 };
 }
+
+export async function captureReceiptImageForWebView(source: ReceiptImageSource): Promise<ReceiptImage | null> {
+  const receiptImage = await captureReceiptImage(source);
+  if (!receiptImage) {
+    return null;
+  }
+  return { uri: `data:image/jpeg;base64,${receiptImage.base64}`, base64: receiptImage.base64 };
+}

@@ -18,7 +18,7 @@
 .flist { width: 100%; overflow: auto; flex: 0 1 auto; display: flex; flex-direction: column; gap: 8px; padding: 4px; }
 .friend {
   display: flex; width: 100%; justify-content: space-between; align-items: center; gap: 10px;
-  background: #fff; border: 3px solid var(--green); border-radius: 20px;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium);
   padding: 12px 16px; font-size: 1.7rem; font-weight: 600; text-align: left;
 }
 .friend:hover { border-color: var(--forest); }
@@ -28,7 +28,7 @@
 .badge {
   flex: none; display: inline-flex; align-items: center; gap: 4px;
   background: var(--red); color: #fff; border: 2px solid var(--red);
-  font-size: 1.15rem; font-weight: 600; padding: 3px 8px; border-radius: 10px;
+  font-size: 1.15rem; font-weight: 600; padding: 3px 8px; border-radius: var(--radius-small);
 }
 .friends .plus { margin-top: 26px; }
 .owe { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 12px; padding: 20px; }
@@ -37,7 +37,7 @@
 .owe .amt.ok { color: var(--forest); font-size: 2.4rem; }
 .pay { text-align: center; font-size: 1.6rem; font-weight: 600; }
 .paypal {
-  display: block; margin-top: 6px; border: 0; border-radius: 10px;
+  display: block; margin-top: 6px; border: 0; border-radius: var(--radius-small);
   background: #f5b52a; padding: 12px 40px;
   font: italic 800 1.8rem Arial, sans-serif; color: #1a3b8f;
 }
@@ -46,7 +46,7 @@
 .choices { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; justify-content: center; }
 .choice {
   width: min(240px, 38vw); height: 170px;
-  background: #fff; border: 6px solid var(--green); border-radius: 20px;
+  background: #fff; border: 6px solid var(--green); border-radius: var(--radius-medium);
   font-size: 1.7rem; font-weight: 600; line-height: 1;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px;
 }
@@ -75,7 +75,7 @@
 .friend-overview-name { font-family: var(--display); color: var(--forest); font-size: 2.2rem; line-height: 1; }
 .friend-overview-link {
   display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
-  background: #fff; border: 3px solid var(--forest); border-radius: 12px;
+  background: #fff; border: 3px solid var(--forest); border-radius: var(--radius-small);
   padding: 4px 10px; font-weight: 600; font-size: 1rem; color: var(--forest);
 }
 .friend-overview-link:hover { background: var(--forest); color: var(--mint); }
@@ -93,7 +93,7 @@
 .owe .amt.owed-to-you { color: var(--blue); }
 .paypal, .venmo { text-align: center; text-decoration: none; }
 .venmo {
-  display: block; margin-top: 6px; border-radius: 10px;
+  display: block; margin-top: 6px; border-radius: var(--radius-small);
   background: #008cff; padding: 12px 40px;
   font: italic 800 1.8rem Arial, sans-serif; color: #fff;
 }
@@ -105,7 +105,7 @@
 .payment-amount input {
   width: 100%; height: 100%; padding: 8px 10px 8px 24px; text-align: right;
   font: 600 1.3rem var(--body); color: var(--navy);
-  background: #fff; border: 3px solid var(--green); border-radius: 12px; outline: none;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-small); outline: none;
 }
 .payment-amount input:focus { border-color: var(--forest); }
 .payment-form .settle { margin-top: 0; flex: 1; min-width: 0; }

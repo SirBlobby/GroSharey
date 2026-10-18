@@ -17,7 +17,7 @@
 .receipt-field input {
   width: 100%; min-width: 0; padding: 8px 10px;
   font: 600 1.2rem var(--body); color: var(--navy);
-  background: #fff; border: 2px solid var(--green); border-radius: 10px; outline: none;
+  background: #fff; border: 2px solid var(--green); border-radius: var(--radius-small); outline: none;
 }
 .receipt-field input:hover { border-color: var(--forest); }
 .receipt-field input:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
@@ -28,7 +28,7 @@
 .items-count {
   background: var(--forest); color: var(--mint);
   font-weight: 600; font-size: 1.2rem;
-  padding: 4px 12px; border-radius: 10px;
+  padding: 4px 12px; border-radius: var(--radius-small);
 }
 .notes { margin: 0; font-weight: 600; color: var(--red); }
 .item-rows { width: 100%; display: flex; flex-direction: column; gap: 10px; }
@@ -37,7 +37,7 @@
 .row {
   display: flex; flex-direction: column; gap: 10px;
   padding: 14px 16px;
-  background: var(--white); border: 3px solid var(--green); border-radius: 22px;
+  background: var(--white); border: 3px solid var(--green); border-radius: var(--radius-medium);
 }
 .row:focus-within { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
 .row--unassigned { border-color: var(--red); }
@@ -45,7 +45,7 @@
 .row input {
   min-width: 0; outline: none;
   font: 600 1.25rem var(--body); color: var(--navy);
-  background: #fff; border: 2px solid var(--green); border-radius: 10px; padding: 8px 10px;
+  background: #fff; border: 2px solid var(--green); border-radius: var(--radius-small); padding: 8px 10px;
 }
 .row input:hover { border-color: var(--forest); }
 .row input:focus { border-color: var(--forest); background: var(--mint); }
@@ -58,7 +58,7 @@
 .price-wrap input { width: 100%; padding-left: 24px; text-align: right; }
 .del {
   display: grid; place-items: center; flex: none;
-  width: 40px; height: 40px; border-radius: 10px;
+  width: 40px; height: 40px; border-radius: var(--radius-small);
   background: #fff; border: 2px solid var(--red); color: var(--red); font-size: 1.3rem;
 }
 .del:hover { background: var(--red); color: var(--mint); }
@@ -67,7 +67,7 @@
 .row-people .av { width: 40px; height: 40px; border-width: 4px; font-size: 0.95rem; }
 .assign-chip {
   display: inline-flex; align-items: center; gap: 6px;
-  background: var(--mint); border: 2px solid var(--forest); border-radius: 10px;
+  background: var(--mint); border: 2px solid var(--forest); border-radius: var(--radius-small);
   padding: 6px 12px; font-weight: 600; font-size: 1rem; color: var(--forest);
 }
 .assign-chip:hover { background: #fff; }
@@ -76,7 +76,7 @@
 
 .add-item-button {
   width: 100%; padding: 14px;
-  background: #fff; border: 3px solid var(--forest); border-radius: 18px;
+  background: #fff; border: 3px solid var(--forest); border-radius: var(--radius-medium);
   font-family: var(--display); font-size: 1.5rem; color: var(--forest);
 }
 .add-item-button:hover { background: var(--forest); color: var(--mint); }
@@ -86,7 +86,7 @@
 .split-summary h3 { margin: 0 0 8px; font-family: var(--display); font-weight: 400; color: var(--forest); font-size: 1.5rem; }
 .receipt-details {
   display: flex; flex-direction: column; gap: 6px;
-  background: #fff; border: 3px solid var(--green); border-radius: 16px; padding: 10px 14px;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium); padding: 10px 14px;
 }
 .receipt-detail { display: flex; align-items: center; gap: 8px; font-weight: 600; font-size: 1.15rem; }
 .receipt-detail svg { flex: none; }
@@ -94,7 +94,7 @@
 .receipt-location:hover { color: var(--navy); }
 .summary-totals {
   margin: 0; display: flex; flex-direction: column;
-  background: #fff; border: 3px solid var(--green); border-radius: 16px; overflow: hidden;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium); overflow: hidden;
   font-size: 1.2rem; font-weight: 600;
 }
 .summary-row { display: flex; justify-content: space-between; gap: 12px; padding: 8px 14px; }
@@ -105,7 +105,7 @@
 .summary-section { padding-top: 14px; border-top: 3px solid var(--green); }
 .summary-warning {
   margin: 0; padding: 10px 14px;
-  background: #fff; border: 3px solid var(--red); border-radius: 12px;
+  background: #fff; border: 3px solid var(--red); border-radius: var(--radius-small);
   color: var(--red); font-weight: 600;
 }
 .summary-confirm { width: 100%; }
@@ -120,7 +120,7 @@
 
 .equal-split-button {
   margin-left: auto; display: inline-flex; align-items: center; gap: 6px;
-  background: #fff; border: 3px solid var(--forest); border-radius: 12px;
+  background: #fff; border: 3px solid var(--forest); border-radius: var(--radius-small);
   padding: 6px 12px; font-weight: 600; font-size: 1.05rem; color: var(--forest);
 }
 .equal-split-button:hover:not(:disabled) { background: var(--forest); color: var(--mint); }
@@ -128,7 +128,7 @@
 .payer-options { display: flex; flex-direction: column; gap: 6px; }
 .payer-option {
   display: flex; align-items: center; gap: 10px;
-  background: #fff; border: 3px solid var(--green); border-radius: 16px;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium);
   padding: 6px 12px; font-weight: 600; font-size: 1.1rem; text-align: left;
 }
 .payer-option .av { width: 34px; height: 34px; border-width: 3px; font-size: 0.8rem; }
@@ -139,7 +139,7 @@
 .person-shares { list-style: none; margin: 8px 0 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
 .person-share {
   display: flex; flex-direction: column; gap: 8px;
-  background: #fff; border: 3px solid var(--green); border-radius: 16px; padding: 10px 12px;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium); padding: 10px 12px;
 }
 .person-share--payer { border-color: var(--forest); }
 .person-share-top { display: flex; align-items: center; gap: 10px; }
@@ -149,12 +149,12 @@
 .person-share-amount { font-size: 0.95rem; opacity: 0.8; }
 .person-share-items {
   flex: none; display: inline-flex; align-items: center; gap: 4px;
-  background: var(--mint); border: 2px solid var(--forest); border-radius: 10px;
+  background: var(--mint); border: 2px solid var(--forest); border-radius: var(--radius-small);
   padding: 4px 8px; font-weight: 600; font-size: 0.95rem; color: var(--forest);
 }
 .person-share-items:hover { background: var(--forest); color: var(--mint); }
 .person-share-payment { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.payment-choices { display: flex; border: 2px solid var(--forest); border-radius: 10px; overflow: hidden; }
+.payment-choices { display: flex; border: 2px solid var(--forest); border-radius: var(--radius-small); overflow: hidden; }
 .payment-choice {
   background: #fff; border: 0; padding: 4px 10px;
   font-weight: 600; font-size: 0.9rem; color: var(--forest);
@@ -165,7 +165,7 @@
 .paid-amount input {
   width: 100%; padding: 4px 8px 4px 22px; text-align: right;
   font: 600 1rem var(--body); color: var(--navy);
-  border: 2px solid var(--green); border-radius: 8px; outline: none;
+  border: 2px solid var(--green); border-radius: var(--radius-small); outline: none;
 }
 .paid-amount input:focus { border-color: var(--forest); }
 .item-picker-all { width: 100%; margin-bottom: 10px; font-size: 1.2rem; padding: 8px; }
@@ -175,7 +175,7 @@
 .receipt-detail--empty { opacity: 0.7; }
 .receipt-details-edit {
   align-self: flex-start; display: inline-flex; align-items: center; gap: 6px; margin-top: 4px;
-  background: var(--mint); border: 2px solid var(--forest); border-radius: 10px;
+  background: var(--mint); border: 2px solid var(--forest); border-radius: var(--radius-small);
   padding: 4px 10px; font-weight: 600; font-size: 0.95rem; color: var(--forest);
 }
 .receipt-details-edit:hover { background: var(--forest); color: var(--mint); }

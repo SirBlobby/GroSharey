@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -m
 
-bun run dev:backend &
+bun run dev:backend < /dev/null &
 backend_process_group=$!
 
 stop_backend() {
@@ -9,4 +9,4 @@ stop_backend() {
 }
 trap stop_backend EXIT
 
-bun run "$1"
+bun run "$1" "${@:2}"

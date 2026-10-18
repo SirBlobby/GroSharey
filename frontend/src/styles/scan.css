@@ -14,3 +14,10 @@
 @media (max-width: 720px) { .scan-card { padding: 16px; } }
 .receipt-preview { max-width: 100%; max-height: 70%; object-fit: contain; }
 .frame { overflow: hidden; }
+.actions--camera { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
+.actions--camera > :first-child { justify-self: end; }
+.actions--camera > :last-child { justify-self: start; }
+@media (max-width: 720px) {
+  .actions--camera { gap: 12px; }
+  .actions--camera > .btn { justify-self: stretch; padding: 10px 6px; }
+}

@@ -14,10 +14,10 @@
 }
 
 .shareable-qr-code { width: 100%; display: flex; flex-direction: column; align-items: center; gap: 10px; }
-.qr-code-frame { padding: 12px; background: var(--white); border-radius: 20px; border: 4px solid var(--forest); line-height: 0; }
+.qr-code-frame { padding: 12px; background: var(--white); border-radius: var(--radius-medium); border: 4px solid var(--forest); line-height: 0; }
 .copy-link-row {
   display: flex; width: 100%; overflow: hidden;
-  background: #fff; border: 2px solid var(--forest); border-radius: 12px;
+  background: #fff; border: 2px solid var(--forest); border-radius: var(--radius-small);
 }
 .copy-link-row:focus-within { box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
 .copy-link-input {
@@ -38,7 +38,7 @@
 .friend-count {
   background: var(--forest); color: var(--mint);
   font-weight: 600; font-size: 1.2rem;
-  padding: 4px 12px; border-radius: 10px;
+  padding: 4px 12px; border-radius: var(--radius-small);
 }
 .add-friend-form { display: flex; flex-direction: column; gap: 8px; }
 .add-friend-form label { font-weight: 600; font-size: 1.2rem; }
@@ -46,7 +46,7 @@
 .find-row input {
   flex: 1; min-width: 0; padding: 10px;
   font: 600 1.2rem var(--body); color: var(--navy);
-  background: #fff; border: 2px solid var(--green); border-radius: 10px;
+  background: #fff; border: 2px solid var(--green); border-radius: var(--radius-small);
 }
 .find-row input:focus { border-color: var(--forest); outline: none; box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
 .find-row .btn { min-width: 0; font-size: 1.2rem; padding: 6px 18px; border-width: 3px; }
@@ -59,7 +59,7 @@
 }
 .manager-row {
   display: flex; align-items: center; gap: 14px;
-  padding: 12px 16px; background: #fff; border: 3px solid var(--green); border-radius: 20px;
+  padding: 12px 16px; background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium);
 }
 .manager-row:hover { border-color: var(--forest); }
 .manager-row-profile {
@@ -71,14 +71,14 @@
 .manager-row-name { font-size: 1.5rem; font-weight: 600; }
 .manager-row-handle { font-size: 1.1rem; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; }
 .manager-row-balance {
-  flex: none; padding: 4px 10px; border-radius: 10px;
+  flex: none; padding: 4px 10px; border-radius: var(--radius-small);
   font-size: 1.1rem; color: var(--mint);
 }
 .balance-owe { background: var(--red); }
 .balance-owed { background: var(--blue); }
 .balance-settled { background: var(--forest); }
 .manager-row-remove {
-  flex: none; display: inline-flex; align-items: center; gap: 6px; background: none; border: 2px solid var(--red); border-radius: 10px;
+  flex: none; display: inline-flex; align-items: center; gap: 6px; background: none; border: 2px solid var(--red); border-radius: var(--radius-small);
   color: var(--red); font-weight: 600; padding: 6px 12px;
 }
 .manager-row-remove:hover { background: var(--red); color: var(--mint); }

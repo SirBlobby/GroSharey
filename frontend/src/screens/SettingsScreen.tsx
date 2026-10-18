@@ -60,7 +60,7 @@ export default function SettingsScreen({
       <div className="topbar">
         <span>Settings</span>
         <button type="button" onClick={onBack}>
-          <BackIcon /> Back to Home
+          <BackIcon /> <span className="topbar-label">Back to Home</span>
         </button>
       </div>
 

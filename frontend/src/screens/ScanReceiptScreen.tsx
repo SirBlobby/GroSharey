@@ -37,7 +37,7 @@ export default function ScanReceiptScreen({ scanner, onBack, onConfirm }: Props)
       </div>
 
       {stage === 'live' ? (
-        <div className="actions">
+        <div className="actions actions--camera">
           <button type="button" className="btn" onClick={onBack} disabled={isReading}>Back</button>
           <button
             type="button"

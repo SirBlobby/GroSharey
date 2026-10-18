@@ -1,11 +1,11 @@
 .pagination {
   display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   padding: 10px 12px;
-  background: #fff; border: 3px solid var(--green); border-radius: 16px;
+  background: #fff; border: 3px solid var(--green); border-radius: var(--radius-medium);
 }
 .pagination-button {
   display: inline-flex; align-items: center; gap: 6px;
-  background: var(--mint); border: 3px solid var(--forest); border-radius: 12px;
+  background: var(--mint); border: 3px solid var(--forest); border-radius: var(--radius-small);
   padding: 6px 12px; font-weight: 600; font-size: 1.05rem; color: var(--forest);
 }
 .pagination-button:hover:not(:disabled) { background: var(--forest); color: var(--mint); }

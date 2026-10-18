@@ -32,8 +32,7 @@ backend/
 frontend/
   package.json                  JavaScript dependencies (bun)
   bun.lock                      Locked JavaScript versions
-  App.tsx                       Native app entry
-  App.web.tsx                   Web app entry (loads fonts and global styles)
+  App.tsx                       App entry, shows src/WebApp.tsx on every platform
   index.ts
   tsconfig.json
   src/
@@ -47,20 +46,20 @@ frontend/
     media/                      Image picking, cropping math, crop export, receipt photos
     screens/                    Screens
     components/                 UI components
-    storage/                    Token storage (secure store on native, localStorage on web)
+    storage/                    Token storage (localStorage)
     styles/                     Web stylesheets from the prototype
     types/                      Shared types
     utils/                      Money formatting, initials, ids
     theme/                      Colors and spacing for native screens
 ```
 
-### Web and Native Screens
+### One App for Web, iOS, and Android
 
-Files ending in `.web.tsx` are used on web instead of the file with the same name. The web app uses the game style screens from `groSharey prototype.html`:
+`src/WebApp.tsx` is an [Expo DOM component](https://docs.expo.dev/guides/dom-components/) (it starts with `"use dom"`). On the web it renders normally. On iOS and Android, `App.tsx` shows it inside a web view, so every platform runs the same screens, built from `groSharey prototype.html`:
 
 | Page | Screen |
 |------|--------|
-| Log in and create account | `LogInScreen.web.tsx`, `SignUpScreen.web.tsx` |
+| Log in and create account | `LogInScreen.tsx`, `SignUpScreen.tsx` |
 | Friends, balances, and settle up | `MainScreen.tsx` |
 | Scan a receipt | `ScanReceiptScreen.tsx` |
 | Edit items and assign friends | `ManageItemsScreen.tsx` |
@@ -69,7 +68,7 @@ Files ending in `.web.tsx` are used on web instead of the file with the same nam
 | Settings menu with Profile, Friends, Appearance, Account, Audit Log, and App Info | `SettingsScreen.tsx`, `components/settings/` |
 | Another user's profile with Add Friend | `FriendProfileScreen.tsx` |
 
-The iOS and Android apps still use the basic account screens. Web icons come from [Iconify](https://iconify.design/) through `@iconify/react` and are collected in `src/components/icons.tsx`.
+Icons come from [Iconify](https://iconify.design/) through `@iconify/react` and are collected in `src/components/icons.tsx`.
 
 ## Root Commands
 
@@ -84,6 +83,7 @@ Run from the project root.
 | `bun run dev:ios` | Run backend and the iOS simulator together |
 | `bun run dev:android` | Run backend and the Android emulator together |
 | `bun run dev:mobile` | Run backend and Expo (scan the QR code with Expo Go) |
+| `bun run dev:mobile -- -c` | Same, but clears the Expo cache (use after changing `frontend/.env`) |
 | `bun run ios` | Run only the app in the iOS simulator |
 | `bun run android` | Run only the app in the Android emulator |
 | `bun run mobile` | Run only Expo for a physical device with Expo Go |
@@ -102,6 +102,8 @@ Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `fr
 - iOS simulator requires macOS with Xcode. Android emulator requires Android Studio.
 - A physical phone or the Android emulator cannot reach `localhost` on your computer. Set `EXPO_PUBLIC_API_URL` in `frontend/.env` to your computer's LAN address, for example `http://192.168.1.20:8000`. The Android emulator can also use `http://10.0.2.2:8000`.
 - The local backend listens on all network interfaces so phones on the same network can reach it.
+- In Expo Go the app runs in a web view served from Expo's dev server, so add that address to `ALLOWED_ORIGINS` in `backend/.env`, for example `http://localhost:8081,http://192.168.1.20:8081`.
+- The first time, install the web view packages: `cd frontend && bunx expo install react-native-webview react-native-safe-area-context`.
 
 ## Backend
 

@@ -8,6 +8,9 @@
   --red: #b00000;
   --blue: #1d5fbf;
   --gray: #d9d9d9;
+  --radius-large: 14px;
+  --radius-medium: 10px;
+  --radius-small: 6px;
   --display: 'Itim', 'Chewy', cursive;
   --body: 'Josefin Sans', system-ui, sans-serif;
 }
@@ -38,7 +41,7 @@ h1, h2 { font-family: var(--display); color: var(--forest); margin: 0; font-weig
 .card {
   background: var(--mint);
   border: 6px solid var(--white);
-  border-radius: 36px;
+  border-radius: var(--radius-large);
   padding: 24px;
   box-shadow: 0 0 0 3px var(--forest);
 }
@@ -55,7 +58,7 @@ h1, h2 { font-family: var(--display); color: var(--forest); margin: 0; font-weig
   color: var(--forest);
   font-family: var(--display);
   font-size: 1.6rem;
-  border-radius: 18px;
+  border-radius: var(--radius-medium);
   padding: 14px 8px;
   min-width: 150px;
 }
@@ -88,3 +91,6 @@ html[data-reduce-motion="true"] *, html[data-reduce-motion="true"] *::before, ht
 .footer { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 40px; padding: 14px 24px 6px; }
 .danger-button { border-color: var(--red); color: var(--red); }
 .danger-button:hover { background: var(--red); color: var(--mint); }
+.loading-screen { align-items: center; justify-content: center; gap: 12px; color: var(--mint); font-family: var(--display); font-size: 1.6rem; }
+.loading-logo { width: 120px; height: 120px; color: var(--mint); animation: loading-pulse 1.2s ease-in-out infinite alternate; }
+@keyframes loading-pulse { from { opacity: 0.5; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }

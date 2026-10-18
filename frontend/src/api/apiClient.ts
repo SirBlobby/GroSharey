@@ -14,8 +14,22 @@ async function buildRequestHeaders(): Promise<Record<string, string>> {
   return requestHeaders;
 }
 
+const REQUEST_TIMEOUT_MILLISECONDS = 60000;
+
+async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
+  const abortController = new AbortController();
+  const timeoutTimer = setTimeout(() => abortController.abort(), REQUEST_TIMEOUT_MILLISECONDS);
+  try {
+    return await fetch(url, { ...options, signal: abortController.signal });
+  } catch {
+    throw new Error(`Couldn't reach the server at ${apiBaseUrl}. Check that the backend is running.`);
+  } finally {
+    clearTimeout(timeoutTimer);
+  }
+}
+
 async function sendRequest<ResponseType>(path: string, options: RequestInit = {}): Promise<ResponseType> {
-  const response = await fetch(`${apiBaseUrl}/api${path}`, {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/api${path}`, {
     headers: await buildRequestHeaders(),
     ...options,
   });
