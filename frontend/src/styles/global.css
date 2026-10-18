@@ -33,7 +33,7 @@ h1, h2 { font-family: var(--display); color: var(--color-heading); margin: 0; fo
 
 .card {
   background: var(--color-card);
-  border: 3px solid var(--color-primary);
+  border: 6px solid var(--color-primary);
   border-radius: var(--radius-large);
   padding: 24px;
 }

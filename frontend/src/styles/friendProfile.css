@@ -1,7 +1,7 @@
 .friend-profile { overflow: auto; }
 .friend-profile-message {
   align-self: center; margin: 24px 0; padding: 12px 18px;
-  background: var(--color-card); border: 3px solid var(--color-primary); border-radius: var(--radius-medium);
+  background: var(--color-card); border: 6px solid var(--color-primary); border-radius: var(--radius-medium);
   font-weight: 600; font-size: 1.2rem;
 }
 .friend-profile-layout {
@@ -18,7 +18,7 @@
 .friend-status {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px; border-radius: var(--radius-small);
-  background: var(--color-surface); border: 3px solid var(--color-border);
+  background: var(--color-surface); border: 4px solid var(--color-border);
   font-weight: 600; font-size: 1.1rem;
 }
 .friend-status--friends { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-strong); }

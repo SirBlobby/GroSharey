@@ -22,6 +22,8 @@
 .landing-hero-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; margin-top: 8px; }
 .btn.landing-primary { background: var(--color-primary); color: var(--color-on-strong); }
 .btn.landing-primary:hover { background: var(--color-ink); border-color: var(--color-outline); }
+/* Same border width as the "How it works" step boxes */
+.landing-hero-actions .btn, .landing-cta .btn { border-width: 3px; }
 
 .landing-section { display: flex; flex-direction: column; gap: 20px; padding: 32px 28px; }
 .landing-section h2, .landing-cta h2 { font-size: clamp(2rem, 4vw, 2.8rem); text-align: center; }
