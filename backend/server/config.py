@@ -29,7 +29,7 @@ class Settings:
     email_app_password: str = os.getenv("EMAIL_APP_PASSWORD", "").replace(" ", "")
     smtp_host: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
     smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
-    app_url: str = os.getenv("APP_URL", "http://localhost:8081")
+    app_url: str = os.getenv("APP_URL", "https://grosharey-frontend.vercel.app")
 
 
 def validate_settings(current_settings: Settings) -> None:
