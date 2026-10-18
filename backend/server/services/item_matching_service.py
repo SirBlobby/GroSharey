@@ -92,6 +92,7 @@ class ItemMatchingService:
                 response_schema=ItemMatchResult,
             ),
             error_messages=MATCHING_ERROR_MESSAGES,
+            fall_back_when_rate_limited=True,
         )
         if not isinstance(response.parsed, ItemMatchResult):
             return {}

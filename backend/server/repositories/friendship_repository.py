@@ -34,6 +34,18 @@ class FriendshipRepository:
         pair_key = build_pair_key(first_user_id, second_user_id)
         return self.friendships_collection.find_one({"pair_key": pair_key}) is not None
 
+    def find_last_reminder_time(self, reminder_id: str, friend_id: str) -> datetime | None:
+        friendship_document = self.friendships_collection.find_one(
+            {"pair_key": build_pair_key(reminder_id, friend_id)}, {"last_reminders": 1}
+        )
+        return (friendship_document or {}).get("last_reminders", {}).get(reminder_id)
+
+    def save_reminder_time(self, reminder_id: str, friend_id: str) -> None:
+        self.friendships_collection.update_one(
+            {"pair_key": build_pair_key(reminder_id, friend_id)},
+            {"$set": {f"last_reminders.{reminder_id}": datetime.now(timezone.utc)}},
+        )
+
     def list_friend_ids(self, user_id: str) -> list[str]:
         friendship_documents = self.friendships_collection.find({"user_ids": user_id})
         return [

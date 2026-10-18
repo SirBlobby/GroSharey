@@ -1,320 +1,90 @@
-# GroSharey
+<p align="center">
+  <img src="frontend/public/grosharey-logo.png" alt="groSharey logo" width="140" />
+</p>
 
-Split groceries with roommates. Scan a receipt, assign items to the people who asked for them, and everyone sees what they owe. Groups share a shopping list, and Gemini matches what was bought to who wanted it.
+<h1 align="center">groSharey</h1>
 
-This is a monorepo with a Python Flask backend and an Expo (React Native + React Native Web) TypeScript frontend. Both deploy to Vercel as separate projects.
+<p align="center"><strong>Split groceries, not friendships.</strong></p>
 
-## Prerequisites
+<p align="center">
+  <a href="https://grosharey-frontend.vercel.app/"><img alt="Live demo" src="https://img.shields.io/badge/demo-live-47a152?style=for-the-badge&logo=vercel&logoColor=white" /></a>
+  <img alt="Web, iOS, and Android" src="https://img.shields.io/badge/platforms-web%20%7C%20iOS%20%7C%20Android-1a1856?style=for-the-badge" />
+</p>
 
-| Tool | Used For | Install |
-|------|----------|---------|
-| [uv](https://docs.astral.sh/uv/) | Python packages and virtual environment | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
-| [Bun](https://bun.sh/) | JavaScript packages and scripts | `curl -fsSL https://bun.sh/install \| bash` |
-| [MongoDB](https://www.mongodb.com/) | Database | Local install or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster |
+<p align="center">
+  <img alt="Expo" src="https://img.shields.io/badge/Expo-000020?style=flat-square&logo=expo&logoColor=white" />
+  <img alt="React" src="https://img.shields.io/badge/React-20232A?style=flat-square&logo=react&logoColor=61DAFB" />
+  <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" />
+  <img alt="Python" src="https://img.shields.io/badge/Python-3776AB?style=flat-square&logo=python&logoColor=white" />
+  <img alt="Flask" src="https://img.shields.io/badge/Flask-000000?style=flat-square&logo=flask&logoColor=white" />
+  <img alt="MongoDB" src="https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white" />
+  <img alt="Google Gemini" src="https://img.shields.io/badge/Google%20Gemini-8E75B2?style=flat-square&logo=googlegemini&logoColor=white" />
+  <img alt="ElevenLabs" src="https://img.shields.io/badge/ElevenLabs-000000?style=flat-square&logo=elevenlabs&logoColor=white" />
+  <img alt="Vercel" src="https://img.shields.io/badge/Vercel-000000?style=flat-square&logo=vercel&logoColor=white" />
+  <img alt="Bun" src="https://img.shields.io/badge/Bun-000000?style=flat-square&logo=bun&logoColor=white" />
+</p>
 
-## Structure
+---
 
-```
-package.json                    Root scripts (bun)
-backend/
-  pyproject.toml                Python dependencies (uv) and Vercel entrypoint
-  uv.lock                       Locked Python versions
-  server/
-    main.py                     App factory
-    config.py                   Environment settings
-    database.py                 MongoDB connection
-    dependencies.py             Service wiring
-    authentication.py           require_authentication decorator
-    errors.py                   Domain errors
-    error_handlers.py           Error to HTTP response mapping
-    models/                     Pydantic schemas
-    repositories/               MongoDB data access
-    services/                   Business logic, passwords, tokens, image compression
-    routes/                     HTTP endpoints
-frontend/
-  package.json                  JavaScript dependencies (bun)
-  bun.lock                      Locked JavaScript versions
-  App.tsx                       App entry, shows src/WebApp.tsx on every platform and opens native cameras on phones
-  index.ts
-  tsconfig.json
-  src/
-    config/                     Environment values
-    api/                        HTTP client and endpoint calls
-    context/                    Auth state provider
-    hooks/                      Data hooks (friends, grocery runs, receipt scanning)
-    services/                   Converts API responses for the screens, builds split requests
-    navigation/                 Shows auth or app screens
-    linking/                    Profile QR code links and reading scanned links
-    media/                      Image picking, cropping math, crop export, receipt photos, QR decoding
-    native/                     Native camera screens for receipts and QR codes (iOS and Android)
-    appearance/                 Text size, dark mode, high contrast, color blindness, and reduce motion settings
-    screens/                    Screens
-    components/                 UI components
-    storage/                    Token storage (localStorage)
-    styles/                     Web stylesheets from the prototype
-    types/                      Shared types
-    utils/                      Money formatting, initials, ids
-    theme/                      Colors and spacing for native screens
-```
+Living with roommates means shared groceries, and shared groceries mean someone always ends up doing receipt math. groSharey keeps one shopping list for the whole apartment, reads your receipt with AI, hands each item to whoever asked for it, and tells everyone exactly what they owe.
 
-### One App for Web, iOS, and Android
+## How it works
 
-`src/WebApp.tsx` is an [Expo DOM component](https://docs.expo.dev/guides/dom-components/) (it starts with `"use dom"`). On the web it renders normally. On iOS and Android, `App.tsx` shows it inside a web view, so every platform runs the same screens, built from `groSharey prototype.html`:
+1. **Make a shared list.** Start a group with your roommates and add what everyone needs. Each item remembers who asked for it.
+2. **Scan the receipt.** Snap a photo and groSharey reads every item, discount, and tax marker. Pick your group and AI assigns each item to the person who wanted it, then crosses it off the list.
+3. **Settle up.** Everyone sees what they owe. Pay with one tap on Venmo or PayPal, and your roommate confirms they got it.
 
-| Page | Screen |
-|------|--------|
-| Landing page about the project (website only, the mobile app opens at log in) | `LandingScreen.tsx`, `components/landing/` |
-| Log in and create account | `LogInScreen.tsx`, `SignUpScreen.tsx` |
-| Friends, groups, balances, payment confirmations, and settle up | `MainScreen.tsx`, `components/groups/`, `components/payments/` |
-| Shopping lists, pantry, and shopping trips | `ShoppingListsScreen.tsx`, `components/lists/` |
-| Scan a receipt | `ScanReceiptScreen.tsx` |
-| Edit items, assign friends, and pick a group | `ManageItemsScreen.tsx`, `components/manage/` |
-| Grocery run saved | `ConfirmedScreen.tsx` |
-| Settings menu with Profile, Friends (with a QR code scanner), Groups, History (with disputes and PDF export), Appearance, Account, Audit Log, App Info, and Log Out | `SettingsScreen.tsx`, `components/settings/`, `components/history/` |
-| Another user's profile with Add Friend | `FriendProfileScreen.tsx` |
+## Features
 
-The camera works differently on phones. iOS only gives web pages camera access on `https://` pages, and the app's page is served over `http://` during development. So in the mobile app, receipt scanning and the QR code scanner open native camera screens from `src/native/` (built with `expo-camera`), and the page gets the result back. The website uses the browser camera.
+### Shopping together
+- **Groups and shared lists** with a store and notes on every item, plus personal lists for yourself
+- **AI item matching** that knows "GV 2% MLK" is the milk Sam asked for
+- **Shared pantry** where bought items land, and "running low" puts them back on the list
+- **Shopping trips** so "I'm going to Trader Joe's" gives everyone a heads up to add last-minute items
+- **Offline lists** in the mobile app, so crossing items off works even with bad signal in the store
 
-Shopping lists keep working offline in the mobile app: crossing off and adding items are saved on the phone and sent when the connection comes back (`services/offlineShoppingLists.ts`). The website doesn't do this.
+### Splitting and paying
+- **Smart receipt scanning** that expands store abbreviations and flags totals that don't add up
+- **Penny-exact splits** where tax lands only on taxed items and leftover cents are shared fairly
+- **Partial payments and overpaying**, with credit kept for the next run
+- **Payment confirmation** so a payment only counts once the person who got paid confirms it
+- **Payment reminders** with one tap, sent in the app and by email
+- **Item disputes** for anything you didn't actually get
+- **Group budgets** with a progress bar and alerts before you go over
+- **Monthly PDF reports** for reimbursements
 
-Icons come from [Iconify](https://iconify.design/) through `@iconify/react` and are collected in `src/components/icons.tsx`.
+### Talk to it
+- **Voice assistant** powered by Gemini and ElevenLabs. Say "add eggs for Sam to the apartment list", "we're out of coffee", "I'm heading to Costco", or "who owes me money?" and it handles it and answers out loud.
 
-## Root Commands
+### Friends and accounts
+- **Add roommates by QR code** with the in-app scanner, or by username or email
+- **Notifications and emails** when you're added to a split, someone buys your item, or a friend pays you back
+- **Split history** with the receipt photo for every grocery run
+- **Audit log** of everything that happened on your account
+- **Built for everyone** with dark mode, high contrast, text sizes, reduce motion, and color blindness friendly palettes
 
-Run from the project root.
+## Built with
 
-| Command | Description |
-|---------|-------------|
-| `bun run setup` | Install root, backend, and frontend dependencies |
-| `bun run dev` | Run backend and frontend together |
-| `bun run dev:backend` | Run only the backend on port 8000 |
-| `bun run dev:frontend` | Run only the frontend web app |
-| `bun run dev:ios` | Run backend and the iOS simulator together |
-| `bun run dev:android` | Run backend and the Android emulator together |
-| `bun run dev:mobile` | Run backend and Expo (scan the QR code with Expo Go) |
-| `bun run dev:mobile -- -c` | Same, but clears the Expo cache (use after changing `frontend/.env`) |
-| `bun run ios` | Run only the app in the iOS simulator |
-| `bun run android` | Run only the app in the Android emulator |
-| `bun run mobile` | Run only Expo for a physical device with Expo Go |
-| `bun run stop` | Stop anything still running on ports 8000 (backend) and 8081 (Expo) |
-| `bun run build:web` | Build the frontend into `frontend/dist` |
-| `bun run preview:web` | Serve the built frontend locally |
-| `bun run typecheck` | Type check the frontend |
-| `bun run test:health` | Check that the backend is running |
-| `bun run backfill:audit-log` | Add audit log entries for friendships, splits, and payments made before the audit log existed (safe to run more than once) |
-| `bun run test:genai` | Check Gemini item matching with sample items, then run a full group split against a throwaway `grosharey_genai_test` database |
-| `bun run test:features` | Check trips, budgets, the pantry, disputes, payment confirmation, and the PDF report against the throwaway test database |
+| Part | Tools |
+|------|-------|
+| App | Expo and React with TypeScript, one codebase for web, iOS, and Android |
+| Server | Python and Flask |
+| Database | MongoDB Atlas |
+| AI | Google Gemini for receipts, item matching, and the voice assistant |
+| Voice | ElevenLabs for speech to text and spoken replies |
+| Hosting | Vercel |
 
-Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env` before running.
+## Try it
 
-### Mobile Preview
+The web app is live at **[grosharey-frontend.vercel.app](https://grosharey-frontend.vercel.app/)**.
 
-- iOS simulator requires macOS with Xcode. Android emulator requires Android Studio.
-- A physical phone or the Android emulator cannot reach `localhost` on your computer. Set `EXPO_PUBLIC_API_URL` in `frontend/.env` to your computer's LAN address, for example `http://192.168.1.20:8000`. The Android emulator can also use `http://10.0.2.2:8000`.
-- The local backend listens on all network interfaces so phones on the same network can reach it.
-- In Expo Go the app runs in a web view served from Expo's dev server, so add that address to `ALLOWED_ORIGINS` in `backend/.env`, for example `http://localhost:8081,http://192.168.1.20:8081`.
-- The first time, install the web view packages: `cd frontend && bunx expo install react-native-webview react-native-safe-area-context`.
+To run it yourself, install [Bun](https://bun.sh/) and [uv](https://docs.astral.sh/uv/), then:
 
-## Backend
-
-```
-cd backend
-uv sync
-cp .env.example .env
-uv run flask --app server.main run --debug --port 8000
+```bash
+bun run setup
+cp backend/.env.example backend/.env
+cp frontend/.env.example frontend/.env
+bun run dev
 ```
 
-| Task | Command |
-|------|---------|
-| Add a package | `uv add <package>` |
-| Remove a package | `uv remove <package>` |
-| Upgrade all packages | `uv lock --upgrade && uv sync` |
-| Run a Python command | `uv run <command>` |
-
-## Frontend
-
-```
-cd frontend
-bun install
-bunx expo install --fix
-cp .env.example .env
-bun run web
-```
-
-| Task | Command |
-|------|---------|
-| Add an Expo or React Native package | `bunx expo install <package>` |
-| Add any other package | `bun add <package>` |
-| Add a dev package | `bun add -d <package>` |
-| Remove a package | `bun remove <package>` |
-| Align Expo package versions | `bunx expo install --fix` |
-
-## Authentication
-
-Email and password accounts stored in the MongoDB `users` collection. Passwords are hashed with Argon2. The backend returns a JWT that the frontend sends as `Authorization: Bearer <token>`.
-
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| POST | `/api/auth/signup` | No | Create an account, returns token and user |
-| POST | `/api/auth/login` | No | Log in, returns token and user |
-| GET | `/api/auth/me` | Yes | Current user |
-| PUT | `/api/auth/me/username` | Yes | Change username with `{"username", "current_password"}` (usernames are unique) |
-| PUT | `/api/auth/me/password` | Yes | Change password with `{"current_password", "new_password"}` |
-| GET | `/api/profiles/<username or email>` | Yes | Public profile (id, username, display name, picture URL) |
-| PUT | `/api/profiles/me/picture` | Yes | Upload profile picture as `{"image_base64": "..."}` |
-| GET | `/api/profiles/<username>/picture` | No | Profile picture image |
-| POST | `/api/receipts/parse` | Yes | Read a receipt photo sent as `{"image_base64": "..."}`, returns items and totals as JSON |
-| POST | `/api/receipts/split` | Yes | Preview a split: what each person owes the logged-in payer (nothing is saved) |
-| GET | `/api/friends` | Yes | Your friends, each with `balance` (positive: they owe you, negative: you owe them) |
-| POST | `/api/friends` | Yes | Add a friend as `{"username": "..."}` (mutual) |
-| DELETE | `/api/friends/<username>` | Yes | Remove a friend (past splits are kept) |
-| POST | `/api/splits` | Yes | Confirm and save a split, same body as the preview |
-| GET | `/api/splits` | Yes | Your 50 most recent splits, as payer or participant |
-| POST | `/api/payments` | Yes | Record a settle-up payment: `{"friend_username": "alex", "amount": 7.07, "direction": "received", "method": "venmo"}` |
-| GET | `/api/payments` | Yes | Your 50 most recent payments |
-| PUT | `/api/profiles/me/payment-handles` | Yes | Set `{"venmo_username": "...", "paypal_username": "..."}` so friends get pay buttons |
-| GET | `/api/receipts/images/<id>` | Yes | Stored receipt photo, for the person who scanned it and everyone in its split |
-| GET | `/api/audit-log?page=1&page_size=20&category=` | Yes | Paged account events, newest first. `category` is optional: account, profile, friends, splits, or payments |
-| GET | `/api/notifications?page=1&page_size=10` | Yes | Things other people did that involve you, with `unread_count` |
-| POST | `/api/notifications/read` | Yes | Mark `{"notification_ids": [...]}` as read, or all when the list is left out |
-| GET | `/api/health` | No | Health check |
-| GET | `/` | No | API name, status, and endpoint list |
-
-Protect a backend route:
-
-```python
-from flask import g
-
-from server.authentication import require_authentication
-
-
-@example_blueprint.get("")
-@require_authentication
-def get_example():
-    current_user = g.current_user
-```
-
-On the frontend, every screen except the log in and create account screens is shown only when logged in. Use `useAuth()` to read `currentUser` or call `logOut()`.
-
-## Accounts and Profiles
-
-Each account has an `id` (MongoDB ObjectId), a unique `username` (3 to 30 lowercase letters, numbers, or underscores), a `display_name`, and an email used to log in.
-
-### QR Codes
-
-The Profile settings page shows a QR code linking to `EXPO_PUBLIC_APP_URL/?user=<username>`. Scanning it with any phone camera opens the web app on that user's profile, after logging in if needed. Settings > Friends also has a Scan QR code button that reads a friend's code inside the app and adds them in one tap. Friends can be added by username or email too.
-
-### Profile Pictures
-
-1. The user picks an image and crops it to a square in the `ImageCropper` component (drag to position, zoom buttons).
-2. The crop is exported as PNG (lossless) and scaled down to at most 1024 by 1024 pixels.
-3. The backend strips metadata, applies orientation, and re-encodes it as lossless WebP at maximum compression effort.
-4. Images are stored in the MongoDB `profile_pictures` collection and served with long-lived cache headers.
-
-Uploads are limited to 3 MB to stay under the Vercel request size limit.
-
-## Receipt Scanning
-
-`POST /api/receipts/parse` sends the receipt image to Google Gemini and returns the store, date, line items, subtotal, tax, and total. Each item gets an `id` (`item_1`, `item_2`, ...) for assigning roommates, and `warnings` lists any totals that don't add up so the user can double-check before splitting.
-
-To try it on an image without the frontend, put the image in `sample-receipts/` (ignored by git, since receipts can show card digits) and run from `backend/`:
-
-```
-uv run python scripts/parse_receipt.py ../sample-receipts/costco.jpg
-```
-
-### Splitting
-
-`POST /api/receipts/split` previews a split and `POST /api/splits` saves it. Both take the receipt (a parsed receipt, or manually entered items with `id`, `name`, and `total_price`) plus who shares each item:
-
-```json
-{"receipt": {...}, "assignments": {"item_1": ["alex", "sam"], "item_2": ["sachi"]}}
-```
-
-The logged-in user is the payer, and everyone assigned must be the payer or one of their friends. Each item's price is split evenly between its people, and tax goes only on items the receipt taxed, found by matching the tax total against each group of tax codes (the letters after prices). If that is ambiguous, tax is spread across all items by price and `tax_note` says so. All math is in cents, so everyone's totals add up exactly to the receipt.
-
-### Friends and Balances
-
-Friendships are mutual and stored in the `friendships` collection. Saved splits go in the `splits` collection, one document per receipt. Payments go in the `payments` collection. Balances are not stored; `GET /api/friends` adds them up from saved splits and payments, so the history always explains the totals.
-
-### Groups and Shopping Lists
-
-Groups (`/api/groups`) are a set of friends, stored in the `groups` collection. The person who makes a group can edit or delete it; everyone else can leave it.
-
-Shopping lists (`/api/shopping-lists`) are stored in the `shopping_lists` collection. A list is either personal or belongs to one group, and each group can have one list. On a group list, every item records who asked for it. Crossing an item off keeps it on the list; only removing an item deletes it.
-
-When a split is made with a group, Gemini matches the receipt items to the open items on the group's list. `POST /api/groups/<id>/match-items` returns who each receipt item belongs to, so the app can assign people automatically. Saving the split with `group_id` crosses the matched items off the list and notifies the people who asked for them. `crossed_off_items` in the response lists what was crossed off.
-
-### Pantry, Trips, and Budgets
-
-Crossing an item off a list, by hand or through a split, stocks it in that list's pantry. Marking a pantry item "running low" puts it back on the list for the person who asked for it.
-
-A group member can start a shopping trip (`POST /api/groups/<id>/trip`). The group is notified, and the list can be filtered to items for that store. The trip ends when the shopper logs a split with the group, or after four hours.
-
-Groups can have a monthly budget. `GET /api/groups` includes `month_spent`, and members are notified when a split takes the group past 80% and 100% of the budget.
-
-### Disputes
-
-Anyone on a split can say they didn't get an item (`POST /api/splits/<id>/disputes`). The person who made or paid for the split is notified and can take the item off that person's share or keep it.
-
-### Payment Confirmation
-
-When someone records that they paid a friend, the payment stays pending until the friend confirms it (`POST /api/payments/<id>/confirm`). Pending payments don't count toward balances. Payments recorded by the person who got paid are confirmed right away.
-
-### Monthly Report
-
-`GET /api/splits/report.pdf?month=YYYY-MM` returns a PDF of that month's grocery runs and your share of each, for reimbursements. It's under Settings > History.
-
-### Email Notifications
-
-Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the web app. `emailed_usernames` in the response says who was emailed. Recording a payment with `direction: "paid"` emails the person who got paid ("Alex paid you $7.07"), with what's still owed; `recipient_emailed` in the response says whether it went out. Payments recorded as `"received"` send nothing, since the person recording them already knows. If email isn't configured or sending fails, the split is still saved; the error is only logged.
-
-### Settling Up
-
-`POST /api/payments` records money changing hands. `direction` is `"paid"` (you paid the friend) or `"received"` (the friend paid you), and either friend can record it. Partial payments and overpaying are allowed; paying more than you owe leaves a credit. A `"paid"` payment waits for the friend to confirm it (see Payment Confirmation).
-
-When you owe a friend who has set their Venmo or PayPal.me name, their entry in `GET /api/friends` includes `venmo_pay_url` and `paypal_pay_url`, which open the payment with the amount filled in. Opening a link doesn't record anything; record the payment afterwards with `POST /api/payments`.
-
-## Backend Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `APP_NAME` | API name |
-| `ENVIRONMENT` | `development` or `production` |
-| `ALLOWED_ORIGINS` | Comma separated frontend URLs |
-| `MONGODB_URI` | MongoDB connection string |
-| `MONGODB_DATABASE_NAME` | Database name |
-| `JWT_SECRET_KEY` | Long random string, required when `ENVIRONMENT=production` |
-| `JWT_EXPIRATION_MINUTES` | Token lifetime, default 10080 (7 days) |
-| `GEMINI_API_KEY` | Google Gemini key for receipt scanning, free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
-| `GEMINI_MODEL` | Gemini model for receipt scanning, default `gemini-flash-latest` |
-| `EMAIL_SENDER_ADDRESS` | Gmail address that sends "you owe" emails; leave blank to skip emails |
-| `EMAIL_APP_PASSWORD` | 16-character Gmail app password from [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) (needs 2-Step Verification) |
-| `SMTP_HOST` / `SMTP_PORT` | Email server, default `smtp.gmail.com` / `587` |
-| `APP_URL` | Frontend URL for links in emails, default `https://grosharey-frontend.vercel.app` |
-| `GEMINI_FALLBACK_MODEL` | Model tried once when `GEMINI_MODEL` is overloaded, default `gemini-flash-lite-latest` |
-
-Generate a secret key with `openssl rand -hex 32`.
-
-## Adding a service
-
-1. Model in `backend/server/models/`
-2. Repository in `backend/server/repositories/`
-3. Service in `backend/server/services/`
-4. Blueprint in `backend/server/routes/` and register in `routes/__init__.py`
-5. Frontend calls in `frontend/src/api/` and a hook in `frontend/src/hooks/`
-
-## Deploying to Vercel
-
-Create two Vercel projects from this repository.
-
-| Project  | Root Directory | Framework Preset | Environment Variables |
-|----------|----------------|------------------|-----------------------|
-| Backend  | `backend`      | Flask            | All backend variables above, with `ENVIRONMENT=production` |
-| Frontend | `frontend`     | Other            | `EXPO_PUBLIC_API_URL` (backend URL) and `EXPO_PUBLIC_APP_URL` (frontend URL), both Config type |
-
-The backend installs from `pyproject.toml` and `uv.lock`. The frontend installs with `bun install` and builds with `bunx expo export --platform web`, as set in `frontend/vercel.json`.
-
-Commit `backend/uv.lock`, `bun.lock`, and `frontend/bun.lock` so Vercel installs the same versions.
-
-For MongoDB Atlas, allow access from anywhere (`0.0.0.0/0`) under Network Access, since Vercel functions do not have fixed IP addresses.
+Fill in `backend/.env` with a MongoDB connection string and a free [Gemini API key](https://aistudio.google.com/apikey). An [ElevenLabs](https://elevenlabs.io/) key is optional and gives the voice assistant its voice. To try it on your phone, run `bun run dev:mobile` and scan the QR code with Expo Go.

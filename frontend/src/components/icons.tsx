@@ -104,6 +104,14 @@ export const DownloadIcon = () => <Icon icon="mdi:file-pdf-box" width="1em" aria
 
 export const ScanQrIcon = () => <Icon icon="mdi:qrcode-scan" width="1em" aria-hidden="true" />;
 
+export const MicrophoneIcon = () => <Icon icon="mdi:microphone" width="1em" aria-hidden="true" />;
+
+export const AssistantIcon = () => <Icon icon="mdi:microphone-message" width={40} aria-hidden="true" />;
+
+export const StopIcon = () => <Icon icon="mdi:stop" width="1em" aria-hidden="true" />;
+
+export const ReminderIcon = () => <Icon icon="mdi:bell-badge-outline" width="1em" aria-hidden="true" />;
+
 export const DeleteIcon = () => <Icon icon="mdi:trash-can-outline" width="1em" aria-hidden="true" />;
 
 export const MatchItemsIcon = () => <Icon icon="mdi:auto-fix" width="1em" aria-hidden="true" />;

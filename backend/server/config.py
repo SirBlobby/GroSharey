@@ -25,6 +25,10 @@ class Settings:
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
     gemini_fallback_model: str = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-flash-lite-latest")
+    elevenlabs_api_key: str = os.getenv("ELEVENLABS_API_KEY", "").strip()
+    elevenlabs_voice_id: str = os.getenv("ELEVENLABS_VOICE_ID") or "JBFqnCBsd6RMkjVDRZzb"
+    elevenlabs_speech_model: str = os.getenv("ELEVENLABS_SPEECH_MODEL") or "eleven_flash_v2_5"
+    elevenlabs_transcription_model: str = os.getenv("ELEVENLABS_TRANSCRIPTION_MODEL") or "scribe_v1"
     email_sender_address: str = os.getenv("EMAIL_SENDER_ADDRESS", "")
     email_app_password: str = os.getenv("EMAIL_APP_PASSWORD", "").replace(" ", "")
     smtp_host: str = os.getenv("SMTP_HOST", "smtp.gmail.com")

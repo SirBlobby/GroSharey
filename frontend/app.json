@@ -26,6 +26,12 @@
         {
           "photosPermission": "GroSharey uses your photos to set your profile picture."
         }
+      ],
+      [
+        "expo-audio",
+        {
+          "microphonePermission": "GroSharey uses your microphone so you can add list items and ask about balances by voice."
+        }
       ]
     ]
   }

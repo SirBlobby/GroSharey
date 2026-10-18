@@ -3,6 +3,7 @@ import { ReactNode } from "react";
 import type { Friend } from "../types";
 import { money } from "../utils";
 import PaymentForm from "./PaymentForm";
+import ReminderButton from "./payments/ReminderButton";
 import "../styles/payments.css";
 
 type BalanceCardProps = {
@@ -64,6 +65,14 @@ export default function BalanceCard({ friend, onSettleUp, waitingAmount = 0, hea
           </a>
         )}
         <PaymentForm key={`${friend.username}:${friend.balance}`} friend={friend} onRecordPayment={onSettleUp} />
+        {!youOweFriend && (
+          <ReminderButton
+            key={friend.username}
+            usernames={[friend.username]}
+            label={`Remind ${friend.name}`}
+            className="reminder--balance"
+          />
+        )}
       </div>
     </div>
   );

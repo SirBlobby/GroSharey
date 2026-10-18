@@ -7,3 +7,10 @@ export type FriendResponse = PublicProfile & {
   venmo_pay_url: string | null;
   paypal_pay_url: string | null;
 };
+
+export type ReminderResult = {
+  reminded: string[];
+  reminded_recently: string[];
+  next_reminder_times: Record<string, string>;
+  emailed: string[];
+};

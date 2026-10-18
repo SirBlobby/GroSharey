@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { SettingsSection } from "../components/settings/settingsSections";
+import VoiceAssistantPanel from "../components/assistant/VoiceAssistantPanel";
 import NotificationToasts from "../components/notifications/NotificationToasts";
 import { useAuth } from "../hooks/useAuth";
 import { useFriends } from "../hooks/useFriends";
@@ -44,6 +45,7 @@ export default function AppNavigator() {
   const groupList = useGroups();
   const pendingPayments = usePendingPayments(currentUser?.username ?? "");
   const [currentPage, setCurrentPage] = useState<AppPage>(getInitialPage);
+  const [isAssistantOpen, setIsAssistantOpen] = useState(false);
 
   const assignableFriends = currentUser
     ? [convertUserToFriend(currentUser), ...friendList.friends]
@@ -99,6 +101,12 @@ export default function AppNavigator() {
   async function confirmPayment(paymentId: string) {
     await pendingPayments.confirmPayment(paymentId);
     await friendList.refreshFriends();
+  }
+
+  function refreshAfterAssistant() {
+    groupList.refreshGroups();
+    friendList.refreshFriends();
+    pendingPayments.refreshPendingPayments();
   }
 
   function showShoppingLists(listId: string | null) {
@@ -220,6 +228,7 @@ export default function AppNavigator() {
             onManual={startManualEntry}
             onShowSettings={() => showSettings("profile")}
             onShowShoppingLists={() => showShoppingLists(null)}
+            onShowAssistant={() => setIsAssistantOpen(true)}
             groups={groupList.groups}
             onOpenShoppingList={showShoppingLists}
             onManageGroups={() => showSettings("groups")}
@@ -236,6 +245,9 @@ export default function AppNavigator() {
   return (
     <>
       {renderCurrentPage()}
+      {isAssistantOpen && (
+        <VoiceAssistantPanel onDataChanged={refreshAfterAssistant} onClose={() => setIsAssistantOpen(false)} />
+      )}
       <NotificationToasts
         toasts={notificationCenter.toasts}
         onOpenNotification={openNotification}

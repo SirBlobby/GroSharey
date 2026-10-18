@@ -88,6 +88,16 @@ def test_dispute(tester: ApiTester, split: dict) -> None:
     tester.check("balance drops after the item is removed", bob_balance["balance"] == 0)
 
 
+def test_reminders(tester: ApiTester) -> None:
+    first = tester.request("POST", "/api/friends/reminders", ALICE, {"usernames": None})
+    tester.check("reminder goes to friends who owe", first["reminded"] == [CAROL])
+    second = tester.request("POST", "/api/friends/reminders", ALICE, {"usernames": [CAROL]})
+    tester.check("a second reminder waits 24 hours", second["reminded_recently"] == [CAROL] and second["reminded"] == [])
+    tester.check("the app says when the next reminder is allowed", CAROL in second["next_reminder_times"])
+    carol_notifications = tester.request("GET", "/api/notifications", CAROL)["notifications"]
+    tester.check("friend is notified about the reminder", any("sent a reminder" in n["description"] for n in carol_notifications))
+
+
 def test_payment_confirmation(tester: ApiTester) -> None:
     payment = tester.request("POST", "/api/payments", CAROL, {"friend_username": ALICE, "amount": 2, "direction": "paid"}, 201)
     tester.check("a payment the payer records starts pending", payment["status"] == "pending")
@@ -118,6 +128,7 @@ def main() -> int:
         split = test_trip_and_budget(tester, group, shopping_list)
         test_pantry(tester, shopping_list)
         test_dispute(tester, split)
+        test_reminders(tester)
         test_payment_confirmation(tester)
         test_pdf_export(tester)
     finally:

@@ -1,8 +1,8 @@
 from flask import Blueprint, g, jsonify, request
 
 from server.authentication import require_authentication
-from server.dependencies import get_friend_service
-from server.models.friend_models import AddFriendRequest
+from server.dependencies import get_friend_service, get_payment_reminder_service
+from server.models.friend_models import AddFriendRequest, ReminderRequest
 
 friend_blueprint = Blueprint("friends", __name__, url_prefix="/api/friends")
 
@@ -27,3 +27,11 @@ def add_friend():
 def remove_friend(username: str):
     get_friend_service().remove_friend(g.current_user.id, username.strip().lower())
     return "", 204
+
+
+@friend_blueprint.post("/reminders")
+@require_authentication
+def remind_friends():
+    reminder_request = ReminderRequest.model_validate(request.get_json(silent=True) or {})
+    reminder_result = get_payment_reminder_service().remind(g.current_user, reminder_request.usernames)
+    return jsonify(reminder_result.model_dump(mode="json"))

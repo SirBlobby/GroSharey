@@ -5,7 +5,9 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import NativeQrScanner from "./src/native/NativeQrScanner";
 import NativeReceiptCamera from "./src/native/NativeReceiptCamera";
+import NativeVoiceRecorder from "./src/native/NativeVoiceRecorder";
 import { useNativeCameras } from "./src/native/useNativeCameras";
+import { useNativeVoice } from "./src/native/useNativeVoice";
 import WebApp from "./src/WebApp";
 
 const DEFAULT_PAGE_COLOR = "#25a18e";
@@ -21,6 +23,7 @@ function MobileApp() {
   const updatePageColor = useCallback((nextPageColor: string) => setPageColor(nextPageColor), []);
   const pageBackground = { backgroundColor: pageColor };
   const nativeCameras = useNativeCameras();
+  const nativeVoice = useNativeVoice();
 
   return (
     <SafeAreaProvider>
@@ -28,6 +31,7 @@ function MobileApp() {
         <WebApp
           captureReceiptImage={nativeCameras.captureReceiptImage}
           scanQrCode={nativeCameras.scanQrCode}
+          recordVoice={nativeVoice.recordVoice}
           onPageColorChange={updatePageColor}
           dom={{
             useExpoDOMWebView: false,
@@ -35,6 +39,7 @@ function MobileApp() {
             style: [styles.webApp, pageBackground],
             mediaCapturePermissionGrantType: "grant",
             allowsInlineMediaPlayback: true,
+            mediaPlaybackRequiresUserAction: false,
             bounces: false,
             overScrollMode: "never",
           }}
@@ -48,6 +53,11 @@ function MobileApp() {
           isVisible={nativeCameras.isQrScannerOpen}
           onScanned={nativeCameras.finishQrScan}
           onCancel={() => nativeCameras.finishQrScan(null)}
+        />
+        <NativeVoiceRecorder
+          isVisible={nativeVoice.isRecorderOpen}
+          onRecorded={nativeVoice.finishRecording}
+          onCancel={() => nativeVoice.finishRecording(null)}
         />
         <StatusBar style="light" />
       </SafeAreaView>

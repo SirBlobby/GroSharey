@@ -19,3 +19,14 @@
   .pending-payment { flex-wrap: wrap; }
   .btn.pending-payment-confirm { flex-basis: 100%; }
 }
+
+.reminder { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.reminder-button {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--color-surface); border: 3px solid var(--color-info); border-radius: var(--radius-small);
+  padding: 6px 12px; font-weight: 600; font-size: 1.05rem; color: var(--color-info);
+}
+.reminder-button:hover:not(:disabled) { background: var(--color-info); color: var(--color-on-strong); }
+.reminder-status { margin: 0; font-size: 0.95rem; font-weight: 600; text-align: center; color: var(--color-heading); }
+.reminder--friends { width: 100%; margin-top: 12px; }
+.reminder--balance { margin-top: 10px; }

@@ -13,8 +13,11 @@ from server.repositories.shopping_list_repository import ShoppingListRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.account_service import AccountService
+from server.services.assistant.assistant_context import AssistantServices
+from server.services.assistant.assistant_service import AssistantService
 from server.services.audit_log_service import AuditLogService
 from server.services.auth_service import AuthService
+from server.services.elevenlabs_client import ElevenLabsClient
 from server.services.email_service import EmailService
 from server.services.friend_service import FriendService
 from server.services.gemini_client import GeminiClient
@@ -23,6 +26,7 @@ from server.services.group_trip_service import GroupTripService
 from server.services.item_matching_service import ItemMatchingService
 from server.services.notification_service import NotificationService
 from server.services.pantry_service import PantryService
+from server.services.payment_reminder_service import PaymentReminderService
 from server.services.payment_service import PaymentService
 from server.services.profile_service import ProfileService
 from server.services.receipt_image_service import ReceiptImageService
@@ -206,3 +210,32 @@ def get_group_trip_service() -> GroupTripService:
 @lru_cache
 def get_split_report_service() -> SplitReportService:
     return SplitReportService(get_split_repository())
+
+
+@lru_cache
+def get_assistant_service() -> AssistantService:
+    elevenlabs_client = ElevenLabsClient(
+        settings.elevenlabs_api_key,
+        settings.elevenlabs_voice_id,
+        settings.elevenlabs_speech_model,
+        settings.elevenlabs_transcription_model,
+    )
+    assistant_services = AssistantServices(
+        shopping_list_service=get_shopping_list_service(),
+        pantry_service=get_pantry_service(),
+        group_service=get_group_service(),
+        group_trip_service=get_group_trip_service(),
+        friend_service=get_friend_service(),
+        payment_service=get_payment_service(),
+        payment_reminder_service=get_payment_reminder_service(),
+        split_service=get_split_service(),
+        split_dispute_service=get_split_dispute_service(),
+    )
+    return AssistantService(get_gemini_client(), elevenlabs_client, assistant_services)
+
+
+@lru_cache
+def get_payment_reminder_service() -> PaymentReminderService:
+    return PaymentReminderService(
+        get_friend_service(), get_friendship_repository(), get_notification_service(), get_audit_log_service()
+    )

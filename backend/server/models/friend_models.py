@@ -1,4 +1,6 @@
-from pydantic import BaseModel, field_validator
+from datetime import datetime
+
+from pydantic import BaseModel, Field, field_validator
 
 from server.models.user_models import PublicProfile
 
@@ -20,3 +22,14 @@ class Friend(PublicProfile):
     # Set only when you owe this friend and they've added that handle; opens the payment with the amount filled in.
     venmo_pay_url: str | None = None
     paypal_pay_url: str | None = None
+
+
+class ReminderRequest(BaseModel):
+    usernames: list[str] | None = Field(default=None, max_length=50)
+
+
+class ReminderResult(BaseModel):
+    reminded: list[str]
+    reminded_recently: list[str]
+    next_reminder_times: dict[str, datetime]
+    emailed: list[str]

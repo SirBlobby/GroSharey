@@ -38,18 +38,26 @@ class GeminiClient:
         contents: list,
         config: types.GenerateContentConfig,
         error_messages: GeminiErrorMessages,
+        fall_back_when_rate_limited: bool = False,
     ) -> types.GenerateContentResponse:
         """Tries each model once. Only moves on when Gemini is overloaded (5xx); rate limits
         and bad requests stop immediately so retries don't burn free-tier quota."""
         client = self.get_client(error_messages)
+        was_rate_limited = False
         for model in self.gemini_models:
             try:
                 return client.models.generate_content(model=model, contents=contents, config=config)
             except gemini_errors.ServerError as error:
                 logger.warning("Gemini model %s unavailable (%s %s)", model, error.code, error.status)
             except gemini_errors.APIError as error:
+                if error.code == 429 and fall_back_when_rate_limited:
+                    logger.warning("Gemini model %s is rate limited, trying the next model", model)
+                    was_rate_limited = True
+                    continue
                 if error.code == 429:
                     raise RateLimitError(error_messages.rate_limited)
                 logger.exception("Gemini request to %s failed", model)
                 raise ExternalServiceError(error_messages.failed)
+        if was_rate_limited:
+            raise RateLimitError(error_messages.rate_limited)
         raise ExternalServiceError(error_messages.busy)

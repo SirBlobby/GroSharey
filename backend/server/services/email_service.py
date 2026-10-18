@@ -9,11 +9,19 @@ SMTP_TIMEOUT_SECONDS = 10
 
 
 @dataclass(frozen=True)
+class InlineImage:
+    content_id: str
+    data: bytes
+    subtype: str = "png"
+
+
+@dataclass(frozen=True)
 class OutgoingEmail:
     to_address: str
     subject: str
     text_body: str
     html_body: str
+    inline_images: tuple[InlineImage, ...] = ()
 
 
 class EmailService:
@@ -60,4 +68,14 @@ class EmailService:
         message["Subject"] = outgoing_email.subject
         message.set_content(outgoing_email.text_body)
         message.add_alternative(outgoing_email.html_body, subtype="html")
+        html_part = message.get_payload()[-1]
+        for inline_image in outgoing_email.inline_images:
+            html_part.add_related(
+                inline_image.data,
+                maintype="image",
+                subtype=inline_image.subtype,
+                cid=f"<{inline_image.content_id}>",
+                disposition="inline",
+                filename=f"{inline_image.content_id}.{inline_image.subtype}",
+            )
         return message

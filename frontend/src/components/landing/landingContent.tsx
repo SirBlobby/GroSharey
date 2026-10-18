@@ -10,7 +10,9 @@ import {
   GroupsIcon,
   HistoryIcon,
   MatchItemsIcon,
+  MicrophoneIcon,
   PantryIcon,
+  ReminderIcon,
   ScanQrIcon,
   ShoppingListIcon,
   TripIcon,
@@ -56,6 +58,11 @@ export const LANDING_FEATURES: LandingFeature[] = [
     description: "Add a group to a split and \"GV 2% MLK\" goes to whoever wanted milk. Bought items get crossed off the list.",
   },
   {
+    icon: <MicrophoneIcon />,
+    title: "Voice assistant",
+    description: "Say \"add eggs for Sam\" or \"who owes me money?\" and groSharey answers out loud.",
+  },
+  {
     icon: <GroupsIcon />,
     title: "Groups and shared lists",
     description: "One shopping list per group, with stores and notes on each item. Crossed-off items stay as history.",
@@ -81,6 +88,11 @@ export const LANDING_FEATURES: LandingFeature[] = [
     description: "Tax lands only on taxed items and leftover cents are shared fairly, so every split adds up.",
   },
   {
+    icon: <ReminderIcon />,
+    title: "Payment reminders",
+    description: "Nudge a roommate who still owes you with one tap. They get a notification and an email with a pay link.",
+  },
+  {
     icon: <DisputeIcon />,
     title: "Item disputes",
     description: "Didn't get something? Flag it, and whoever made the split can take it off your share.",
@@ -103,7 +115,7 @@ export const LANDING_FEATURES: LandingFeature[] = [
   {
     icon: <BellAlertIcon />,
     title: "Notifications",
-    description: "Get notified when you're added to a split, someone buys your item, or a roommate pays you back.",
+    description: "Get notified in the app and by email when you're added to a split, someone buys your item, or a roommate pays you back.",
   },
   {
     icon: <ShoppingListIcon />,

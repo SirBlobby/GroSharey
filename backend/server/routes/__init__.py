@@ -1,5 +1,6 @@
 from flask import Flask
 
+from server.routes.assistant_routes import assistant_blueprint
 from server.routes.audit_routes import audit_blueprint
 from server.routes.auth_routes import auth_blueprint
 from server.routes.friend_routes import friend_blueprint
@@ -27,3 +28,4 @@ def register_routes(application: Flask) -> None:
     application.register_blueprint(payment_blueprint)
     application.register_blueprint(audit_blueprint)
     application.register_blueprint(notification_blueprint)
+    application.register_blueprint(assistant_blueprint)
