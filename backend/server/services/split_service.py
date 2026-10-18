@@ -8,8 +8,19 @@ to the receipt.
 from itertools import combinations
 
 from server.errors import BadRequestError
-from server.models.receipt_models import ParsedReceipt, ParsedReceiptItem
-from server.models.split_models import ItemShare, PersonSplit, SplitResult
+from server.models.split_models import (
+    ItemShare,
+    PersonSplit,
+    SavedSplit,
+    SplitReceipt,
+    SplitReceiptItem,
+    SplitRequest,
+    SplitResult,
+)
+from server.models.user_models import User
+from server.repositories.friendship_repository import FriendshipRepository
+from server.repositories.split_repository import SplitRepository
+from server.repositories.user_repository import UserRepository
 
 # Real tax rates are round numbers (6%, 7.25%, 5.3%, 8.875%). Rounder rates are checked
 # first, so "6% on some items" wins over "4.325% on everything" when both fit.
@@ -55,7 +66,7 @@ def rate_fits(tax_cents: int, taxed_cents: int, rate_step: float) -> bool:
     return MIN_TAX_RATE <= rate <= MAX_TAX_RATE and abs(taxed_cents * rate - tax_cents) <= 1
 
 
-def find_taxed_items(items: list[ParsedReceiptItem], tax_cents: int) -> tuple[list[bool], str | None]:
+def find_taxed_items(items: list[SplitReceiptItem], tax_cents: int) -> tuple[list[bool], str | None]:
     """Works out which items the receipt's tax applies to, using the printed tax codes.
 
     Returns one flag per item, plus a note if it had to fall back to taxing everything.
@@ -91,7 +102,11 @@ def find_taxed_items(items: list[ParsedReceiptItem], tax_cents: int) -> tuple[li
     return [True] * len(items), UNCLEAR_TAX_NOTE
 
 
-def split_receipt(receipt: ParsedReceipt, assignments: dict[str, list[str]], payer: str) -> SplitResult:
+def normalize_username(username: str) -> str:
+    return username.strip().lower()
+
+
+def split_receipt(receipt: SplitReceipt, assignments: dict[str, list[str]], payer: str) -> SplitResult:
     items_by_id = {item.id: item for item in receipt.items}
 
     unknown_item_ids = sorted(set(assignments) - set(items_by_id))
@@ -113,7 +128,7 @@ def split_receipt(receipt: ParsedReceipt, assignments: dict[str, list[str]], pay
     for item, price_cents, tax_share_cents, tip_share_cents in zip(
         receipt.items, item_cents, item_tax_cents, item_tip_cents
     ):
-        usernames = list(dict.fromkeys(username.strip().lower() for username in assignments[item.id]))
+        usernames = list(dict.fromkeys(normalize_username(username) for username in assignments[item.id]))
         even_weights = [1] * len(usernames)
         price_parts = allocate_cents(price_cents, even_weights)
         tax_parts = allocate_cents(tax_share_cents, even_weights)
@@ -154,3 +169,49 @@ def split_receipt(receipt: ParsedReceipt, assignments: dict[str, list[str]], pay
         total=to_dollars(sum(item_cents) + tax_cents + to_cents(receipt.tip)),
         tax_note=tax_note,
     )
+
+
+class SplitService:
+    def __init__(
+        self,
+        user_repository: UserRepository,
+        friendship_repository: FriendshipRepository,
+        split_repository: SplitRepository,
+    ):
+        self.user_repository = user_repository
+        self.friendship_repository = friendship_repository
+        self.split_repository = split_repository
+
+    def find_participant_ids(self, assignments: dict[str, list[str]], payer: User) -> dict[str, str]:
+        """username -> user id for everyone assigned. Each must be the payer or the payer's friend."""
+        user_ids_by_username = {payer.username: payer.id}
+        for username in {normalize_username(name) for names in assignments.values() for name in names}:
+            if username in user_ids_by_username:
+                continue
+            stored_user = self.user_repository.find_by_username(username)
+            if stored_user is None:
+                raise BadRequestError(f"No account with username '{username}'")
+            if not self.friendship_repository.are_friends(payer.id, stored_user.id):
+                raise BadRequestError(f"'{username}' isn't in your friends list")
+            user_ids_by_username[username] = stored_user.id
+        return user_ids_by_username
+
+    def preview_split(self, split_request: SplitRequest, payer: User) -> SplitResult:
+        self.find_participant_ids(split_request.assignments, payer)
+        return split_receipt(split_request.receipt, split_request.assignments, payer.username)
+
+    def save_split(self, split_request: SplitRequest, payer: User) -> SavedSplit:
+        user_ids_by_username = self.find_participant_ids(split_request.assignments, payer)
+        split_result = split_receipt(split_request.receipt, split_request.assignments, payer.username)
+        if all(person.owes == 0 for person in split_result.people):
+            raise BadRequestError("Nobody owes anything on this receipt")
+        return self.split_repository.create(
+            payer.id,
+            split_result,
+            user_ids_by_username,
+            split_request.receipt.store_name,
+            split_request.receipt.purchase_date,
+        )
+
+    def list_splits(self, user_id: str) -> list[SavedSplit]:
+        return self.split_repository.list_for_user(user_id)

@@ -20,6 +20,7 @@ entrypoint = "server.main:app"
 
 [dependency-groups]
 dev = [
+    "mongomock==4.3.0",
     "pytest==9.1.1",
 ]
 

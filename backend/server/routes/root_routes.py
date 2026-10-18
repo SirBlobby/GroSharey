@@ -21,7 +21,12 @@ def get_api_overview():
                 "profile_picture": "GET /api/profiles/<username>/picture",
                 "upload_profile_picture": "PUT /api/profiles/me/picture",
                 "parse_receipt": "POST /api/receipts/parse",
-                "split_receipt": "POST /api/receipts/split",
+                "preview_split": "POST /api/receipts/split",
+                "list_friends": "GET /api/friends",
+                "add_friend": "POST /api/friends",
+                "remove_friend": "DELETE /api/friends/<username>",
+                "save_split": "POST /api/splits",
+                "list_splits": "GET /api/splits",
             },
         }
     )

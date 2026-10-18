@@ -127,7 +127,12 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | PUT | `/api/profiles/me/picture` | Yes | Upload profile picture as `{"image_base64": "..."}` |
 | GET | `/api/profiles/<username>/picture` | No | Profile picture image |
 | POST | `/api/receipts/parse` | Yes | Read a receipt photo sent as `{"image_base64": "..."}`, returns items and totals as JSON |
-| POST | `/api/receipts/split` | Yes | Split a parsed receipt between roommates, returns what each person owes the logged-in payer |
+| POST | `/api/receipts/split` | Yes | Preview a split: what each person owes the logged-in payer (nothing is saved) |
+| GET | `/api/friends` | Yes | Your friends, each with `balance` (positive: they owe you, negative: you owe them) |
+| POST | `/api/friends` | Yes | Add a friend as `{"username": "..."}` (mutual) |
+| DELETE | `/api/friends/<username>` | Yes | Remove a friend (past splits are kept) |
+| POST | `/api/splits` | Yes | Confirm and save a split, same body as the preview |
+| GET | `/api/splits` | Yes | Your 50 most recent splits, as payer or participant |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 
@@ -176,13 +181,17 @@ uv run python scripts/parse_receipt.py ../sample-receipts/costco.jpg
 
 ### Splitting
 
-`POST /api/receipts/split` takes the parsed receipt plus who shares each item:
+`POST /api/receipts/split` previews a split and `POST /api/splits` saves it. Both take the receipt (a parsed receipt, or manually entered items with `id`, `name`, and `total_price`) plus who shares each item:
 
 ```json
 {"receipt": {...}, "assignments": {"item_1": ["alex", "sam"], "item_2": ["sachi"]}}
 ```
 
-The logged-in user is the payer. Each item's price is split evenly between its people, and tax goes only on items the receipt taxed, found by matching the tax total against each group of tax codes (the letters after prices). If that is ambiguous, tax is spread across all items by price and `tax_note` says so. All math is in cents, so everyone's totals add up exactly to the receipt.
+The logged-in user is the payer, and everyone assigned must be the payer or one of their friends. Each item's price is split evenly between its people, and tax goes only on items the receipt taxed, found by matching the tax total against each group of tax codes (the letters after prices). If that is ambiguous, tax is spread across all items by price and `tax_note` says so. All math is in cents, so everyone's totals add up exactly to the receipt.
+
+### Friends and Balances
+
+Friendships are mutual and stored in the `friendships` collection. Saved splits go in the `splits` collection, one document per receipt. Balances are not stored; `GET /api/friends` adds them up from the saved splits, so the history always explains the totals.
 
 ## Backend Environment Variables
 

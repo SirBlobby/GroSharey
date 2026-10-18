@@ -49,6 +49,11 @@ class UserRepository:
         user_document = self.users_collection.find_one({"_id": ObjectId(user_id)})
         return convert_document_to_user(user_document) if user_document else None
 
+    def find_by_ids(self, user_ids: list[str]) -> list[StoredUser]:
+        object_ids = [ObjectId(user_id) for user_id in user_ids if ObjectId.is_valid(user_id)]
+        user_documents = self.users_collection.find({"_id": {"$in": object_ids}})
+        return [convert_document_to_user(user_document) for user_document in user_documents]
+
     def create(self, email: str, username: str, display_name: str, password_hash: str) -> StoredUser:
         user_document = {
             "email": email,

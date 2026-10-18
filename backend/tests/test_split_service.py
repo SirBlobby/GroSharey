@@ -1,41 +1,16 @@
 import pytest
 
 from server.errors import BadRequestError
-from server.models.receipt_models import ParsedReceipt, ParsedReceiptItem
+from server.models.split_models import SplitReceipt, SplitReceiptItem
 from server.services.split_service import UNCLEAR_TAX_NOTE, allocate_cents, split_receipt
 
 
-def make_item(item_id: str, total_price: float, tax_code: str | None = None) -> ParsedReceiptItem:
-    return ParsedReceiptItem(
-        id=item_id,
-        name=item_id,
-        raw_text=item_id,
-        quantity=1,
-        unit_price=None,
-        discount=0,
-        total_price=total_price,
-        tax_code=tax_code,
-        category="other",
-    )
+def make_item(item_id: str, total_price: float, tax_code: str | None = None) -> SplitReceiptItem:
+    return SplitReceiptItem(id=item_id, name=item_id, total_price=total_price, tax_code=tax_code)
 
 
-def make_receipt(items: list[ParsedReceiptItem], tax: float | None, tip: float | None = None) -> ParsedReceipt:
-    subtotal = round(sum(item.total_price for item in items), 2)
-    return ParsedReceipt(
-        store_name="Test",
-        store_address=None,
-        purchase_date=None,
-        purchase_time=None,
-        currency="USD",
-        items=items,
-        subtotal=subtotal,
-        tax=tax,
-        tip=tip,
-        total=round(subtotal + (tax or 0) + (tip or 0), 2),
-        payment_method=None,
-        notes=None,
-        warnings=[],
-    )
+def make_receipt(items: list[SplitReceiptItem], tax: float | None, tip: float | None = None) -> SplitReceipt:
+    return SplitReceipt(items=items, tax=tax, tip=tip)
 
 
 def people_by_name(result):
