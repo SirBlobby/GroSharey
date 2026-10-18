@@ -18,6 +18,7 @@ class SplitReceipt(BaseModel):
     items: list[SplitReceiptItem] = Field(min_length=1)
     tax: float | None = None
     tip: float | None = None
+    receipt_image_id: str | None = None
 
 
 class SplitRequest(BaseModel):
@@ -57,6 +58,7 @@ class SavedSplit(SplitResult):
     id: str
     store_name: str | None
     purchase_date: str | None
+    receipt_image_id: str | None = None
     created_at: datetime
     # Who was emailed about this split when it was saved (empty when listing past splits).
     emailed_usernames: list[str] = []

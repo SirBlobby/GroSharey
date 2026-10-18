@@ -41,3 +41,15 @@ export const CalendarIcon = () => <Icon icon="mdi:calendar-month-outline" width=
 export const StoreIcon = () => <Icon icon="mdi:storefront-outline" width="1em" aria-hidden="true" />;
 
 export const LocationIcon = () => <Icon icon="mdi:map-marker-outline" width="1em" aria-hidden="true" />;
+
+export const ZoomInIcon = () => <Icon icon="mdi:magnify-plus-outline" width="1em" aria-hidden="true" />;
+
+export const ZoomOutIcon = () => <Icon icon="mdi:magnify-minus-outline" width="1em" aria-hidden="true" />;
+
+export const ViewReceiptIcon = () => <Icon icon="mdi:receipt-text-outline" width="1em" aria-hidden="true" />;
+
+export const HistoryIcon = () => <Icon icon="mdi:history" width="1em" aria-hidden="true" />;
+
+export const ExpandIcon = () => <Icon icon="mdi:chevron-down" width="1em" aria-hidden="true" />;
+
+export const CollapseIcon = () => <Icon icon="mdi:chevron-up" width="1em" aria-hidden="true" />;

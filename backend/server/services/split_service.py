@@ -22,6 +22,7 @@ from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.notification_service import NotificationService
+from server.services.receipt_image_service import ReceiptImageService
 
 # Real tax rates are round numbers (6%, 7.25%, 5.3%, 8.875%). Rounder rates are checked
 # first, so "6% on some items" wins over "4.325% on everything" when both fit.
@@ -179,11 +180,13 @@ class SplitService:
         friendship_repository: FriendshipRepository,
         split_repository: SplitRepository,
         notification_service: NotificationService,
+        receipt_image_service: ReceiptImageService,
     ):
         self.user_repository = user_repository
         self.friendship_repository = friendship_repository
         self.split_repository = split_repository
         self.notification_service = notification_service
+        self.receipt_image_service = receipt_image_service
 
     def find_friends_assigned(self, assignments: dict[str, list[str]], payer: User) -> dict[str, StoredUser]:
         """username -> account for everyone assigned besides the payer. Each must be the payer's friend."""
@@ -208,6 +211,9 @@ class SplitService:
         split_result = split_receipt(split_request.receipt, split_request.assignments, payer.username)
         if all(person.owes == 0 for person in split_result.people):
             raise BadRequestError("Nobody owes anything on this receipt")
+        receipt_image_id = split_request.receipt.receipt_image_id
+        if receipt_image_id:
+            self.receipt_image_service.ensure_owned_by(receipt_image_id, payer.id)
         user_ids_by_username = {username: friend.id for username, friend in friends_by_username.items()}
         user_ids_by_username[payer.username] = payer.id
         saved_split = self.split_repository.create(
@@ -216,6 +222,7 @@ class SplitService:
             user_ids_by_username,
             split_request.receipt.store_name,
             split_request.receipt.purchase_date,
+            receipt_image_id,
         )
         emailed_usernames = self.notification_service.notify_people_who_owe(saved_split, payer, friends_by_username)
         return saved_split.model_copy(update={"emailed_usernames": emailed_usernames})

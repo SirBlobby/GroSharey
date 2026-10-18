@@ -27,6 +27,7 @@ export function useGroceryRun() {
       storeName: scannedReceipt.storeName,
       storeAddress: scannedReceipt.storeAddress,
       purchaseDate: scannedReceipt.purchaseDate,
+      receiptImageId: scannedReceipt.receiptImageId,
       tax: scannedReceipt.tax,
       tip: scannedReceipt.tip,
       warnings: scannedReceipt.warnings,

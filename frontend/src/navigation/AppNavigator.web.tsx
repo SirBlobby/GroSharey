@@ -12,6 +12,7 @@ import MainScreen from "../screens/MainScreen";
 import ManageItemsScreen from "../screens/ManageItemsScreen";
 import ScanReceiptScreen from "../screens/ScanReceiptScreen";
 import SettingsScreen from "../screens/SettingsScreen";
+import SplitHistoryScreen from "../screens/SplitHistoryScreen";
 import { convertUserToFriend } from "../services/friends";
 
 type AppPage =
@@ -19,6 +20,7 @@ type AppPage =
   | { name: "scan" }
   | { name: "manage" }
   | { name: "confirmed" }
+  | { name: "history" }
   | { name: "settings"; section: SettingsSection }
   | { name: "profile"; username: string; returnPage: "main" | "settings" };
 
@@ -95,6 +97,8 @@ export default function AppNavigator() {
           onConfirm={confirmGroceryRun}
         />
       );
+    case "history":
+      return <SplitHistoryScreen people={assignableFriends} onBack={showMain} />;
     case "confirmed":
       return <ConfirmedScreen onDone={showMain} />;
     case "settings":
@@ -128,6 +132,7 @@ export default function AppNavigator() {
           onScan={startScan}
           onManual={startManualEntry}
           onShowSettings={() => showSettings("profile")}
+          onShowHistory={() => setCurrentPage({ name: "history" })}
           onLogout={logOut}
         />
       );

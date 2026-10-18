@@ -9,6 +9,7 @@ export interface ScannedReceipt {
   storeName: string | null;
   storeAddress: string | null;
   purchaseDate: string | null;
+  receiptImageId: string | null;
   items: ScannedItem[];
   tax: number | null;
   tip: number | null;
@@ -24,6 +25,7 @@ export async function parseReceipt(imageBase64: string): Promise<ScannedReceipt>
     storeName: receipt.store_name,
     storeAddress: receipt.store_address,
     purchaseDate: receipt.purchase_date,
+    receiptImageId: receipt.receipt_image_id,
     items: receipt.items.map((item) => ({
       id: uid(),
       name: item.name,

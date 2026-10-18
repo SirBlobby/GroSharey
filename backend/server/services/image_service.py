@@ -10,6 +10,8 @@ from server.models.profile_picture_models import MAX_PROFILE_PICTURE_BYTES
 ALLOWED_IMAGE_FORMATS = {"JPEG", "PNG", "WEBP", "GIF", "BMP", "TIFF"}
 MAX_IMAGE_DIMENSION = 1024
 COMPRESSED_IMAGE_CONTENT_TYPE = "image/webp"
+MAX_RECEIPT_DIMENSION = 1600
+RECEIPT_IMAGE_QUALITY = 60
 
 
 def decode_base64_image(image_base64: str) -> bytes:
@@ -40,4 +42,12 @@ def compress_image_losslessly(image_bytes: bytes) -> bytes:
     target_mode = "RGBA" if image.mode in ("RGBA", "LA", "P") else "RGB"
     output_buffer = BytesIO()
     image.convert(target_mode).save(output_buffer, format="WEBP", lossless=True, quality=100, method=6)
+    return output_buffer.getvalue()
+
+
+def compress_receipt_image(image_bytes: bytes) -> bytes:
+    image = ImageOps.exif_transpose(open_image(image_bytes))
+    image.thumbnail((MAX_RECEIPT_DIMENSION, MAX_RECEIPT_DIMENSION))
+    output_buffer = BytesIO()
+    image.convert("L").save(output_buffer, format="WEBP", quality=RECEIPT_IMAGE_QUALITY, method=6)
     return output_buffer.getvalue()

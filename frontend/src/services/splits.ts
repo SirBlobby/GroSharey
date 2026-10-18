@@ -6,6 +6,7 @@ export type ReceiptDetails = {
   storeName: string | null;
   storeAddress: string | null;
   purchaseDate: string | null;
+  receiptImageId: string | null;
   tax: number | null;
   tip: number | null;
   warnings: string[];
@@ -15,6 +16,7 @@ export const EMPTY_RECEIPT_DETAILS: ReceiptDetails = {
   storeName: null,
   storeAddress: null,
   purchaseDate: null,
+  receiptImageId: null,
   tax: null,
   tip: null,
   warnings: [],
@@ -43,6 +45,7 @@ function buildSplitRequest(items: Item[], receiptDetails: ReceiptDetails): Split
       purchase_date: receiptDetails.purchaseDate,
       tax: receiptDetails.tax,
       tip: receiptDetails.tip,
+      receipt_image_id: receiptDetails.receiptImageId,
       items: items.map((item) => ({
         id: item.id,
         name: item.name.trim(),

@@ -50,3 +50,4 @@ class ParsedReceipt(Receipt):
 
     items: list[ParsedReceiptItem]
     warnings: list[str]
+    receipt_image_id: str | None = None

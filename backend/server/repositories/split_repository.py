@@ -17,6 +17,7 @@ def convert_document_to_split(split_document: dict) -> SavedSplit:
         tax_note=split_document.get("tax_note"),
         store_name=split_document.get("store_name"),
         purchase_date=split_document.get("purchase_date"),
+        receipt_image_id=split_document.get("receipt_image_id"),
         created_at=split_document["created_at"],
     )
 
@@ -29,6 +30,7 @@ class SplitRepository:
         self.splits_collection = database["splits"]
         self.splits_collection.create_index([("participant_ids", 1), ("created_at", DESCENDING)])
         self.splits_collection.create_index("payer_id")
+        self.splits_collection.create_index("receipt_image_id", sparse=True)
 
     def create(
         self,
@@ -37,6 +39,7 @@ class SplitRepository:
         user_ids_by_username: dict[str, str],
         store_name: str | None,
         purchase_date: str | None,
+        receipt_image_id: str | None,
     ) -> SavedSplit:
         people = split_result.model_dump(mode="json")["people"]
         for person in people:
@@ -52,6 +55,7 @@ class SplitRepository:
             "tax_note": split_result.tax_note,
             "store_name": store_name,
             "purchase_date": purchase_date,
+            "receipt_image_id": receipt_image_id,
             "created_at": datetime.now(timezone.utc),
         }
         insert_result = self.splits_collection.insert_one(split_document)
@@ -65,6 +69,14 @@ class SplitRepository:
             .limit(SPLIT_HISTORY_LIMIT)
         )
         return [convert_document_to_split(split_document) for split_document in split_documents]
+
+    def is_receipt_image_shared_with(self, receipt_image_id: str, user_id: str) -> bool:
+        return (
+            self.splits_collection.find_one(
+                {"receipt_image_id": receipt_image_id, "participant_ids": user_id}, {"_id": 1}
+            )
+            is not None
+        )
 
     def sum_owed_to_payer(self, payer_id: str) -> dict[str, int]:
         """user id -> cents that user owes payer_id, across all of payer_id's splits."""

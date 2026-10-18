@@ -1,9 +1,12 @@
+import { useState } from "react";
+
 import type { ReceiptDetails } from "../services/splits";
 import { estimateShares, sumItemPrices } from "../services/splitEstimate";
 import type { Friend, Item } from "../types";
 import { formatReceiptDate, money } from "../utils";
 import Avatar from "./Avatar";
-import { CalendarIcon, CheckIcon, LocationIcon, StoreIcon } from "./icons";
+import { CalendarIcon, CheckIcon, LocationIcon, StoreIcon, ViewReceiptIcon } from "./icons";
+import ReceiptViewerModal from "./ReceiptViewerModal";
 
 type SplitSummaryProps = {
   items: Item[];
@@ -28,6 +31,7 @@ export default function SplitSummary({
   onToggleOnEveryItem,
   onConfirm,
 }: SplitSummaryProps) {
+  const [isReceiptOpen, setIsReceiptOpen] = useState(false);
   const subtotal = sumItemPrices(items);
   const total = subtotal + (receiptDetails.tax ?? 0) + (receiptDetails.tip ?? 0);
   const unassignedCount = items.filter((item) => item.usernames.length === 0).length;
@@ -67,6 +71,12 @@ export default function SplitSummary({
             </span>
           )}
         </div>
+      )}
+
+      {receiptDetails.receiptImageId && (
+        <button type="button" className="btn view-receipt-button" onClick={() => setIsReceiptOpen(true)}>
+          <ViewReceiptIcon /> View Receipt
+        </button>
       )}
 
       <dl className="summary-totals">
@@ -135,6 +145,13 @@ export default function SplitSummary({
       <button type="button" className="btn summary-confirm" onClick={onConfirm} disabled={isSaving}>
         <CheckIcon /> {isSaving ? "Saving..." : "Confirm Split"}
       </button>
+
+      {isReceiptOpen && receiptDetails.receiptImageId && (
+        <ReceiptViewerModal
+          receiptImageId={receiptDetails.receiptImageId}
+          onClose={() => setIsReceiptOpen(false)}
+        />
+      )}
     </aside>
   );
 }

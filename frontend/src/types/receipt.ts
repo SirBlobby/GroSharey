@@ -24,4 +24,10 @@ export type ParsedReceipt = {
   payment_method: string | null;
   notes: string | null;
   warnings: string[];
+  receipt_image_id: string | null;
+};
+
+export type ReceiptImage = {
+  id: string;
+  image_data_url: string;
 };
