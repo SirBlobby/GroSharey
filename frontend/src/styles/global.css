@@ -65,3 +65,6 @@ h1, h2 { font-family: var(--display); color: var(--forest); margin: 0; font-weig
 }
 .plus:hover { background: var(--navy); }
 :focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+button:disabled { opacity: 0.6; cursor: default; }
+.btn:disabled:hover { background: var(--mint); }
+.error-text { color: var(--red); font-weight: 600; margin: 8px 0; }

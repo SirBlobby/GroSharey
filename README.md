@@ -32,23 +32,42 @@ backend/
 frontend/
   package.json                  JavaScript dependencies (bun)
   bun.lock                      Locked JavaScript versions
-  App.tsx
+  App.tsx                       Native app entry
+  App.web.tsx                   Web app entry (loads fonts and global styles)
   index.ts
   tsconfig.json
   src/
     config/                     Environment values
     api/                        HTTP client and endpoint calls
     context/                    Auth state provider
-    hooks/                      Data hooks
+    hooks/                      Data hooks (friends, grocery runs, receipt scanning)
+    services/                   Converts API responses for the screens, builds split requests
     navigation/                 Shows auth or app screens
     linking/                    Profile QR code links
-    media/                      Image picking, cropping math, and crop export
+    media/                      Image picking, cropping math, crop export, receipt photos
     screens/                    Screens
     components/                 UI components
     storage/                    Token storage (secure store on native, localStorage on web)
+    styles/                     Web stylesheets from the prototype
     types/                      Shared types
-    theme/                      Colors and spacing
+    utils/                      Money formatting, initials, ids
+    theme/                      Colors and spacing for native screens
 ```
+
+### Web and Native Screens
+
+Files ending in `.web.tsx` are used on web instead of the file with the same name. The web app uses the game style screens from `groSharey prototype.html`:
+
+| Page | Screen |
+|------|--------|
+| Log in and create account | `LogInScreen.web.tsx`, `SignUpScreen.web.tsx` |
+| Friends, balances, and settle up | `MainScreen.tsx` |
+| Scan a receipt | `ScanReceiptScreen.tsx` |
+| Edit items and assign friends | `ManageItemsScreen.tsx` |
+| Grocery run saved | `ConfirmedScreen.tsx` |
+| Account, QR code, and profiles | `HomeScreen.tsx`, `MyQrCodeScreen.tsx`, `ProfileScreen.tsx` inside `CardScreen` |
+
+The iOS and Android apps still use the basic account screens.
 
 ## Root Commands
 

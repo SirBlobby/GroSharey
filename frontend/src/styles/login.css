@@ -1,11 +1,23 @@
-.login { align-items: center; justify-content: center; }
-.login .card { width: min(470px, 100%); text-align: center; padding: 44px 24px 80px; }
+.login { align-items: center; justify-content: safe center; overflow: auto; }
+.login .card { width: min(470px, 100%); text-align: center; padding: 44px 24px 36px; }
 .login .welcome { font-size: 1.7rem; font-weight: 600; margin: 0; }
 .login h1 { font-size: clamp(3rem, 10vw, 4.6rem); margin: 14px 0 30px; }
-.login .tag { font-size: 1.6rem; font-weight: 600; line-height: 1.1; margin: 0 0 64px; }
+.login .tag { font-size: 1.6rem; font-weight: 600; line-height: 1.1; margin: 0 0 32px; }
 .google {
   display: inline-flex; align-items: center; gap: 14px;
   background: #fff; border: 1px solid #999; border-radius: 12px;
   padding: 20px 34px;
   font-family: 'Outfit', sans-serif; font-size: 1.4rem; color: #222;
+}
+.auth-form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
+.auth-field { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 1.2rem; }
+.auth-field input {
+  font: 600 1.2rem var(--body); color: var(--navy);
+  background: #fff; border: 2px solid var(--green); border-radius: 10px; padding: 10px 12px;
+}
+.auth-field input:focus { border-color: var(--forest); outline: none; box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
+.auth-form .btn { margin-top: 8px; }
+.switch-link {
+  margin-top: 20px; background: none; border: 0;
+  font-weight: 600; font-size: 1.1rem; color: var(--forest); text-decoration: underline;
 }

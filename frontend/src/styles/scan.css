@@ -12,3 +12,5 @@
 }
 .shutter:active { transform: scale(0.92); }
 @media (max-width: 720px) { .scan-card { padding: 16px; } }
+.receipt-preview { max-width: 100%; max-height: 70%; object-fit: contain; }
+.frame { overflow: hidden; }

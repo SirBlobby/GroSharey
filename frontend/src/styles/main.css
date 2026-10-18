@@ -51,3 +51,13 @@
   .main-grid { grid-template-columns: 1fr; grid-template-rows: auto auto auto; overflow: auto; }
   .friends { grid-row: auto; }
 }
+.topbar-actions { display: flex; align-items: center; gap: 18px; }
+.badge--owed { background: var(--forest); }
+.owe .amt.owed-to-you { color: var(--forest); }
+.paypal, .venmo { text-align: center; text-decoration: none; }
+.venmo {
+  display: block; margin-top: 6px; border-radius: 10px;
+  background: #008cff; padding: 12px 40px;
+  font: italic 800 1.8rem Arial, sans-serif; color: #fff;
+}
+.settle { display: block; margin-top: 12px; width: 100%; font-size: 1.3rem; }

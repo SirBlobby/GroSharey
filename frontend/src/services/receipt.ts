@@ -26,7 +26,7 @@ export async function parseReceipt(imageBase64: string): Promise<ScannedReceipt>
       id: uid(),
       name: item.name,
       price: item.total_price.toFixed(2),
-      friendIds: [],
+      usernames: [],
       taxCode: item.tax_code,
     })),
     tax: receipt.tax,

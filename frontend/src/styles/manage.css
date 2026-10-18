@@ -41,3 +41,13 @@
   .manage-body { grid-template-columns: 1fr; }
   .assign { display: none; }
 }
+.notes { width: 100%; margin: 0 0 10px; font-weight: 600; color: var(--red); }
+.arow-label { display: none; }
+.footer { align-items: center; flex-wrap: wrap; }
+.footer .error-text { margin: 0 auto 0 0; }
+@media (max-width: 720px) {
+  .assign { display: flex; }
+  .assign .spacer { display: none; }
+  .arow { height: auto; min-height: 72px; flex-wrap: wrap; border-top: 3px solid var(--mint); }
+  .arow-label { display: block; flex-basis: 100%; color: var(--mint); font-weight: 600; font-size: 1.2rem; }
+}

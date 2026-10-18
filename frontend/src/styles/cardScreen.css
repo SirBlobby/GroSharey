@@ -1,0 +1,6 @@
+.card-screen {
+  flex: 1; min-height: 0;
+  width: min(560px, 100%); align-self: center;
+  display: flex; flex-direction: column;
+  overflow: hidden; padding: 8px;
+}
