@@ -53,7 +53,10 @@ class NotificationService:
         )
         return OutgoingEmail(
             to_address=recipient.email,
-            subject=f"You owe {payer.display_name} {format_money(person.owes)} for groceries",
+            subject=(
+                f"You owe {payer.display_name} {format_money(person.owes)}. "
+                f"Pay {payer.display_name} in GroSharey"
+            ),
             text_body=text_body,
             html_body=html_body,
         )

@@ -109,7 +109,7 @@ def test_people_who_owe_get_an_email(monkeypatch):
     assert len(FakeSmtpServer.sent_messages) == 1  # Sachi paid, so only Alex is emailed
     message = FakeSmtpServer.sent_messages[0]
     assert message["To"] == "alex@example.com"
-    assert "$3.00" in message["Subject"]
+    assert message["Subject"] == "You owe Sachi <b>V</b> $3.00. Pay Sachi <b>V</b> in GroSharey"
     text_body = message.get_body(("plain",)).get_content()
     html_body = message.get_body(("html",)).get_content()
     assert "Milk: $3.00" in text_body
