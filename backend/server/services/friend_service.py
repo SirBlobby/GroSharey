@@ -7,6 +7,7 @@ from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.payment_repository import PaymentRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
+from server.services.audit_log_service import AuditLogService
 from server.services.user_mapper import convert_to_public_profile
 
 PAYMENT_NOTE = "GroSharey groceries"
@@ -28,8 +29,10 @@ class FriendService:
         friendship_repository: FriendshipRepository,
         split_repository: SplitRepository,
         payment_repository: PaymentRepository,
+        audit_log_service: AuditLogService,
     ):
         self.user_repository = user_repository
+        self.audit_log_service = audit_log_service
         self.friendship_repository = friendship_repository
         self.split_repository = split_repository
         self.payment_repository = payment_repository
@@ -95,8 +98,20 @@ class FriendService:
         if friend_user.id == user_id:
             raise BadRequestError("You can't add yourself as a friend")
         self.friendship_repository.add(user_id, friend_user.id)
+        self.record_friendship_change(user_id, friend_user, "added_friend", "added")
         return self.build_friends(user_id, [friend_user])[0]
 
     def remove_friend(self, user_id: str, username: str) -> None:
         friend_user = self.find_user_by_username(username)
         self.friendship_repository.remove(user_id, friend_user.id)
+        self.record_friendship_change(user_id, friend_user, "removed_friend", "removed")
+
+    def record_friendship_change(self, user_id: str, friend_user: StoredUser, action: str, verb: str) -> None:
+        current_user = self.user_repository.find_by_id(user_id)
+        current_username = current_user.username if current_user else None
+        self.audit_log_service.record(
+            user_id, "friends", action, f"You {verb} @{friend_user.username} as a friend", current_username
+        )
+        self.audit_log_service.record(
+            friend_user.id, "friends", action, f"@{current_username} {verb} you as a friend", current_username
+        )

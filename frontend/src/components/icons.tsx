@@ -53,3 +53,11 @@ export const HistoryIcon = () => <Icon icon="mdi:history" width="1em" aria-hidde
 export const ExpandIcon = () => <Icon icon="mdi:chevron-down" width="1em" aria-hidden="true" />;
 
 export const CollapseIcon = () => <Icon icon="mdi:chevron-up" width="1em" aria-hidden="true" />;
+
+export const AuditLogIcon = () => <Icon icon="mdi:clipboard-text-clock-outline" width="1em" aria-hidden="true" />;
+
+export const RefreshIcon = () => <Icon icon="mdi:refresh" width="1em" aria-hidden="true" />;
+
+export const SplitsIcon = () => <Icon icon="mdi:cart-outline" width="1em" aria-hidden="true" />;
+
+export const WalletIcon = () => <Icon icon="mdi:wallet-outline" width="1em" aria-hidden="true" />;

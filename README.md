@@ -66,7 +66,7 @@ Files ending in `.web.tsx` are used on web instead of the file with the same nam
 | Edit items and assign friends | `ManageItemsScreen.tsx` |
 | Grocery run saved | `ConfirmedScreen.tsx` |
 | Past grocery runs with details and View Receipt | `SplitHistoryScreen.tsx`, `components/history/` |
-| Settings menu with Profile, Friends, Appearance, Account, and App Info | `SettingsScreen.tsx`, `components/settings/` |
+| Settings menu with Profile, Friends, Appearance, Account, Audit Log, and App Info | `SettingsScreen.tsx`, `components/settings/` |
 | Another user's profile with Add Friend | `FriendProfileScreen.tsx` |
 
 The iOS and Android apps still use the basic account screens. Web icons come from [Iconify](https://iconify.design/) through `@iconify/react` and are collected in `src/components/icons.tsx`.
@@ -158,6 +158,7 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | GET | `/api/payments` | Yes | Your 50 most recent payments |
 | PUT | `/api/profiles/me/payment-handles` | Yes | Set `{"venmo_username": "...", "paypal_username": "..."}` so friends get pay buttons |
 | GET | `/api/receipts/images/<id>` | Yes | Stored receipt photo, for the person who scanned it and everyone in its split |
+| GET | `/api/audit-log` | Yes | Latest 200 account events (log ins, profile, friends, splits, payments) |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 

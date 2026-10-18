@@ -21,6 +21,7 @@ from server.models.user_models import StoredUser, User
 from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
+from server.services.audit_log_service import AuditLogService
 from server.services.notification_service import NotificationService
 from server.services.receipt_image_service import ReceiptImageService
 
@@ -181,12 +182,14 @@ class SplitService:
         split_repository: SplitRepository,
         notification_service: NotificationService,
         receipt_image_service: ReceiptImageService,
+        audit_log_service: AuditLogService,
     ):
         self.user_repository = user_repository
         self.friendship_repository = friendship_repository
         self.split_repository = split_repository
         self.notification_service = notification_service
         self.receipt_image_service = receipt_image_service
+        self.audit_log_service = audit_log_service
 
     def find_friends_assigned(self, assignments: dict[str, list[str]], payer: User) -> dict[str, StoredUser]:
         """username -> account for everyone assigned besides the payer. Each must be the payer's friend."""
@@ -224,8 +227,29 @@ class SplitService:
             split_request.receipt.purchase_date,
             receipt_image_id,
         )
+        self.record_saved_split(saved_split, payer, user_ids_by_username)
         emailed_usernames = self.notification_service.notify_people_who_owe(saved_split, payer, friends_by_username)
         return saved_split.model_copy(update={"emailed_usernames": emailed_usernames})
+
+    def record_saved_split(self, saved_split: SavedSplit, payer: User, user_ids_by_username: dict[str, str]) -> None:
+        store_label = saved_split.store_name or "a grocery run"
+        self.audit_log_service.record(
+            payer.id,
+            "splits",
+            "saved_split",
+            f"Saved a split for {store_label} totaling ${saved_split.total:.2f}",
+            payer.username,
+        )
+        for person in saved_split.people:
+            if person.username == payer.username:
+                continue
+            self.audit_log_service.record(
+                user_ids_by_username[person.username],
+                "splits",
+                "added_to_split",
+                f"@{payer.username} added you to a split for {store_label}, you owe ${person.owes:.2f}",
+                payer.username,
+            )
 
     def list_splits(self, user_id: str) -> list[SavedSplit]:
         return self.split_repository.list_for_user(user_id)

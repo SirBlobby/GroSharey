@@ -5,6 +5,7 @@ from server.models.payment_models import PaymentHandlesUpdate
 from server.models.user_models import PublicProfile, StoredUser, User
 from server.repositories.profile_picture_repository import ProfilePictureRepository
 from server.repositories.user_repository import UserRepository
+from server.services.audit_log_service import AuditLogService
 from server.services.image_service import (
     COMPRESSED_IMAGE_CONTENT_TYPE,
     compress_image_losslessly,
@@ -14,9 +15,15 @@ from server.services.user_mapper import convert_to_public_profile, convert_to_us
 
 
 class ProfileService:
-    def __init__(self, user_repository: UserRepository, profile_picture_repository: ProfilePictureRepository):
+    def __init__(
+        self,
+        user_repository: UserRepository,
+        profile_picture_repository: ProfilePictureRepository,
+        audit_log_service: AuditLogService,
+    ):
         self.user_repository = user_repository
         self.profile_picture_repository = profile_picture_repository
+        self.audit_log_service = audit_log_service
 
     def find_stored_user_by_username(self, username: str) -> StoredUser:
         stored_user = self.user_repository.find_by_username(username.strip().lower())
@@ -33,6 +40,9 @@ class ProfileService:
         updated_user = self.user_repository.set_profile_picture_version(user_id, int(time.time()))
         if updated_user is None:
             raise NotFoundError("User", user_id)
+        self.audit_log_service.record(
+            user_id, "profile", "changed_profile_picture", "Changed your profile picture", updated_user.username
+        )
         return convert_to_user(updated_user)
 
     def get_profile_picture(self, username: str) -> tuple[bytes, str]:
@@ -48,4 +58,7 @@ class ProfileService:
         )
         if updated_user is None:
             raise NotFoundError("User", user_id)
+        self.audit_log_service.record(
+            user_id, "profile", "updated_payment_links", "Updated your payment links", updated_user.username
+        )
         return convert_to_user(updated_user)

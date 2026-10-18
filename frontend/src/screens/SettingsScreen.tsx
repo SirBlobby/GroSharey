@@ -2,6 +2,7 @@ import { BackIcon } from "../components/icons";
 import AccountSettings from "../components/settings/AccountSettings";
 import AppearanceSettings from "../components/settings/AppearanceSettings";
 import AppInfoSettings from "../components/settings/AppInfoSettings";
+import AuditLogSettings from "../components/settings/AuditLogSettings";
 import FriendManager from "../components/settings/FriendManager";
 import ProfileSettings from "../components/settings/ProfileSettings";
 import SettingsMenu from "../components/settings/SettingsMenu";
@@ -45,6 +46,8 @@ export default function SettingsScreen({
         return <AppearanceSettings />;
       case "account":
         return <AccountSettings />;
+      case "auditLog":
+        return <AuditLogSettings />;
       case "appInfo":
         return <AppInfoSettings />;
       default:

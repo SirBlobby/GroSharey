@@ -2,12 +2,14 @@ from functools import lru_cache
 
 from server.config import settings
 from server.database import get_database
+from server.repositories.audit_log_repository import AuditLogRepository
 from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.payment_repository import PaymentRepository
 from server.repositories.profile_picture_repository import ProfilePictureRepository
 from server.repositories.receipt_image_repository import ReceiptImageRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
+from server.services.audit_log_service import AuditLogService
 from server.services.auth_service import AuthService
 from server.services.email_service import EmailService
 from server.services.friend_service import FriendService
@@ -25,13 +27,18 @@ def get_user_repository() -> UserRepository:
 
 
 @lru_cache
+def get_audit_log_service() -> AuditLogService:
+    return AuditLogService(AuditLogRepository(get_database()))
+
+
+@lru_cache
 def get_auth_service() -> AuthService:
-    return AuthService(get_user_repository())
+    return AuthService(get_user_repository(), get_audit_log_service())
 
 
 @lru_cache
 def get_profile_service() -> ProfileService:
-    return ProfileService(get_user_repository(), ProfilePictureRepository(get_database()))
+    return ProfileService(get_user_repository(), ProfilePictureRepository(get_database()), get_audit_log_service())
 
 
 @lru_cache
@@ -57,13 +64,19 @@ def get_payment_repository() -> PaymentRepository:
 @lru_cache
 def get_friend_service() -> FriendService:
     return FriendService(
-        get_user_repository(), get_friendship_repository(), get_split_repository(), get_payment_repository()
+        get_user_repository(),
+        get_friendship_repository(),
+        get_split_repository(),
+        get_payment_repository(),
+        get_audit_log_service(),
     )
 
 
 @lru_cache
 def get_payment_service() -> PaymentService:
-    return PaymentService(get_friendship_repository(), get_payment_repository(), get_friend_service())
+    return PaymentService(
+        get_friendship_repository(), get_payment_repository(), get_friend_service(), get_audit_log_service()
+    )
 
 
 @lru_cache
@@ -87,4 +100,5 @@ def get_split_service() -> SplitService:
         get_split_repository(),
         get_notification_service(),
         get_receipt_image_service(),
+        get_audit_log_service(),
     )
