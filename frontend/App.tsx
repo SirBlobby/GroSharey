@@ -6,6 +6,7 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import NativeQrScanner from "./src/native/NativeQrScanner";
 import NativeReceiptCamera from "./src/native/NativeReceiptCamera";
 import NativeVoiceRecorder from "./src/native/NativeVoiceRecorder";
+import { shareImageNatively } from "./src/native/shareImageNatively";
 import { useNativeCameras } from "./src/native/useNativeCameras";
 import { useNativeVoice } from "./src/native/useNativeVoice";
 import WebApp from "./src/WebApp";
@@ -32,6 +33,7 @@ function MobileApp() {
           captureReceiptImage={nativeCameras.captureReceiptImage}
           scanQrCode={nativeCameras.scanQrCode}
           recordVoice={nativeVoice.recordVoice}
+          shareImage={shareImageNatively}
           onPageColorChange={updatePageColor}
           dom={{
             useExpoDOMWebView: false,

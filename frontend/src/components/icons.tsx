@@ -112,6 +112,14 @@ export const StopIcon = () => <Icon icon="mdi:stop" width="1em" aria-hidden="tru
 
 export const ReminderIcon = () => <Icon icon="mdi:bell-badge-outline" width="1em" aria-hidden="true" />;
 
+export const InsightsIcon = () => <Icon icon="mdi:chart-box-outline" width="1em" aria-hidden="true" />;
+
+export const PriceTagIcon = () => <Icon icon="mdi:tag-outline" width="1em" aria-hidden="true" />;
+
+export const RecapIcon = () => <Icon icon="mdi:party-popper" width="1em" aria-hidden="true" />;
+
+export const ShareIcon = () => <Icon icon="mdi:share-variant" width="1em" aria-hidden="true" />;
+
 export const DeleteIcon = () => <Icon icon="mdi:trash-can-outline" width="1em" aria-hidden="true" />;
 
 export const MatchItemsIcon = () => <Icon icon="mdi:auto-fix" width="1em" aria-hidden="true" />;

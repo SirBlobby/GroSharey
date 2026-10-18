@@ -6,6 +6,7 @@ import AuditLogSettings from "../components/settings/AuditLogSettings";
 import FriendManager from "../components/settings/FriendManager";
 import GroupManager from "../components/settings/GroupManager";
 import HistorySettings from "../components/settings/HistorySettings";
+import InsightsSettings from "../components/settings/InsightsSettings";
 import ProfileSettings from "../components/settings/ProfileSettings";
 import SettingsMenu from "../components/settings/SettingsMenu";
 import { SettingsSection } from "../components/settings/settingsSections";
@@ -62,6 +63,8 @@ export default function SettingsScreen({
             onOpenShoppingList={onOpenShoppingList}
           />
         );
+      case "insights":
+        return <InsightsSettings groups={groupList.groups} />;
       case "history":
         return <HistorySettings people={people} />;
       case "appearance":

@@ -5,18 +5,21 @@ from pydantic import ValidationError
 from server.errors import BadRequestError, ConflictError, NotFoundError
 from server.services.assistant.assistant_context import AssistantContext
 from server.services.assistant.group_tools import GROUP_TOOL_DECLARATIONS, GroupTools
+from server.services.assistant.insight_tools import INSIGHT_TOOL_DECLARATIONS, InsightTools
 from server.services.assistant.list_tools import LIST_TOOL_DECLARATIONS, ListTools
 from server.services.assistant.money_tools import MONEY_TOOL_DECLARATIONS, MoneyTools
 
 logger = logging.getLogger(__name__)
 
-FUNCTION_DECLARATIONS = LIST_TOOL_DECLARATIONS + GROUP_TOOL_DECLARATIONS + MONEY_TOOL_DECLARATIONS
+FUNCTION_DECLARATIONS = (
+    LIST_TOOL_DECLARATIONS + GROUP_TOOL_DECLARATIONS + MONEY_TOOL_DECLARATIONS + INSIGHT_TOOL_DECLARATIONS
+)
 
 
 class AssistantTools:
     def __init__(self, context: AssistantContext):
         self.context = context
-        tool_groups = (ListTools(context), GroupTools(context), MoneyTools(context))
+        tool_groups = (ListTools(context), GroupTools(context), MoneyTools(context), InsightTools(context))
         self.tool_functions = {
             declaration["name"]: getattr(tool_group, declaration["name"])
             for tool_group in tool_groups

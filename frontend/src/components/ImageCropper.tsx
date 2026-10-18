@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
     pointerEvents: "none",
   },
   pictureShapeGuide: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderRadius: CROP_FRAME_SIZE / 4,
     borderWidth: 2,
     borderColor: colors.onPrimary,

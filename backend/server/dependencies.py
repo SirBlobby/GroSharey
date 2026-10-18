@@ -7,6 +7,7 @@ from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.group_repository import GroupRepository
 from server.repositories.pantry_repository import PantryRepository
 from server.repositories.payment_repository import PaymentRepository
+from server.repositories.product_name_repository import ProductNameRepository
 from server.repositories.profile_picture_repository import ProfilePictureRepository
 from server.repositories.receipt_image_repository import ReceiptImageRepository
 from server.repositories.shopping_list_repository import ShoppingListRepository
@@ -23,11 +24,13 @@ from server.services.friend_service import FriendService
 from server.services.gemini_client import GeminiClient
 from server.services.group_service import GroupService
 from server.services.group_trip_service import GroupTripService
+from server.services.insights_service import InsightsService
 from server.services.item_matching_service import ItemMatchingService
 from server.services.notification_service import NotificationService
 from server.services.pantry_service import PantryService
 from server.services.payment_reminder_service import PaymentReminderService
 from server.services.payment_service import PaymentService
+from server.services.product_name_service import ProductNameService
 from server.services.profile_service import ProfileService
 from server.services.receipt_image_service import ReceiptImageService
 from server.services.receipt_service import ReceiptService
@@ -230,6 +233,7 @@ def get_assistant_service() -> AssistantService:
         payment_reminder_service=get_payment_reminder_service(),
         split_service=get_split_service(),
         split_dispute_service=get_split_dispute_service(),
+        insights_service=get_insights_service(),
     )
     return AssistantService(get_gemini_client(), elevenlabs_client, assistant_services)
 
@@ -239,3 +243,9 @@ def get_payment_reminder_service() -> PaymentReminderService:
     return PaymentReminderService(
         get_friend_service(), get_friendship_repository(), get_notification_service(), get_audit_log_service()
     )
+
+
+@lru_cache
+def get_insights_service() -> InsightsService:
+    product_name_service = ProductNameService(get_gemini_client(), ProductNameRepository(get_database()))
+    return InsightsService(get_split_repository(), get_user_repository(), get_group_service(), product_name_service)

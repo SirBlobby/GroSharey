@@ -1,11 +1,22 @@
 import type { Friend } from "../../types";
+import { PriceComparison } from "../../types/insights";
+import { money } from "../../utils";
 import { ShoppingListItem } from "../../types/shoppingList";
 import Avatar from "../Avatar";
-import { AddAgainIcon, CheckedBoxIcon, CloseIcon, EditIcon, LocationIcon, UncheckedBoxIcon } from "../icons";
+import {
+  AddAgainIcon,
+  CheckedBoxIcon,
+  CloseIcon,
+  EditIcon,
+  LocationIcon,
+  PriceTagIcon,
+  UncheckedBoxIcon,
+} from "../icons";
 
 type ShoppingListItemRowProps = {
   item: ShoppingListItem;
   requester: Friend | undefined;
+  priceComparison: PriceComparison | undefined;
   onToggle: () => void;
   onAddAgain: () => void;
   onRemove: () => void;
@@ -14,6 +25,7 @@ type ShoppingListItemRowProps = {
 export default function ShoppingListItemRow({
   item,
   requester,
+  priceComparison,
   onToggle,
   onAddAgain,
   onRemove,
@@ -38,6 +50,11 @@ export default function ShoppingListItemRow({
         {item.store && (
           <span className="shopping-item-detail">
             <LocationIcon /> {item.store}
+          </span>
+        )}
+        {priceComparison && !item.is_crossed_off && (
+          <span className="shopping-item-price-tip">
+            <PriceTagIcon /> Cheapest at {priceComparison.cheapest_store}: {money(priceComparison.cheapest_price)}
           </span>
         )}
         {item.notes && (

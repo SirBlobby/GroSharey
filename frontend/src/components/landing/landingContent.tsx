@@ -12,6 +12,8 @@ import {
   MatchItemsIcon,
   MicrophoneIcon,
   PantryIcon,
+  PriceTagIcon,
+  RecapIcon,
   ReminderIcon,
   ScanQrIcon,
   ShoppingListIcon,
@@ -81,6 +83,16 @@ export const LANDING_FEATURES: LandingFeature[] = [
     icon: <WalletIcon />,
     title: "Group budgets",
     description: "Set a monthly grocery budget, watch the progress bar, and get an alert before you go over.",
+  },
+  {
+    icon: <PriceTagIcon />,
+    title: "Price Watch",
+    description: "See where things are cheapest. \"Eggs were $1.20 cheaper at Aldi\" shows up right on your list.",
+  },
+  {
+    icon: <RecapIcon />,
+    title: "Yearly Recap",
+    description: "Your apartment's year in groceries, from the top buy to your shopping buddy, on a card you can share.",
   },
   {
     icon: <EqualSplitIcon />,

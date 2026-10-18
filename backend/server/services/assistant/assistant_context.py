@@ -4,6 +4,7 @@ from server.models.user_models import User
 from server.services.friend_service import FriendService
 from server.services.group_service import GroupService
 from server.services.group_trip_service import GroupTripService
+from server.services.insights_service import InsightsService
 from server.services.pantry_service import PantryService
 from server.services.payment_reminder_service import PaymentReminderService
 from server.services.payment_service import PaymentService
@@ -23,6 +24,7 @@ class AssistantServices:
     payment_reminder_service: PaymentReminderService
     split_service: SplitService
     split_dispute_service: SplitDisputeService
+    insights_service: InsightsService
 
 
 @dataclass

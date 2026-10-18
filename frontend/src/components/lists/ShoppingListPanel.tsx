@@ -1,7 +1,9 @@
 import { useState } from "react";
 
 import { convertProfileToFriend } from "../../services/friends";
+import { findPriceComparison } from "../../services/priceTips";
 import { Group } from "../../types/group";
+import { PriceComparison } from "../../types/insights";
 import { NewShoppingListItem, ShoppingList, ShoppingListItem } from "../../types/shoppingList";
 import TripBanner from "../groups/TripBanner";
 import { DeleteIcon, GroupsIcon } from "../icons";
@@ -21,6 +23,7 @@ function isForStore(itemStore: string | null, tripStore: string): boolean {
 type ShoppingListPanelProps = {
   shoppingList: ShoppingList;
   group: Group | undefined;
+  priceComparisons: PriceComparison[];
   currentUsername: string;
   onStartTrip: (groupId: string, store: string) => Promise<void>;
   onEndTrip: (groupId: string) => Promise<void>;
@@ -35,6 +38,7 @@ type ShoppingListPanelProps = {
 export default function ShoppingListPanel({
   shoppingList,
   group,
+  priceComparisons,
   currentUsername,
   onStartTrip,
   onEndTrip,
@@ -76,6 +80,7 @@ export default function ShoppingListPanel({
             key={item.id}
             item={item}
             requester={isGroupList ? membersByUsername.get(item.requested_by) : undefined}
+            priceComparison={findPriceComparison(item.name, priceComparisons)}
             onToggle={() => onSetItemCrossedOff(item.id, !item.is_crossed_off)}
             onAddAgain={() => addItemAgain(item)}
             onRemove={() => onRemoveItem(item.id)}

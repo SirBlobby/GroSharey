@@ -32,7 +32,8 @@
         {
           "microphonePermission": "GroSharey uses your microphone so you can add list items and ask about balances by voice."
         }
-      ]
+      ],
+      "expo-sharing"
     ]
   }
 }

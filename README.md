@@ -52,6 +52,8 @@ Living with roommates means shared groceries, and shared groceries mean someone 
 - **Item disputes** for anything you didn't actually get
 - **Group budgets** with a progress bar and alerts before you go over
 - **Monthly PDF reports** for reimbursements
+- **Price Watch** that compares what you paid for the same thing at different stores, like "eggs were $1.20 cheaper at Aldi", and shows the cheapest store right on your shopping list
+- **Yearly Recap** for you or your apartment, with your top buys, favorite store, and shopping buddy, plus a card you can share. Group recaps show each roommate's share, how many runs they paid for, and their top buy
 
 ### Talk to it
 - **Voice assistant** powered by Gemini and ElevenLabs that can run almost the whole app. Try:
@@ -61,6 +63,7 @@ Living with roommates means shared groceries, and shared groceries mean someone 
   - "Set our budget to $300 a month"
   - "Who owes me money?" or "remind Sam to pay me"
   - "I never got the olive oil from the Costco run"
+  - "Where are eggs cheapest?" or "how was our year?"
 
   It asks before anything risky, like deleting a list or recording a payment, and answers out loud. You can also type.
 

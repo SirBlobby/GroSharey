@@ -8,6 +8,7 @@ import {
   FriendsIcon,
   GroupsIcon,
   HistoryIcon,
+  InsightsIcon,
   ProfileIcon,
 } from "../icons";
 
@@ -16,6 +17,7 @@ export type SettingsSection =
   | "friends"
   | "groups"
   | "history"
+  | "insights"
   | "appearance"
   | "account"
   | "auditLog"
@@ -26,6 +28,7 @@ export const SETTINGS_SECTIONS: { id: SettingsSection; label: string; icon: Reac
   { id: "friends", label: "Friends", icon: <FriendsIcon /> },
   { id: "groups", label: "Groups", icon: <GroupsIcon /> },
   { id: "history", label: "History", icon: <HistoryIcon /> },
+  { id: "insights", label: "Insights", icon: <InsightsIcon /> },
   { id: "appearance", label: "Appearance", icon: <AppearanceIcon /> },
   { id: "account", label: "Account", icon: <AccountIcon /> },
   { id: "auditLog", label: "Audit Log", icon: <AuditLogIcon /> },

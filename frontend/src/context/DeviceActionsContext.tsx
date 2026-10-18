@@ -7,6 +7,7 @@ export type DeviceActions = {
   captureReceiptImage?: (source: ReceiptImageSource) => Promise<ReceiptImage | null>;
   scanQrCode?: () => Promise<string | null>;
   recordVoice?: () => Promise<VoiceClip | null>;
+  shareImage?: (base64Image: string, fileName: string) => Promise<boolean>;
 };
 
 const DeviceActionsContext = createContext<DeviceActions>({});

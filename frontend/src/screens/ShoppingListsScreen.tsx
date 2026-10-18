@@ -2,6 +2,7 @@ import { BackIcon } from "../components/icons";
 import ShoppingListMenu from "../components/lists/ShoppingListMenu";
 import ShoppingListPanel from "../components/lists/ShoppingListPanel";
 import type { GroupList } from "../hooks/useGroups";
+import { usePriceWatch } from "../hooks/usePriceWatch";
 import { useShoppingLists } from "../hooks/useShoppingLists";
 import "../styles/main.css";
 import "../styles/account.css";
@@ -9,6 +10,7 @@ import "../styles/settings.css";
 import "../styles/manage.css";
 import "../styles/groups.css";
 import "../styles/shoppingLists.css";
+import "../styles/insights.css";
 
 type ShoppingListsScreenProps = {
   groupList: GroupList;
@@ -25,6 +27,7 @@ export default function ShoppingListsScreen({
 }: ShoppingListsScreenProps) {
   const listCenter = useShoppingLists(initialListId, currentUsername);
   const waitingChangeCount = listCenter.waitingChangeCount;
+  const { priceWatch } = usePriceWatch();
   const changeWord = waitingChangeCount === 1 ? "change" : "changes";
   const selectedList = listCenter.selectedList;
 
@@ -64,6 +67,7 @@ export default function ShoppingListsScreen({
           <ShoppingListPanel
             shoppingList={selectedList}
             group={groupList.groups.find((group) => group.id === selectedList.group_id)}
+            priceComparisons={priceWatch?.comparisons ?? []}
             currentUsername={currentUsername}
             onStartTrip={groupList.startTrip}
             onEndTrip={groupList.endTrip}

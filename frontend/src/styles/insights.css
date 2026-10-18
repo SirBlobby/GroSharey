@@ -1,0 +1,46 @@
+.insights-group h3 { display: flex; align-items: center; gap: 8px; }
+.insights-group select {
+  padding: 8px 10px; font: 600 1.05rem var(--body); color: var(--color-text);
+  background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-small);
+}
+.recap-controls { display: flex; gap: 8px; flex-wrap: wrap; }
+.recap-card {
+  width: 100%; display: flex; flex-direction: column; gap: 14px;
+  background: var(--color-surface); border: 4px solid var(--color-primary); border-radius: var(--radius-large);
+  padding: 20px;
+}
+.recap-headline { margin: 0; font-family: var(--display); color: var(--color-heading); font-size: 1.7rem; line-height: 1.25; }
+.recap-stats { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.recap-stat { display: flex; flex-direction: column-reverse; gap: 2px; background: var(--color-card); border-radius: var(--radius-medium); padding: 10px; }
+.recap-stat dt { font-size: 0.95rem; font-weight: 600; opacity: 0.75; }
+.recap-stat dd { margin: 0; font-family: var(--display); color: var(--color-heading); font-size: 1.7rem; }
+.recap-top { margin: 0; padding-left: 24px; display: flex; flex-direction: column; gap: 4px; font-weight: 600; font-size: 1.1rem; }
+.recap-top span { opacity: 0.7; }
+.recap-favorites { margin: 0; display: flex; flex-wrap: wrap; gap: 8px 18px; font-weight: 600; }
+.btn.recap-share { align-self: flex-start; min-width: 0; font-size: 1.25rem; padding: 10px 18px; border-width: 3px; }
+
+.price-tips { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; width: 100%; }
+.price-tip {
+  padding: 8px 12px; font-weight: 600;
+  background: var(--color-surface); border: 3px solid var(--color-info); border-radius: var(--radius-medium); color: var(--color-info);
+}
+.price-table {
+  width: 100%; border-collapse: separate; border-spacing: 0; overflow: hidden;
+  background: var(--color-surface); border: 3px solid var(--color-border); border-radius: var(--radius-medium);
+}
+.price-table th { text-align: left; padding: 8px 12px; background: var(--color-card); font-size: 0.95rem; }
+.price-table td { padding: 8px 12px; border-top: 2px solid var(--color-divider); font-weight: 600; vertical-align: top; }
+.price-table-count, .price-table-store { display: block; font-size: 0.85rem; font-weight: 400; opacity: 0.75; }
+.price-table-higher { color: var(--color-danger); }
+
+.shopping-item-price-tip { display: inline-flex; align-items: center; gap: 6px; font-size: 0.9rem; font-weight: 600; color: var(--color-info); }
+
+@media (max-width: 720px) {
+  .recap-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .recap-headline { font-size: 1.35rem; }
+  .btn.recap-share { align-self: stretch; }
+  .price-table th, .price-table td { padding: 6px 8px; font-size: 0.95rem; }
+}
+.group-recap-modal { width: min(640px, 100%); text-align: left; display: flex; flex-direction: column; gap: 10px; }
+.group-recap-modal .settings-group { border-top: 0; padding-top: 0; }
+.recap-members td, .recap-members th { font-size: 0.95rem; }

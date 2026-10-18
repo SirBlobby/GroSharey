@@ -22,11 +22,17 @@ type WebAppProps = DeviceActions & {
   dom?: DOMProps;
 };
 
-export default function WebApp({ captureReceiptImage, scanQrCode, recordVoice, onPageColorChange }: WebAppProps) {
+export default function WebApp({
+  captureReceiptImage,
+  scanQrCode,
+  recordVoice,
+  shareImage,
+  onPageColorChange,
+}: WebAppProps) {
   usePageColorReport(onPageColorChange);
 
   return (
-    <DeviceActionsProvider deviceActions={{ captureReceiptImage, scanQrCode, recordVoice }}>
+    <DeviceActionsProvider deviceActions={{ captureReceiptImage, scanQrCode, recordVoice, shareImage }}>
       <AuthProvider>
         <RootNavigator />
       </AuthProvider>

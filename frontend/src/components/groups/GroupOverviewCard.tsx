@@ -1,9 +1,13 @@
+import { useState } from "react";
+
 import { convertProfileToFriend } from "../../services/friends";
 import type { Friend } from "../../types";
 import { Group } from "../../types/group";
 import { money } from "../../utils";
 import Avatar from "../Avatar";
-import { EditIcon, GroupsIcon, ShoppingListIcon } from "../icons";
+import { EditIcon, GroupsIcon, RecapIcon, ShoppingListIcon } from "../icons";
+import GroupRecapModal from "../insights/GroupRecapModal";
+import "../../styles/assistant.css";
 import BudgetBar from "./BudgetBar";
 import TripBanner from "./TripBanner";
 
@@ -39,6 +43,7 @@ export default function GroupOverviewCard({
   onStartTrip,
   onEndTrip,
 }: GroupOverviewCardProps) {
+  const [isRecapOpen, setIsRecapOpen] = useState(false);
   const friendsByUsername = new Map(friends.map((friend) => [friend.username, friend]));
   const otherMembers = group.members.filter((member) => member.username !== currentUsername);
 
@@ -61,6 +66,9 @@ export default function GroupOverviewCard({
               onClick={() => onOpenShoppingList(group.shopping_list_id)}
             >
               <ShoppingListIcon /> {group.shopping_list_id ? "Shopping list" : "Start a list"}
+            </button>
+            <button type="button" className="friend-overview-link" onClick={() => setIsRecapOpen(true)}>
+              <RecapIcon /> Year recap
             </button>
             <button type="button" className="friend-overview-link" onClick={onManageGroups}>
               <EditIcon /> Manage
@@ -85,6 +93,7 @@ export default function GroupOverviewCard({
 
       <BudgetBar group={group} />
       <TripBanner group={group} currentUsername={currentUsername} onStartTrip={onStartTrip} onEndTrip={onEndTrip} />
+      {isRecapOpen && <GroupRecapModal group={group} onClose={() => setIsRecapOpen(false)} />}
     </div>
   );
 }
