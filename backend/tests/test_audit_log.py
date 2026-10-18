@@ -62,7 +62,7 @@ def sign_up(client, username: str) -> dict:
 def audit_descriptions(client, headers) -> list[str]:
     response = client.get("/api/audit-log", headers=headers)
     assert response.status_code == 200
-    return [audit_event["description"] for audit_event in response.json]
+    return [audit_event["description"] for audit_event in response.json["events"]]
 
 
 def build_png_base64() -> str:
@@ -170,3 +170,64 @@ def test_backfill_adds_history_from_before_the_audit_log_once(client, fake_datab
     assert backfill_audit_log(fake_database) == 2
     assert backfill_audit_log(fake_database) == 0
     assert "You and @alex became friends" in audit_descriptions(client, sachi)
+
+
+def test_audit_log_is_paginated_and_filtered_by_category(client):
+    sachi = sign_up(client, "sachi")
+    for venmo_username in ("first", "second", "third"):
+        client.put("/api/profiles/me/payment-handles", json={"venmo_username": venmo_username}, headers=sachi)
+
+    first_page = client.get("/api/audit-log?page=1&page_size=2", headers=sachi).json
+    assert first_page["total"] == 4
+    assert len(first_page["events"]) == 2
+    last_page = client.get("/api/audit-log?page=2&page_size=2", headers=sachi).json
+    assert [event["description"] for event in last_page["events"]] == [
+        "Updated your payment links",
+        "Created your account",
+    ]
+
+    account_page = client.get("/api/audit-log?category=account", headers=sachi).json
+    assert account_page["total"] == 1
+    assert client.get("/api/audit-log?page=0", headers=sachi).status_code == 400
+
+
+def test_notifications_only_show_what_other_people_did(client):
+    sachi = sign_up(client, "sachi")
+    alex = sign_up(client, "alex")
+    client.post("/api/friends", json={"username": "alex"}, headers=sachi)
+    client.post("/api/splits", json=MILK_SPLIT, headers=sachi)
+
+    alex_notifications = client.get("/api/notifications", headers=alex).json
+    assert [notification["description"] for notification in alex_notifications["notifications"]] == [
+        "@sachi added you to a split for Costco, you owe $3.00",
+        "@sachi added you as a friend",
+    ]
+    assert alex_notifications["unread_count"] == 2
+    assert client.get("/api/notifications", headers=sachi).json["total"] == 0
+
+
+def test_notifications_can_be_marked_read(client):
+    sachi = sign_up(client, "sachi")
+    alex = sign_up(client, "alex")
+    client.post("/api/friends", json={"username": "alex"}, headers=sachi)
+    client.post("/api/splits", json=MILK_SPLIT, headers=sachi)
+    newest_notification = client.get("/api/notifications", headers=alex).json["notifications"][0]
+
+    response = client.post(
+        "/api/notifications/read", json={"notification_ids": [newest_notification["id"]]}, headers=alex
+    )
+    assert response.status_code == 204
+    assert client.get("/api/notifications", headers=alex).json["unread_count"] == 1
+
+    client.post("/api/notifications/read", json={}, headers=alex)
+    alex_notifications = client.get("/api/notifications", headers=alex).json
+    assert alex_notifications["unread_count"] == 0
+    assert all(notification["is_read"] for notification in alex_notifications["notifications"])
+
+
+def test_failed_log_in_creates_a_notification(client):
+    sachi = sign_up(client, "sachi")
+    client.post("/api/auth/login", json={"email": "sachi@example.com", "password": "wrong-password"})
+
+    sachi_notifications = client.get("/api/notifications", headers=sachi).json
+    assert sachi_notifications["notifications"][0]["description"] == "Someone tried to log in with a wrong password"

@@ -1,12 +1,10 @@
 from datetime import datetime, timezone
 
+from bson import ObjectId
 from pymongo import DESCENDING
 from pymongo.database import Database
 
-from server.models.audit_models import AuditCategory, AuditEvent
-
-AUDIT_LOG_LIMIT = 200
-
+from server.models.audit_models import AuditCategory, AuditEvent, Notification
 
 def convert_document_to_event(event_document: dict) -> AuditEvent:
     return AuditEvent(
@@ -34,6 +32,7 @@ class AuditLogRepository:
         actor_username: str | None,
         created_at: datetime | None = None,
         source_key: str | None = None,
+        notify: bool = False,
     ) -> None:
         event_document = {
             "user_id": user_id,
@@ -45,6 +44,9 @@ class AuditLogRepository:
         }
         if source_key:
             event_document["source_key"] = source_key
+        if notify:
+            event_document["notify"] = True
+            event_document["is_read"] = False
         self.audit_events_collection.insert_one(event_document)
 
     def has_source_key(self, source_key: str) -> bool:
@@ -56,10 +58,45 @@ class AuditLogRepository:
         )
         return first_event["created_at"] if first_event else None
 
-    def list_for_user(self, user_id: str) -> list[AuditEvent]:
+    def list_for_user(
+        self, user_id: str, category: AuditCategory | None, skip: int, limit: int
+    ) -> tuple[list[AuditEvent], int]:
+        event_filter: dict = {"user_id": user_id}
+        if category:
+            event_filter["category"] = category
         event_documents = (
-            self.audit_events_collection.find({"user_id": user_id})
+            self.audit_events_collection.find(event_filter)
             .sort([("created_at", DESCENDING), ("_id", DESCENDING)])
-            .limit(AUDIT_LOG_LIMIT)
+            .skip(skip)
+            .limit(limit)
         )
-        return [convert_document_to_event(event_document) for event_document in event_documents]
+        events = [convert_document_to_event(event_document) for event_document in event_documents]
+        return events, self.audit_events_collection.count_documents(event_filter)
+
+    def list_notifications(self, user_id: str, skip: int, limit: int) -> tuple[list[Notification], int, int]:
+        notification_filter = {"user_id": user_id, "notify": True}
+        notification_documents = (
+            self.audit_events_collection.find(notification_filter)
+            .sort([("created_at", DESCENDING), ("_id", DESCENDING)])
+            .skip(skip)
+            .limit(limit)
+        )
+        notifications = [
+            Notification(
+                **convert_document_to_event(notification_document).model_dump(),
+                is_read=notification_document.get("is_read", False),
+            )
+            for notification_document in notification_documents
+        ]
+        total = self.audit_events_collection.count_documents(notification_filter)
+        unread_count = self.audit_events_collection.count_documents({**notification_filter, "is_read": False})
+        return notifications, total, unread_count
+
+    def mark_notifications_read(self, user_id: str, notification_ids: list[str] | None) -> None:
+        notification_filter: dict = {"user_id": user_id, "notify": True, "is_read": False}
+        if notification_ids is not None:
+            valid_ids = [
+                ObjectId(notification_id) for notification_id in notification_ids if ObjectId.is_valid(notification_id)
+            ]
+            notification_filter["_id"] = {"$in": valid_ids}
+        self.audit_events_collection.update_many(notification_filter, {"$set": {"is_read": True}})

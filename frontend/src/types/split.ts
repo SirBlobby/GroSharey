@@ -8,6 +8,7 @@ export type SplitReceiptItem = {
 export type SplitRequest = {
   receipt: {
     store_name: string | null;
+    store_address: string | null;
     purchase_date: string | null;
     items: SplitReceiptItem[];
     tax: number | null;
@@ -15,6 +16,9 @@ export type SplitRequest = {
     receipt_image_id: string | null;
   };
   assignments: Record<string, string[]>;
+  payer_username: string | null;
+  paid_in_full: string[];
+  paid_amounts: Record<string, number>;
 };
 
 export type ItemShare = {
@@ -33,6 +37,7 @@ export type PersonSplit = {
   tip: number;
   total: number;
   owes: number;
+  paid: number;
 };
 
 export type SavedSplit = {
@@ -42,8 +47,10 @@ export type SavedSplit = {
   total: number;
   tax_note: string | null;
   store_name: string | null;
+  store_address: string | null;
   purchase_date: string | null;
   receipt_image_id: string | null;
+  created_by: string | null;
   created_at: string;
   emailed_usernames: string[];
 };

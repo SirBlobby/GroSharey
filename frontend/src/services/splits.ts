@@ -22,6 +22,18 @@ export const EMPTY_RECEIPT_DETAILS: ReceiptDetails = {
   warnings: [],
 };
 
+export type UpfrontPayment = { kind: "full" } | { kind: "partial"; amount: number };
+
+export type SplitPayment = {
+  payerUsername: string | null;
+  upfrontPayments: Record<string, UpfrontPayment>;
+};
+
+export const EMPTY_SPLIT_PAYMENT: SplitPayment = {
+  payerUsername: null,
+  upfrontPayments: {},
+};
+
 export function findItemProblem(items: Item[]): string | null {
   if (items.length === 0) {
     return "Add at least one item";
@@ -38,10 +50,18 @@ export function findItemProblem(items: Item[]): string | null {
   return null;
 }
 
-function buildSplitRequest(items: Item[], receiptDetails: ReceiptDetails): SplitRequest {
+function buildSplitRequest(
+  items: Item[],
+  receiptDetails: ReceiptDetails,
+  splitPayment: SplitPayment,
+): SplitRequest {
+  const upfrontPayments = Object.entries(splitPayment.upfrontPayments).filter(
+    ([username]) => username !== splitPayment.payerUsername,
+  );
   return {
     receipt: {
       store_name: receiptDetails.storeName,
+      store_address: receiptDetails.storeAddress,
       purchase_date: receiptDetails.purchaseDate,
       tax: receiptDetails.tax,
       tip: receiptDetails.tip,
@@ -54,9 +74,20 @@ function buildSplitRequest(items: Item[], receiptDetails: ReceiptDetails): Split
       })),
     },
     assignments: Object.fromEntries(items.map((item) => [item.id, item.usernames])),
+    payer_username: splitPayment.payerUsername,
+    paid_in_full: upfrontPayments.filter(([, payment]) => payment.kind === "full").map(([username]) => username),
+    paid_amounts: Object.fromEntries(
+      upfrontPayments.flatMap(([username, payment]) =>
+        payment.kind === "partial" && payment.amount > 0 ? [[username, payment.amount]] : [],
+      ),
+    ),
   };
 }
 
-export async function saveSplit(items: Item[], receiptDetails: ReceiptDetails): Promise<SavedSplit> {
-  return splitsApi.saveSplit(buildSplitRequest(items, receiptDetails));
+export async function saveSplit(
+  items: Item[],
+  receiptDetails: ReceiptDetails,
+  splitPayment: SplitPayment,
+): Promise<SavedSplit> {
+  return splitsApi.saveSplit(buildSplitRequest(items, receiptDetails, splitPayment));
 }

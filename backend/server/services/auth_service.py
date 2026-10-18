@@ -39,7 +39,11 @@ class AuthService:
             raise UnauthorizedError("Invalid email or password")
         if not verify_password(log_in_data.password, stored_user.password_hash):
             self.audit_log_service.record(
-                stored_user.id, "account", "log_in_failed", "Someone tried to log in with a wrong password"
+                stored_user.id,
+                "account",
+                "log_in_failed",
+                "Someone tried to log in with a wrong password",
+                notify=True,
             )
             raise UnauthorizedError("Invalid email or password")
         self.audit_log_service.record(stored_user.id, "account", "logged_in", "Logged in", stored_user.username)

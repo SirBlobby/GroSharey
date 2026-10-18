@@ -160,7 +160,9 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | GET | `/api/payments` | Yes | Your 50 most recent payments |
 | PUT | `/api/profiles/me/payment-handles` | Yes | Set `{"venmo_username": "...", "paypal_username": "..."}` so friends get pay buttons |
 | GET | `/api/receipts/images/<id>` | Yes | Stored receipt photo, for the person who scanned it and everyone in its split |
-| GET | `/api/audit-log` | Yes | Latest 200 account events (log ins, profile, friends, splits, payments) |
+| GET | `/api/audit-log?page=1&page_size=20&category=` | Yes | Paged account events, newest first. `category` is optional: account, profile, friends, splits, or payments |
+| GET | `/api/notifications?page=1&page_size=10` | Yes | Things other people did that involve you, with `unread_count` |
+| POST | `/api/notifications/read` | Yes | Mark `{"notification_ids": [...]}` as read, or all when the list is left out |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 

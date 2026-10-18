@@ -2,8 +2,10 @@ import { useState } from "react";
 
 import SplitHistoryCard from "../components/history/SplitHistoryCard";
 import { BackIcon } from "../components/icons";
+import Pagination from "../components/Pagination";
 import ReceiptViewerModal from "../components/ReceiptViewerModal";
 import { useAuth } from "../hooks/useAuth";
+import { usePagination } from "../hooks/usePagination";
 import { useSplitHistory } from "../hooks/useSplitHistory";
 import type { Friend } from "../types";
 import "../styles/main.css";
@@ -18,6 +20,7 @@ export default function SplitHistoryScreen({ people, onBack }: SplitHistoryScree
   const { currentUser } = useAuth();
   const { splits, isLoading, errorMessage } = useSplitHistory();
   const [viewingReceiptImageId, setViewingReceiptImageId] = useState<string | null>(null);
+  const splitPages = usePagination(splits);
 
   const peopleByUsername = new Map(people.map((person) => [person.username, person]));
 
@@ -42,7 +45,7 @@ export default function SplitHistoryScreen({ people, onBack }: SplitHistoryScree
         )}
         {currentUser && splits.length > 0 && (
           <ul className="history-list">
-            {splits.map((split) => (
+            {splitPages.pageItems.map((split) => (
               <SplitHistoryCard
                 key={split.id}
                 split={split}
@@ -53,6 +56,13 @@ export default function SplitHistoryScreen({ people, onBack }: SplitHistoryScree
             ))}
           </ul>
         )}
+        <Pagination
+          page={splitPages.page}
+          pageCount={splitPages.pageCount}
+          totalCount={splitPages.totalCount}
+          itemLabel="grocery runs"
+          onPageChange={splitPages.setPage}
+        />
       </div>
 
       {viewingReceiptImageId && (

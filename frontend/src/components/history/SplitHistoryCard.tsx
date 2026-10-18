@@ -4,7 +4,7 @@ import type { Friend } from "../../types";
 import { SavedSplit } from "../../types/split";
 import { formatReceiptDate, money } from "../../utils";
 import Avatar from "../Avatar";
-import { CollapseIcon, ExpandIcon, ViewReceiptIcon } from "../icons";
+import { CollapseIcon, ExpandIcon, LocationIcon, ViewReceiptIcon } from "../icons";
 
 type SplitHistoryCardProps = {
   split: SavedSplit;
@@ -30,8 +30,14 @@ function describeYourPart(split: SavedSplit, currentUsername: string): { label: 
     const owedToYou = split.people.reduce((total, person) => total + person.owes, 0);
     return { label: `You paid, owed ${money(owedToYou)}`, className: "history-owed" };
   }
-  const yourShare = split.people.find((person) => person.username === currentUsername);
-  return { label: `You owe ${money(yourShare?.owes ?? 0)}`, className: "history-owe" };
+  const yourOwes = split.people.find((person) => person.username === currentUsername)?.owes ?? 0;
+  if (yourOwes < 0) {
+    return { label: `You overpaid, owed ${money(-yourOwes)} back`, className: "history-owed" };
+  }
+  if (yourOwes === 0) {
+    return { label: "You're all paid up", className: "history-settled" };
+  }
+  return { label: `You owe @${split.payer} ${money(yourOwes)}`, className: "history-owe" };
 }
 
 export default function SplitHistoryCard({
@@ -53,6 +59,11 @@ export default function SplitHistoryCard({
         <div className="history-card-title">
           <span className="history-store">{split.store_name ?? "Grocery run"}</span>
           <span className="history-date">{describeSplitDate(split)}</span>
+          {split.store_address && (
+            <span className="history-location">
+              <LocationIcon /> {split.store_address}
+            </span>
+          )}
         </div>
         <span className="history-total">{money(split.total)}</span>
       </div>
@@ -96,6 +107,12 @@ export default function SplitHistoryCard({
                 <span>{findName(person.username)}</span>
                 <span>{money(person.total)}</span>
               </div>
+              {person.paid > 0 && (
+                <p className="history-paid-upfront">
+                  Paid {money(person.paid)} upfront
+                  {person.owes < 0 ? `, owed ${money(-person.owes)} back` : `, ${money(person.owes)} left`}
+                </p>
+              )}
               <ul className="history-items">
                 {person.items.map((itemShare) => (
                   <li key={itemShare.item_id}>

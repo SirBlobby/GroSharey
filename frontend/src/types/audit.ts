@@ -8,3 +8,10 @@ export type AuditEvent = {
   actor_username: string | null;
   created_at: string;
 };
+
+export type AuditLogPage = {
+  events: AuditEvent[];
+  total: number;
+  page: number;
+  page_size: number;
+};
