@@ -50,3 +50,5 @@ class Payment(BaseModel):
     method: PaymentMethod
     recorded_by: str
     created_at: datetime
+    # True when the person who got paid was emailed about it (only set when recording).
+    recipient_emailed: bool = False

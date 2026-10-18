@@ -221,7 +221,7 @@ Friendships are mutual and stored in the `friendships` collection. Saved splits 
 
 ### Email Notifications
 
-Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the payer's profile in the web app. `emailed_usernames` in the response says who was emailed. If email isn't configured or sending fails, the split is still saved; the error is only logged.
+Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the payer's profile in the web app. `emailed_usernames` in the response says who was emailed. Recording a payment with `direction: "paid"` emails the person who got paid ("Alex paid you $7.07"), with what's still owed; `recipient_emailed` in the response says whether it went out. Payments recorded as `"received"` send nothing, since the person recording them already knows. If email isn't configured or sending fails, the split is still saved; the error is only logged.
 
 ### Settling Up
 

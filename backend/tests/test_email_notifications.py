@@ -142,3 +142,55 @@ def test_split_is_saved_when_email_server_is_down(monkeypatch):
     assert response.status_code == 201
     assert response.json["emailed_usernames"] == []
     assert len(client.get("/api/splits", headers=sachi).json) == 1
+
+
+def make_alex_owe_sachi(client) -> tuple[dict, dict]:
+    sachi = sign_up(client, "sachi")
+    alex = sign_up(client, "alex")
+    client.post("/api/friends", json={"username": "alex"}, headers=sachi)
+    save_milk_split(client, sachi)  # Alex owes Sachi $3.00
+    FakeSmtpServer.sent_messages = []
+    return sachi, alex
+
+
+def test_person_who_got_paid_gets_an_email(monkeypatch):
+    client = build_client(monkeypatch, email_configured=True)
+    sachi, alex = make_alex_owe_sachi(client)
+
+    response = client.post(
+        "/api/payments",
+        json={"friend_username": "sachi", "amount": 1.00, "direction": "paid", "method": "venmo"},
+        headers=alex,
+    )
+    assert response.status_code == 201
+    assert response.json["recipient_emailed"] is True
+
+    assert len(FakeSmtpServer.sent_messages) == 1
+    message = FakeSmtpServer.sent_messages[0]
+    assert message["To"] == "sachi@example.com"
+    assert message["Subject"] == "Alex paid you $1.00"
+    text_body = message.get_body(("plain",)).get_content()
+    assert "by Venmo" in text_body
+    assert "Alex still owes you $2.00." in text_body
+    assert "https://grosharey.example/?user=alex" in text_body
+
+    client.post(
+        "/api/payments",
+        json={"friend_username": "sachi", "amount": 2.00, "direction": "paid", "method": "cash"},
+        headers=alex,
+    )
+    assert "all settled up" in FakeSmtpServer.sent_messages[1].get_body(("plain",)).get_content()
+
+
+def test_no_email_when_the_recipient_records_it_themselves(monkeypatch):
+    client = build_client(monkeypatch, email_configured=True)
+    sachi, alex = make_alex_owe_sachi(client)
+
+    response = client.post(
+        "/api/payments",
+        json={"friend_username": "alex", "amount": 3.00, "direction": "received", "method": "cash"},
+        headers=sachi,
+    )
+    assert response.status_code == 201
+    assert response.json["recipient_emailed"] is False
+    assert FakeSmtpServer.sent_messages == []

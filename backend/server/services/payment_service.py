@@ -5,6 +5,7 @@ from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.payment_repository import PaymentRepository
 from server.services.audit_log_service import AuditLogService
 from server.services.friend_service import FriendService
+from server.services.notification_service import NotificationService
 
 
 class PaymentService:
@@ -14,7 +15,9 @@ class PaymentService:
         payment_repository: PaymentRepository,
         friend_service: FriendService,
         audit_log_service: AuditLogService,
+        notification_service: NotificationService,
     ):
+        self.notification_service = notification_service
         self.friendship_repository = friendship_repository
         self.audit_log_service = audit_log_service
         self.payment_repository = payment_repository
@@ -50,6 +53,13 @@ class PaymentService:
             f"@{current_user.username} recorded a {payment_summary}",
             current_user.username,
         )
+        # Email the person who got paid, unless they recorded it themselves.
+        if payment_request.direction == "paid":
+            still_owed_cents = self.friend_service.get_balance_in_cents(friend_user.id, current_user.id)
+            recipient_emailed = self.notification_service.notify_payment_received(
+                current_user, friend_user, amount_cents, payment_request.method, still_owed_cents
+            )
+            payment = payment.model_copy(update={"recipient_emailed": recipient_emailed})
         return payment
 
     def list_payments(self, user_id: str) -> list[Payment]:
