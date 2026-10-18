@@ -1,4 +1,5 @@
 import { useAuth } from "../../hooks/useAuth";
+import { LogOutIcon } from "../icons";
 import ProfileAvatar from "../ProfileAvatar";
 import { SETTINGS_SECTIONS, SettingsSection } from "./settingsSections";
 
@@ -8,7 +9,7 @@ type SettingsMenuProps = {
 };
 
 export default function SettingsMenu({ activeSection, onSelectSection }: SettingsMenuProps) {
-  const { currentUser } = useAuth();
+  const { currentUser, logOut } = useAuth();
 
   return (
     <nav className="card settings-menu" aria-label="Settings">
@@ -36,6 +37,10 @@ export default function SettingsMenu({ activeSection, onSelectSection }: Setting
           </li>
         ))}
       </ul>
+      <button type="button" className="settings-menu-item settings-menu-logout" onClick={logOut}>
+        <LogOutIcon />
+        Log Out
+      </button>
     </nav>
   );
 }

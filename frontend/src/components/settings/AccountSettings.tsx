@@ -4,7 +4,6 @@ import { profilesApi } from "../../api/profilesApi";
 import { useAuth } from "../../hooks/useAuth";
 import { useFormSubmission } from "../../hooks/useFormSubmission";
 import { PaymentHandles } from "../../types/auth";
-import { LogOutIcon } from "../icons";
 import PasswordForm from "./account/PasswordForm";
 import UsernameForm from "./account/UsernameForm";
 
@@ -13,7 +12,7 @@ function formatDate(isoDate: string): string {
 }
 
 export default function AccountSettings() {
-  const { currentUser, logOut, updateCurrentUser } = useAuth();
+  const { currentUser, updateCurrentUser } = useAuth();
   const [venmoUsername, setVenmoUsername] = useState(currentUser?.venmo_username ?? "");
   const [paypalUsername, setPaypalUsername] = useState(currentUser?.paypal_username ?? "");
   const [isSaved, setIsSaved] = useState(false);
@@ -79,12 +78,6 @@ export default function AccountSettings() {
         </button>
       </form>
 
-      <div className="settings-group">
-        <h3>Session</h3>
-        <button type="button" className="btn danger-button" onClick={logOut}>
-          <LogOutIcon /> Log Out
-        </button>
-      </div>
     </div>
   );
 }

@@ -10,6 +10,7 @@ import RootNavigator from "./navigation/RootNavigator";
 import { loadFonts } from "./styles/fonts";
 import "./styles/themes.css";
 import "./styles/global.css";
+import "./styles/laptop.css";
 import "./styles/mobile.css";
 
 loadFonts();

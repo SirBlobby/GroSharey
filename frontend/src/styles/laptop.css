@@ -1,0 +1,57 @@
+@media (min-width: 721px) and (max-width: 1440px), (min-width: 721px) and (max-height: 860px) {
+  html { --base-font-size: 14px; }
+
+  .screen { padding: 10px 12px 16px; }
+  .card { padding: 16px; }
+  .topbar { padding: 0 8px 8px; font-size: 1.3rem; }
+  .topbar-actions { gap: 14px; }
+  .brand { font-size: 1.9rem; gap: 10px; }
+  .brand-logo { width: 52px; height: 52px; }
+  .btn { font-size: 1.35rem; padding: 10px 14px; border-width: 4px; }
+  .plus { width: 46px; height: 46px; font-size: 1.9rem; }
+
+  .main-grid, .home-details, .home-lower, .settings-layout, .manage-layout, .friend-profile-layout { gap: 10px; }
+  .main-grid { grid-template-columns: minmax(220px, 26%) 1fr; }
+
+  .friends { padding: 14px 10px; }
+  .friends h2 { font-size: 2rem; margin-bottom: 6px; }
+  .friends .plus { margin-top: 14px; }
+  .friend { font-size: 1.35rem; padding: 8px 12px; }
+  .friend .av { width: 40px; height: 40px; border-width: 3px; font-size: 0.9rem; }
+
+  .owe, .owe:has(.friend-overview) { padding: 14px 22px; gap: 12px; }
+  .owe h2 { font-size: 1.8rem; }
+  .owe .amt { font-size: clamp(2.4rem, 6vh, 3.8rem); }
+  .owe .amt.ok { font-size: 1.8rem; }
+  .friend-overview .av { width: clamp(72px, 13vh, 130px); height: clamp(72px, 13vh, 130px); border-width: 5px; font-size: 1.8rem; }
+  .friend-overview-name { font-size: 2rem; }
+  .pay { font-size: 1.3rem; }
+  .paypal, .venmo { padding: 8px 24px; font-size: 1.4rem; }
+
+  .home-lower { grid-template-columns: 1fr minmax(240px, 30%); }
+  .home-lower .log { overflow: auto; gap: 12px; padding: 14px; }
+  .log h2 { font-size: 1.7rem; text-align: center; }
+  .home-lower .choice { height: 92px; font-size: 1.25rem; flex-direction: row; gap: 12px; }
+  .home-lower .choice svg { width: 40px; height: 40px; }
+  .shared-splits { padding: 14px; }
+  .shared-splits .history-header h2, .history-header h2 { font-size: 1.8rem; }
+  .history-card { padding: 12px 14px; gap: 10px; }
+  .history-store, .history-total { font-size: 1.5rem; }
+  .history-people .av { width: 34px; height: 34px; }
+
+  .settings-menu { padding: 16px 12px; gap: 12px; }
+  .settings-menu-item { font-size: 1.2rem; padding: 8px 12px; }
+  .settings-panel { padding: 16px 20px; gap: 14px; }
+  .settings-panel h2, .items-header h2, .split-summary h2, .receipt-details-form h2 { font-size: 2rem; }
+
+  .items, .split-summary, .receipt-details-form { padding: 16px; }
+  .row { padding: 10px 12px; }
+  .friend-profile-card { padding: 20px 16px; }
+  .profile-avatar { width: 110px; height: 110px; }
+  .friend-profile-name { font-size: 2.1rem; }
+
+  .scan-card { padding: 16px 24px; }
+  .landing-hero { padding: 32px 20px; }
+  .landing-hero-logo { width: 110px; height: 110px; }
+  .landing-section { padding: 24px 20px; }
+}

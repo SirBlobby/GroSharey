@@ -65,8 +65,7 @@ frontend/
 | Scan a receipt | `ScanReceiptScreen.tsx` |
 | Edit items and assign friends | `ManageItemsScreen.tsx` |
 | Grocery run saved | `ConfirmedScreen.tsx` |
-| Past grocery runs with details and View Receipt | `SplitHistoryScreen.tsx`, `components/history/` |
-| Settings menu with Profile, Friends, Appearance, Account, Audit Log, and App Info | `SettingsScreen.tsx`, `components/settings/` |
+| Settings menu with Profile, Friends, History, Appearance, Account, Audit Log, App Info, and Log Out | `SettingsScreen.tsx`, `components/settings/` |
 | Another user's profile with Add Friend | `FriendProfileScreen.tsx` |
 
 Icons come from [Iconify](https://iconify.design/) through `@iconify/react` and are collected in `src/components/icons.tsx`.

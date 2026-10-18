@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Friend } from '../types';
 import { money } from '../utils';
-import { BellAlertIcon, HistoryIcon, LogOutIcon, ManualEntryIcon, ReceiptIcon, UserIcon } from '../components/icons';
+import { BellAlertIcon, ManualEntryIcon, ReceiptIcon, UserIcon } from '../components/icons';
 import Avatar from '../components/Avatar';
 import BalanceCard from '../components/BalanceCard';
 import FriendOverviewHeader from '../components/FriendOverviewHeader';
@@ -25,16 +25,14 @@ interface Props {
   onScan: () => void;
   onManual: () => void;
   onShowSettings: () => void;
-  onShowHistory: () => void;
   onViewProfile: (username: string) => void;
   notificationCenter: NotificationCenter;
   onOpenNotification: (notification: AppNotification) => void;
-  onLogout: () => void;
 }
 
 export default function MainScreen({
   currentUsername, friends, people, selectedFriend, errorMessage, onSelectFriend, onAddFriend, onSettleUp,
-  onScan, onManual, onShowSettings, onShowHistory, onViewProfile, notificationCenter, onOpenNotification, onLogout,
+  onScan, onManual, onShowSettings, onViewProfile, notificationCenter, onOpenNotification,
 }: Props) {
   const [adding, setAdding] = useState(false);
 
@@ -44,8 +42,6 @@ export default function MainScreen({
         <span className="brand"><Logo className="brand-logo" />groSharey</span>
         <div className="topbar-actions">
           <NotificationBell notificationCenter={notificationCenter} onOpenNotification={onOpenNotification} />
-          <button type="button" aria-label="History" onClick={onShowHistory}><span className="topbar-label">History</span> <HistoryIcon /></button>
-          <button type="button" aria-label="Log Out" onClick={onLogout}><span className="topbar-label">Log Out</span> <LogOutIcon /></button>
           <button type="button" aria-label="Settings" onClick={onShowSettings}><UserIcon /></button>
         </div>
       </div>

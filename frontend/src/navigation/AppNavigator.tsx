@@ -14,7 +14,6 @@ import MainScreen from "../screens/MainScreen";
 import ManageItemsScreen from "../screens/ManageItemsScreen";
 import ScanReceiptScreen from "../screens/ScanReceiptScreen";
 import SettingsScreen from "../screens/SettingsScreen";
-import SplitHistoryScreen from "../screens/SplitHistoryScreen";
 import { convertUserToFriend } from "../services/friends";
 import { AppNotification } from "../types/notification";
 
@@ -23,7 +22,6 @@ type AppPage =
   | { name: "scan" }
   | { name: "manage" }
   | { name: "confirmed" }
-  | { name: "history" }
   | { name: "settings"; section: SettingsSection }
   | { name: "profile"; username: string; returnPage: "main" | "settings" };
 
@@ -33,7 +31,7 @@ function getInitialPage(): AppPage {
 }
 
 export default function AppNavigator() {
-  const { currentUser, logOut } = useAuth();
+  const { currentUser } = useAuth();
   const friendList = useFriends();
   const groceryRun = useGroceryRun();
   const receiptScanner = useReceiptScanner();
@@ -58,7 +56,7 @@ export default function AppNavigator() {
   function openNotification(notification: AppNotification) {
     notificationCenter.markRead(notification.id);
     if (notification.category === "splits") {
-      setCurrentPage({ name: "history" });
+      showSettings("history");
     } else if (notification.category === "account") {
       showSettings("auditLog");
     } else if (notification.actor_username) {
@@ -118,8 +116,6 @@ export default function AppNavigator() {
             onConfirm={confirmGroceryRun}
           />
         );
-      case "history":
-        return <SplitHistoryScreen people={assignableFriends} onBack={showMain} />;
       case "confirmed":
         return <ConfirmedScreen onDone={showMain} />;
       case "settings":
@@ -128,6 +124,7 @@ export default function AppNavigator() {
             activeSection={currentPage.section}
             onSelectSection={(section) => setCurrentPage({ name: "settings", section })}
             friends={friendList.friends}
+            people={assignableFriends}
             onAddFriend={friendList.addFriend}
             onRemoveFriend={friendList.removeFriend}
             onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "settings" })}
@@ -160,11 +157,9 @@ export default function AppNavigator() {
             onScan={startScan}
             onManual={startManualEntry}
             onShowSettings={() => showSettings("profile")}
-            onShowHistory={() => setCurrentPage({ name: "history" })}
             onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "main" })}
             notificationCenter={notificationCenter}
             onOpenNotification={openNotification}
-            onLogout={logOut}
           />
         );
     }

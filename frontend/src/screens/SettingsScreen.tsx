@@ -4,6 +4,7 @@ import AppearanceSettings from "../components/settings/AppearanceSettings";
 import AppInfoSettings from "../components/settings/AppInfoSettings";
 import AuditLogSettings from "../components/settings/AuditLogSettings";
 import FriendManager from "../components/settings/FriendManager";
+import HistorySettings from "../components/settings/HistorySettings";
 import ProfileSettings from "../components/settings/ProfileSettings";
 import SettingsMenu from "../components/settings/SettingsMenu";
 import { SettingsSection } from "../components/settings/settingsSections";
@@ -16,6 +17,7 @@ type SettingsScreenProps = {
   activeSection: SettingsSection;
   onSelectSection: (section: SettingsSection) => void;
   friends: Friend[];
+  people: Friend[];
   onAddFriend: (username: string) => Promise<Friend>;
   onRemoveFriend: (username: string) => Promise<void>;
   onViewProfile: (username: string) => void;
@@ -26,6 +28,7 @@ export default function SettingsScreen({
   activeSection,
   onSelectSection,
   friends,
+  people,
   onAddFriend,
   onRemoveFriend,
   onViewProfile,
@@ -42,6 +45,8 @@ export default function SettingsScreen({
             onViewProfile={onViewProfile}
           />
         );
+      case "history":
+        return <HistorySettings people={people} />;
       case "appearance":
         return <AppearanceSettings />;
       case "account":

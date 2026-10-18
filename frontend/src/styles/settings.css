@@ -106,3 +106,5 @@
 .audit-event--warning .audit-event-icon { background: var(--color-surface); border-color: var(--color-danger); color: var(--color-danger); }
 .audit-event--warning .audit-event-description { color: var(--color-danger); }
 
+.settings-menu-logout { margin-top: auto; color: var(--color-danger); }
+.settings-menu-logout:hover { border-color: var(--color-danger); }
