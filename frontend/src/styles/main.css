@@ -24,7 +24,7 @@
 }
 .friend:last-child { border-bottom: 3px solid var(--green); }
 .friend.sel { background: #fff; border-radius: 30px; border-color: transparent; }
-.badge { background: var(--red); color: var(--mint); font-size: 1.2rem; font-weight: 400; padding: 4px 12px; border-radius: 99px; }
+.badge { background: var(--red); color: var(--mint); font-size: 1.2rem; font-weight: 400; padding: 4px 10px; border-radius: 10px; }
 .friends .plus { margin-top: 26px; }
 .owe { display: flex; align-items: center; justify-content: space-around; flex-wrap: wrap; gap: 12px; padding: 20px; }
 .owe h2 { font-size: clamp(1.8rem, 4vw, 2.7rem); }

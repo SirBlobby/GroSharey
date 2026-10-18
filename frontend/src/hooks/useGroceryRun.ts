@@ -25,6 +25,7 @@ export function useGroceryRun() {
     setItems(scannedReceipt.items);
     setReceiptDetails({
       storeName: scannedReceipt.storeName,
+      storeAddress: scannedReceipt.storeAddress,
       purchaseDate: scannedReceipt.purchaseDate,
       tax: scannedReceipt.tax,
       tip: scannedReceipt.tip,

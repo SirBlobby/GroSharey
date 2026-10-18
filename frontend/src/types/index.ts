@@ -2,6 +2,7 @@ export type Friend = {
   username: string;
   name: string;
   initials: string;
+  profilePictureUrl: string | null;
   balance: number;
   venmoPayUrl: string | null;
   paypalPayUrl: string | null;

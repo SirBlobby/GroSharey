@@ -35,3 +35,9 @@ export const AppearanceIcon = () => <Icon icon="mdi:palette-outline" width="1em"
 export const AccountIcon = () => <Icon icon="mdi:cog-outline" width="1em" aria-hidden="true" />;
 
 export const AppInfoIcon = () => <Icon icon="mdi:information-outline" width="1em" aria-hidden="true" />;
+
+export const CalendarIcon = () => <Icon icon="mdi:calendar-month-outline" width="1em" aria-hidden="true" />;
+
+export const StoreIcon = () => <Icon icon="mdi:storefront-outline" width="1em" aria-hidden="true" />;
+
+export const LocationIcon = () => <Icon icon="mdi:map-marker-outline" width="1em" aria-hidden="true" />;

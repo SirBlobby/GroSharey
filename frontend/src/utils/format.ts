@@ -17,6 +17,15 @@ export function getInitials(name: string): string {
     .toUpperCase();
 }
 
+export function formatReceiptDate(isoDate: string): string {
+  const [year, month, day] = isoDate.split("-").map(Number);
+  const receiptDate = new Date(year, month - 1, day);
+  if (isNaN(receiptDate.getTime())) {
+    return isoDate;
+  }
+  return receiptDate.toLocaleDateString(undefined, { weekday: "short", year: "numeric", month: "long", day: "numeric" });
+}
+
 export function readErrorMessage(error: unknown, fallbackMessage: string): string {
   return error instanceof Error ? error.message : fallbackMessage;
 }

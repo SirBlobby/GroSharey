@@ -7,6 +7,7 @@ export type ScannedItem = Item & { taxCode: string | null };
 
 export interface ScannedReceipt {
   storeName: string | null;
+  storeAddress: string | null;
   purchaseDate: string | null;
   items: ScannedItem[];
   tax: number | null;
@@ -21,6 +22,7 @@ export async function parseReceipt(imageBase64: string): Promise<ScannedReceipt>
   const receipt = await receiptsApi.parseReceipt(imageBase64);
   return {
     storeName: receipt.store_name,
+    storeAddress: receipt.store_address,
     purchaseDate: receipt.purchase_date,
     items: receipt.items.map((item) => ({
       id: uid(),

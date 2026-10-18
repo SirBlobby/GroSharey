@@ -4,6 +4,7 @@ import { SavedSplit, SplitRequest } from "../types/split";
 
 export type ReceiptDetails = {
   storeName: string | null;
+  storeAddress: string | null;
   purchaseDate: string | null;
   tax: number | null;
   tip: number | null;
@@ -12,6 +13,7 @@ export type ReceiptDetails = {
 
 export const EMPTY_RECEIPT_DETAILS: ReceiptDetails = {
   storeName: null,
+  storeAddress: null,
   purchaseDate: null,
   tax: null,
   tip: null,

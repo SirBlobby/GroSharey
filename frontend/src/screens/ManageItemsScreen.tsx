@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import type { Friend, Item } from '../types';
 import type { ReceiptDetails } from '../services/splits';
-import { money, uid } from '../utils';
-import Avatar from '../components/Avatar';
+import { uid } from '../utils';
+import { BackIcon } from '../components/icons';
 import FriendModal from '../components/FriendModal';
 import ItemRow from '../components/ItemRow';
+import SplitSummary from '../components/SplitSummary';
+import '../styles/main.css';
 import '../styles/manage.css';
 
 interface Props {
@@ -34,69 +36,63 @@ export default function ManageItemsScreen({
     onItemsChange([...items, item]);
   };
 
-  const itemsTotal = items.reduce((sum, i) => sum + (parseFloat(i.price) || 0), 0);
-  const total = itemsTotal + (receiptDetails.tax ?? 0) + (receiptDetails.tip ?? 0);
+  const toggleOnEveryItem = (username: string) => {
+    const isOnEveryItem = items.every((i) => i.usernames.includes(username));
+    onItemsChange(items.map((i) => ({
+      ...i,
+      usernames: isOnEveryItem
+        ? i.usernames.filter((x) => x !== username)
+        : [...i.usernames.filter((x) => x !== username), username],
+    })));
+  };
+
   const assigning = items.find((i) => i.id === assigningId);
 
   return (
-    <section className="screen">
-      <div className="title-top">Assign Friends</div>
+    <section className="screen manage">
+      <div className="topbar">
+        <span>Assign Friends</span>
+        <button type="button" onClick={onBack}><BackIcon /> Back</button>
+      </div>
 
-      <div className="manage-body">
+      <div className="manage-layout">
         <div className="card items">
-          <h2>Items</h2>
+          <div className="items-header">
+            <h2>Items</h2>
+            <span className="items-count">{items.length}</span>
+          </div>
           {receiptDetails.warnings.map((warning) => (
             <p key={warning} className="notes">{warning}</p>
           ))}
           <div className="item-rows">
             {items.length === 0 ? (
-              <div className="empty">No items yet.<br />Tap + to add one.</div>
+              <div className="empty">No items yet.<br />Add one below.</div>
             ) : (
               items.map((item) => (
                 <ItemRow
                   key={item.id}
                   item={item}
+                  friends={friends}
                   autoFocus={item.id === focusId}
                   onChange={(p) => patch(item.id, p)}
                   onDelete={() => onItemsChange(items.filter((i) => i.id !== item.id))}
+                  onAssign={() => setAssigningId(item.id)}
                 />
               ))
             )}
           </div>
-          <button type="button" className="plus" aria-label="Add item" onClick={addItem}>+</button>
-          {receiptDetails.tax !== null && <div className="total">Tax: {money(receiptDetails.tax)}</div>}
-          {receiptDetails.tip !== null && <div className="total">Tip: {money(receiptDetails.tip)}</div>}
-          {items.length > 0 && <div className="total">Total: {money(total)}</div>}
+          <button type="button" className="add-item-button" onClick={addItem}>+ Add item</button>
         </div>
 
-        <div className="assign">
-          <div className="spacer" />
-          {items.map((item) => (
-            <div key={item.id} className="arow">
-              <span className="arow-label">{item.name || 'Unnamed item'}</span>
-              {item.usernames.map((username) => {
-                const f = friends.find((x) => x.username === username);
-                return f ? (
-                  <Avatar
-                    key={username}
-                    friend={f}
-                    title={`Remove ${f.name}`}
-                    onClick={() => patch(item.id, { usernames: item.usernames.filter((x) => x !== username) })}
-                  />
-                ) : null;
-              })}
-              <button type="button" className="plus" aria-label="Assign friends" onClick={() => setAssigningId(item.id)}>+</button>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="footer">
-        {errorMessage && <p className="error-text">{errorMessage}</p>}
-        <button type="button" className="btn" onClick={onBack}>Back</button>
-        <button type="button" className="btn" onClick={onConfirm} disabled={isSaving}>
-          {isSaving ? 'Saving...' : 'Confirm'}
-        </button>
+        <SplitSummary
+          items={items}
+          receiptDetails={receiptDetails}
+          friends={friends}
+          errorMessage={errorMessage}
+          isSaving={isSaving}
+          onToggleOnEveryItem={toggleOnEveryItem}
+          onConfirm={onConfirm}
+        />
       </div>
 
       {assigning && (

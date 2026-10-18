@@ -73,3 +73,4 @@ html[data-text-size="large"] { font-size: 112.5%; }
 html[data-reduce-motion="true"] *, html[data-reduce-motion="true"] *::before, html[data-reduce-motion="true"] *::after {
   animation-duration: 0.01s !important; transition-duration: 0.01s !important;
 }
+.footer { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 40px; padding: 14px 24px 6px; }
