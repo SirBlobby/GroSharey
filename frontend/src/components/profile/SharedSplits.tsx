@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { usePagination } from "../../hooks/usePagination";
 import { useSplitHistory } from "../../hooks/useSplitHistory";
+import { calculateUnpaidAmounts } from "../../services/splitStanding";
 import type { Friend } from "../../types";
 import SplitHistoryCard from "../history/SplitHistoryCard";
 import Pagination from "../Pagination";
@@ -24,6 +25,10 @@ export default function SharedSplits({ friendUsername, friendName, currentUserna
       split.payer === friendUsername || split.people.some((person) => person.username === friendUsername),
   );
   const peopleByUsername = new Map(people.map((person) => [person.username, person]));
+  const unpaidAmounts = useMemo(
+    () => calculateUnpaidAmounts(splits, currentUsername, people),
+    [splits, currentUsername, people],
+  );
   const sharedSplitPages = usePagination(sharedSplits, 5);
 
   return (
@@ -45,6 +50,8 @@ export default function SharedSplits({ friendUsername, friendName, currentUserna
               split={split}
               currentUsername={currentUsername}
               peopleByUsername={peopleByUsername}
+              unpaidForSplit={unpaidAmounts.get(split.id) ?? new Map()}
+              focusUsername={friendUsername}
               onViewReceipt={setViewingReceiptImageId}
             />
           ))}

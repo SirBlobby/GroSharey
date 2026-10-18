@@ -111,3 +111,4 @@
 .payment-amount input:focus { border-color: var(--color-primary); }
 .payment-form .settle { margin-top: 0; flex: 1; min-width: 0; }
 .payment-form-hint { margin: 0; font-size: 0.95rem; font-weight: 600; opacity: 0.8; }
+.badge--settled { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-strong); }

@@ -56,3 +56,4 @@
 .shared-splits .history-header h2 { font-size: 2.2rem; }
 .history-paid-upfront { margin: 0; padding: 6px 12px; font-size: 1rem; font-weight: 600; color: var(--color-info); border-bottom: 2px solid var(--color-divider); }
 .history-settled { background: var(--color-primary); }
+.history-neutral { background: var(--color-muted-surface); color: var(--color-text); }

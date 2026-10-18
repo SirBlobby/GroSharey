@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 
 import { useAuth } from "../../hooks/useAuth";
 import { usePagination } from "../../hooks/usePagination";
 import { useSplitHistory } from "../../hooks/useSplitHistory";
+import { calculateUnpaidAmounts } from "../../services/splitStanding";
 import type { Friend } from "../../types";
 import SplitHistoryCard from "../history/SplitHistoryCard";
 import Pagination from "../Pagination";
@@ -20,6 +21,10 @@ export default function HistorySettings({ people }: HistorySettingsProps) {
   const splitPages = usePagination(splits);
 
   const peopleByUsername = new Map(people.map((person) => [person.username, person]));
+  const unpaidAmounts = useMemo(
+    () => calculateUnpaidAmounts(splits, currentUser?.username ?? "", people),
+    [splits, currentUser, people],
+  );
 
   return (
     <div className="card settings-panel">
@@ -40,6 +45,7 @@ export default function HistorySettings({ people }: HistorySettingsProps) {
               split={split}
               currentUsername={currentUser.username}
               peopleByUsername={peopleByUsername}
+              unpaidForSplit={unpaidAmounts.get(split.id) ?? new Map()}
               onViewReceipt={setViewingReceiptImageId}
             />
           ))}

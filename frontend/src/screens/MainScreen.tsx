@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import type { Friend } from '../types';
 import { money } from '../utils';
-import { BellAlertIcon, ManualEntryIcon, ReceiptIcon, UserIcon } from '../components/icons';
+import { BellAlertIcon, CheckIcon, ManualEntryIcon, ReceiptIcon, UserIcon } from '../components/icons';
 import Avatar from '../components/Avatar';
 import BalanceCard from '../components/BalanceCard';
 import FriendOverviewHeader from '../components/FriendOverviewHeader';
@@ -70,6 +70,11 @@ export default function MainScreen({
                 {f.balance > 0 && (
                   <span className="badge badge--owed" title={`${f.name} owes you`}>
                     <BellAlertIcon /> {money(f.balance)}
+                  </span>
+                )}
+                {f.balance === 0 && (
+                  <span className="badge badge--settled" title={`You and ${f.name} are settled up`} aria-label="Settled up">
+                    <CheckIcon />
                   </span>
                 )}
               </button>
