@@ -1,14 +1,9 @@
-import logging
-
-from google import genai
-from google.genai import errors as gemini_errors
 from google.genai import types
 
-from server.errors import BadRequestError, ExternalServiceError, RateLimitError
+from server.errors import BadRequestError
 from server.models.receipt_models import ParsedReceipt, ParsedReceiptItem, Receipt
+from server.services.gemini_client import GeminiClient, GeminiErrorMessages
 from server.services.image_service import open_image
-
-logger = logging.getLogger(__name__)
 
 IMAGE_FORMAT_CONTENT_TYPES = {
     "JPEG": "image/jpeg",
@@ -69,20 +64,17 @@ def add_item_ids(receipt: Receipt) -> ParsedReceipt:
     )
 
 
-class ReceiptService:
-    def __init__(self, gemini_api_key: str, gemini_model: str, gemini_fallback_model: str):
-        self.gemini_api_key = gemini_api_key
-        # Free-tier quotas are per model, so the fallback draws on a separate allowance.
-        self.gemini_models = list(dict.fromkeys(model for model in (gemini_model, gemini_fallback_model) if model))
-        self.gemini_client: genai.Client | None = None
+RECEIPT_ERROR_MESSAGES = GeminiErrorMessages(
+    not_configured="Receipt scanning is not configured on the server",
+    rate_limited="Too many receipts at once. Try again in a minute.",
+    failed="Couldn't read the receipt right now. Try again.",
+    busy="Receipt scanning is busy right now. Try again in a few minutes.",
+)
 
-    def get_gemini_client(self) -> genai.Client:
-        if not self.gemini_api_key:
-            logger.error("GEMINI_API_KEY is not set")
-            raise ExternalServiceError("Receipt scanning is not configured on the server")
-        if self.gemini_client is None:
-            self.gemini_client = genai.Client(api_key=self.gemini_api_key)
-        return self.gemini_client
+
+class ReceiptService:
+    def __init__(self, gemini_client: GeminiClient):
+        self.gemini_client = gemini_client
 
     def parse_receipt(self, image_bytes: bytes) -> ParsedReceipt:
         image_format = open_image(image_bytes).format
@@ -98,29 +90,16 @@ class ReceiptService:
         return add_item_ids(response.parsed)
 
     def request_receipt_from_gemini(self, image_bytes: bytes, content_type: str) -> types.GenerateContentResponse:
-        """Tries each model once. Only moves on when Gemini is overloaded (5xx); rate limits
-        and bad requests stop immediately so retries don't burn free-tier quota."""
-        client = self.get_gemini_client()
-        for model in self.gemini_models:
-            try:
-                return client.models.generate_content(
-                    model=model,
-                    contents=[
-                        types.Part.from_bytes(data=image_bytes, mime_type=content_type),
-                        "Transcribe this receipt.",
-                    ],
-                    config=types.GenerateContentConfig(
-                        system_instruction=SYSTEM_PROMPT,
-                        # Forces the reply to be JSON matching the Receipt schema.
-                        response_mime_type="application/json",
-                        response_schema=Receipt,
-                    ),
-                )
-            except gemini_errors.ServerError as error:
-                logger.warning("Gemini model %s unavailable (%s %s)", model, error.code, error.status)
-            except gemini_errors.APIError as error:
-                if error.code == 429:
-                    raise RateLimitError("Too many receipts at once. Try again in a minute.")
-                logger.exception("Gemini request to %s failed", model)
-                raise ExternalServiceError("Couldn't read the receipt right now. Try again.")
-        raise ExternalServiceError("Receipt scanning is busy right now. Try again in a few minutes.")
+        return self.gemini_client.generate(
+            contents=[
+                types.Part.from_bytes(data=image_bytes, mime_type=content_type),
+                "Transcribe this receipt.",
+            ],
+            config=types.GenerateContentConfig(
+                system_instruction=SYSTEM_PROMPT,
+                # Forces the reply to be JSON matching the Receipt schema.
+                response_mime_type="application/json",
+                response_schema=Receipt,
+            ),
+            error_messages=RECEIPT_ERROR_MESSAGES,
+        )

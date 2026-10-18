@@ -4,10 +4,12 @@ import AppearanceSettings from "../components/settings/AppearanceSettings";
 import AppInfoSettings from "../components/settings/AppInfoSettings";
 import AuditLogSettings from "../components/settings/AuditLogSettings";
 import FriendManager from "../components/settings/FriendManager";
+import GroupManager from "../components/settings/GroupManager";
 import HistorySettings from "../components/settings/HistorySettings";
 import ProfileSettings from "../components/settings/ProfileSettings";
 import SettingsMenu from "../components/settings/SettingsMenu";
 import { SettingsSection } from "../components/settings/settingsSections";
+import type { GroupList } from "../hooks/useGroups";
 import type { Friend } from "../types";
 import "../styles/main.css";
 import "../styles/account.css";
@@ -20,6 +22,9 @@ type SettingsScreenProps = {
   people: Friend[];
   onAddFriend: (username: string) => Promise<Friend>;
   onRemoveFriend: (username: string) => Promise<void>;
+  groupList: GroupList;
+  currentUsername: string;
+  onOpenShoppingList: (listId: string | null) => void;
   onViewProfile: (username: string) => void;
   onBack: () => void;
 };
@@ -31,6 +36,9 @@ export default function SettingsScreen({
   people,
   onAddFriend,
   onRemoveFriend,
+  groupList,
+  currentUsername,
+  onOpenShoppingList,
   onViewProfile,
   onBack,
 }: SettingsScreenProps) {
@@ -43,6 +51,15 @@ export default function SettingsScreen({
             onAddFriend={onAddFriend}
             onRemoveFriend={onRemoveFriend}
             onViewProfile={onViewProfile}
+          />
+        );
+      case "groups":
+        return (
+          <GroupManager
+            groupList={groupList}
+            friends={friends}
+            currentUsername={currentUsername}
+            onOpenShoppingList={onOpenShoppingList}
           />
         );
       case "history":

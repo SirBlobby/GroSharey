@@ -3,6 +3,7 @@ import { paymentsApi } from "../api/paymentsApi";
 import type { Friend } from "../types";
 import { User } from "../types/auth";
 import { FriendResponse } from "../types/friend";
+import { PublicProfile } from "../types/profile";
 import { getInitials } from "../utils";
 
 function convertToFriend(friendResponse: FriendResponse): Friend {
@@ -23,6 +24,18 @@ export function convertUserToFriend(user: User): Friend {
     name: "You",
     initials: getInitials(user.display_name),
     profilePictureUrl: user.profile_picture_url,
+    balance: 0,
+    venmoPayUrl: null,
+    paypalPayUrl: null,
+  };
+}
+
+export function convertProfileToFriend(profile: PublicProfile): Friend {
+  return {
+    username: profile.username,
+    name: profile.display_name,
+    initials: getInitials(profile.display_name),
+    profilePictureUrl: profile.profile_picture_url,
     balance: 0,
     venmoPayUrl: null,
     paypalPayUrl: null,

@@ -93,6 +93,7 @@ Run from the project root.
 | `bun run typecheck` | Type check the frontend |
 | `bun run test:health` | Check that the backend is running |
 | `bun run backfill:audit-log` | Add audit log entries for friendships, splits, and payments made before the audit log existed (safe to run more than once) |
+| `bun run test:genai` | Check Gemini item matching with sample items, then run a full group split against a throwaway `grosharey_genai_test` database |
 
 Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env` before running.
 
@@ -225,6 +226,14 @@ The logged-in user is the payer, and everyone assigned must be the payer or one 
 ### Friends and Balances
 
 Friendships are mutual and stored in the `friendships` collection. Saved splits go in the `splits` collection, one document per receipt. Payments go in the `payments` collection. Balances are not stored; `GET /api/friends` adds them up from saved splits and payments, so the history always explains the totals.
+
+### Groups and Shopping Lists
+
+Groups (`/api/groups`) are a set of friends, stored in the `groups` collection. The person who makes a group can edit or delete it; everyone else can leave it.
+
+Shopping lists (`/api/shopping-lists`) are stored in the `shopping_lists` collection. A list is either personal or belongs to one group, and each group can have one list. On a group list, every item records who asked for it. Crossing an item off keeps it on the list; only removing an item deletes it.
+
+When a split is made with a group, Gemini matches the receipt items to the open items on the group's list. `POST /api/groups/<id>/match-items` returns who each receipt item belongs to, so the app can assign people automatically. Saving the split with `group_id` crosses the matched items off the list and notifies the people who asked for them. `crossed_off_items` in the response lists what was crossed off.
 
 ### Email Notifications
 

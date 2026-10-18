@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 from pymongo import DESCENDING
 from pymongo.database import Database
 
+from server.models.group_models import StoredGroup
 from server.models.split_models import SavedSplit, SplitResult
 from server.models.user_models import User
 
@@ -20,6 +21,8 @@ def convert_document_to_split(split_document: dict) -> SavedSplit:
         store_address=split_document.get("store_address"),
         purchase_date=split_document.get("purchase_date"),
         receipt_image_id=split_document.get("receipt_image_id"),
+        group_id=split_document.get("group_id"),
+        group_name=split_document.get("group_name"),
         created_by=split_document.get("created_by_username", split_document["payer_username"]),
         created_at=split_document["created_at"],
     )
@@ -45,6 +48,7 @@ class SplitRepository:
         purchase_date: str | None,
         receipt_image_id: str | None,
         created_by: User,
+        group: StoredGroup | None = None,
     ) -> SavedSplit:
         people = split_result.model_dump(mode="json")["people"]
         for person in people:
@@ -62,6 +66,8 @@ class SplitRepository:
             "store_address": store_address,
             "purchase_date": purchase_date,
             "receipt_image_id": receipt_image_id,
+            "group_id": group.id if group else None,
+            "group_name": group.name if group else None,
             "created_by_id": created_by.id,
             "created_by_username": created_by.username,
             "created_at": datetime.now(timezone.utc),

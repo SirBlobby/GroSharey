@@ -3,7 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-AuditCategory = Literal["account", "profile", "friends", "splits", "payments"]
+AuditCategory = Literal["account", "profile", "friends", "groups", "lists", "splits", "payments"]
 
 
 class AuditEvent(BaseModel):

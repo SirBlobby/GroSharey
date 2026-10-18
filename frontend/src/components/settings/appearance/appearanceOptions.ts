@@ -1,4 +1,4 @@
-import type { ColorMode, TextSize } from "../../../appearance/appearanceSettings";
+import type { ColorMode, ColorVision, TextSize } from "../../../appearance/appearanceSettings";
 
 export type Option<Value extends string> = {
   value: Value;
@@ -18,3 +18,9 @@ export const COLOR_MODE_OPTIONS: Option<ColorMode>[] = [
   { value: "dark", label: "Dark" },
 ];
 
+export const COLOR_VISION_OPTIONS: Option<ColorVision>[] = [
+  { value: "standard", label: "Standard" },
+  { value: "red-green", label: "Red-green", ariaLabel: "Red-green color blindness (protanopia and deuteranopia)" },
+  { value: "blue-yellow", label: "Blue-yellow", ariaLabel: "Blue-yellow color blindness (tritanopia)" },
+  { value: "monochrome", label: "Monochrome", ariaLabel: "No color vision (achromatopsia)" },
+];

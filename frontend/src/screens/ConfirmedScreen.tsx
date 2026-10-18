@@ -2,16 +2,21 @@ import { useEffect } from 'react';
 import '../styles/confirmed.css';
 
 interface Props {
+  crossedOffItems?: string[];
   onDone: () => void;
   /** ms before returning to the main view */
   duration?: number;
 }
 
-export default function ConfirmedScreen({ onDone, duration = 2600 }: Props) {
+const CROSSED_OFF_EXTRA_DURATION = 1800;
+
+export default function ConfirmedScreen({ crossedOffItems = [], onDone, duration = 2600 }: Props) {
+  const displayDuration = crossedOffItems.length > 0 ? duration + CROSSED_OFF_EXTRA_DURATION : duration;
+
   useEffect(() => {
-    const t = setTimeout(onDone, duration);
+    const t = setTimeout(onDone, displayDuration);
     return () => clearTimeout(t);
-  }, [onDone, duration]);
+  }, [onDone, displayDuration]);
 
   return (
     <section className="screen confirmed">
@@ -20,6 +25,9 @@ export default function ConfirmedScreen({ onDone, duration = 2600 }: Props) {
         <path className="ring" d="M60 3a57 57 0 1 0 57 57" />
         <path className="tick" d="M38 62l19 19 46-46" />
       </svg>
+      {crossedOffItems.length > 0 && (
+        <p className="confirmed-crossed-off">Crossed off the shopping list: {crossedOffItems.join(", ")}</p>
+      )}
     </section>
   );
 }

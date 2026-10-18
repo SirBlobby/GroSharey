@@ -3,7 +3,16 @@ import { ReactNode, useState } from "react";
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { AuditCategory, AuditEvent } from "../../types/audit";
 import { formatDateTime } from "../../utils";
-import { AccountIcon, FriendsIcon, ProfileIcon, RefreshIcon, SplitsIcon, WalletIcon } from "../icons";
+import {
+  AccountIcon,
+  FriendsIcon,
+  GroupsIcon,
+  ProfileIcon,
+  RefreshIcon,
+  ShoppingListIcon,
+  SplitsIcon,
+  WalletIcon,
+} from "../icons";
 import Pagination from "../Pagination";
 
 type CategoryFilter = AuditCategory | "all";
@@ -13,6 +22,8 @@ const CATEGORY_FILTERS: { value: CategoryFilter; label: string }[] = [
   { value: "account", label: "Account" },
   { value: "profile", label: "Profile" },
   { value: "friends", label: "Friends" },
+  { value: "groups", label: "Groups" },
+  { value: "lists", label: "Lists" },
   { value: "splits", label: "Splits" },
   { value: "payments", label: "Payments" },
 ];
@@ -21,6 +32,8 @@ const CATEGORY_ICONS: Record<AuditCategory, ReactNode> = {
   account: <AccountIcon />,
   profile: <ProfileIcon />,
   friends: <FriendsIcon />,
+  groups: <GroupsIcon />,
+  lists: <ShoppingListIcon />,
   splits: <SplitsIcon />,
   payments: <WalletIcon />,
 };

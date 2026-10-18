@@ -29,6 +29,8 @@ class SplitRequest(BaseModel):
     payer_username: str | None = None
     paid_in_full: list[str] = Field(default_factory=list)
     paid_amounts: dict[str, float] = Field(default_factory=dict)
+    group_id: str | None = None
+    shopping_list_matches: dict[str, list[str]] | None = None
 
 
 class ItemShare(BaseModel):
@@ -65,7 +67,10 @@ class SavedSplit(SplitResult):
     store_address: str | None = None
     purchase_date: str | None
     receipt_image_id: str | None = None
+    group_id: str | None = None
+    group_name: str | None = None
     created_by: str | None = None
     created_at: datetime
     # Who was emailed about this split when it was saved (empty when listing past splits).
     emailed_usernames: list[str] = []
+    crossed_off_items: list[str] = []

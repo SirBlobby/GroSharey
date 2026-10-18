@@ -1,5 +1,5 @@
 import { useAppearance } from "../../hooks/useAppearance";
-import { COLOR_MODE_OPTIONS, TEXT_SIZE_OPTIONS } from "./appearance/appearanceOptions";
+import { COLOR_MODE_OPTIONS, COLOR_VISION_OPTIONS, TEXT_SIZE_OPTIONS } from "./appearance/appearanceOptions";
 import OptionGroup from "./appearance/OptionGroup";
 
 export default function AppearanceSettings() {
@@ -16,6 +16,17 @@ export default function AppearanceSettings() {
           options={COLOR_MODE_OPTIONS}
           selectedValue={appearance.colorMode}
           onSelect={(colorMode) => updateAppearance({ colorMode })}
+        />
+      </div>
+
+      <div className="settings-group">
+        <h3>Color Blindness</h3>
+        <p className="description">Swaps colors that are hard to tell apart, like the red and green on balances.</p>
+        <OptionGroup
+          label="Color blindness"
+          options={COLOR_VISION_OPTIONS}
+          selectedValue={appearance.colorVision}
+          onSelect={(colorVision) => updateAppearance({ colorVision })}
         />
       </div>
 

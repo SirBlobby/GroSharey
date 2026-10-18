@@ -12,3 +12,5 @@
   .confirmed h1 { animation: none; }
   .confirmed .ring, .confirmed .tick { animation-duration: 0.01s; }
 }
+.confirmed-crossed-off { max-width: 520px; margin: 0; text-align: center; font-weight: 600; font-size: 1.3rem; color: var(--color-on-strong); }
+@media (max-width: 720px) { .confirmed-crossed-off { font-size: 1.1rem; padding: 0 12px; } }

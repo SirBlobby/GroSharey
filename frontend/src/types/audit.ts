@@ -1,4 +1,4 @@
-export type AuditCategory = "account" | "profile" | "friends" | "splits" | "payments";
+export type AuditCategory = "account" | "profile" | "friends" | "groups" | "lists" | "splits" | "payments";
 
 export type AuditEvent = {
   id: string;

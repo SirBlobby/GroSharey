@@ -1,9 +1,11 @@
 export type TextSize = "small" | "normal" | "large";
 export type ColorMode = "system" | "light" | "dark";
+export type ColorVision = "standard" | "red-green" | "blue-yellow" | "monochrome";
 
 export type AppearanceSettings = {
   textSize: TextSize;
   colorMode: ColorMode;
+  colorVision: ColorVision;
   highContrast: boolean;
   reduceMotion: boolean;
 };
@@ -15,6 +17,7 @@ export const APPEARANCE_CHANGE_EVENT = "grosharey-appearance-change";
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
   textSize: "normal",
   colorMode: "light",
+  colorVision: "standard",
   highContrast: false,
   reduceMotion: false,
 };
@@ -43,6 +46,7 @@ export function applyAppearance(appearance: AppearanceSettings): void {
   const rootDataset = document.documentElement.dataset;
   rootDataset.textSize = appearance.textSize;
   rootDataset.colorMode = resolveColorMode(appearance.colorMode);
+  rootDataset.colorVision = appearance.colorVision;
   rootDataset.contrast = appearance.highContrast ? "high" : "normal";
   rootDataset.reduceMotion = String(appearance.reduceMotion);
   window.dispatchEvent(new Event(APPEARANCE_CHANGE_EVENT));

@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import { matchGroupItems } from "../services/groupSplit";
 import { ScannedReceipt } from "../services/receipt";
 import {
   EMPTY_RECEIPT_DETAILS,
@@ -7,10 +8,13 @@ import {
   findItemProblem,
   ReceiptDetails,
   saveSplit,
+  SplitGroup,
   SplitPayment,
   UpfrontPayment,
 } from "../services/splits";
 import type { Item } from "../types";
+import { Group } from "../types/group";
+import { SavedSplit } from "../types/split";
 import { readErrorMessage } from "../utils";
 
 export type GroceryRunSource = "scan" | "manual";
@@ -22,6 +26,14 @@ export function useGroceryRun() {
   const [source, setSource] = useState<GroceryRunSource>("manual");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [splitGroup, setSplitGroup] = useState<SplitGroup | null>(null);
+  const [isMatchingGroup, setIsMatchingGroup] = useState(false);
+  const [groupErrorMessage, setGroupErrorMessage] = useState<string | null>(null);
+
+  function resetGroup() {
+    setSplitGroup(null);
+    setGroupErrorMessage(null);
+  }
 
   function startManualEntry() {
     setItems([]);
@@ -29,6 +41,7 @@ export function useGroceryRun() {
     setSplitPayment(EMPTY_SPLIT_PAYMENT);
     setSource("manual");
     setErrorMessage(null);
+    resetGroup();
   }
 
   function loadScannedReceipt(scannedReceipt: ScannedReceipt) {
@@ -45,6 +58,21 @@ export function useGroceryRun() {
     setSplitPayment(EMPTY_SPLIT_PAYMENT);
     setSource("scan");
     setErrorMessage(null);
+    resetGroup();
+  }
+
+  async function chooseGroup(group: Group) {
+    setIsMatchingGroup(true);
+    setGroupErrorMessage(null);
+    try {
+      const groupMatch = await matchGroupItems(group, items);
+      setItems(groupMatch.items);
+      setSplitGroup(groupMatch.splitGroup);
+    } catch (error) {
+      setGroupErrorMessage(readErrorMessage(error, "Couldn't match items to the group's shopping list"));
+    } finally {
+      setIsMatchingGroup(false);
+    }
   }
 
   function updateReceiptDetails(changes: Partial<ReceiptDetails>) {
@@ -73,21 +101,20 @@ export function useGroceryRun() {
     });
   }
 
-  async function saveGroceryRun(): Promise<boolean> {
+  async function saveGroceryRun(): Promise<SavedSplit | null> {
     const itemProblem = findItemProblem(items);
     if (itemProblem) {
       setErrorMessage(itemProblem);
-      return false;
+      return null;
     }
 
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      await saveSplit(items, receiptDetails, splitPayment);
-      return true;
+      return await saveSplit(items, receiptDetails, splitPayment, splitGroup);
     } catch (error) {
       setErrorMessage(readErrorMessage(error, "Couldn't save this grocery run"));
-      return false;
+      return null;
     } finally {
       setIsSaving(false);
     }
@@ -101,6 +128,11 @@ export function useGroceryRun() {
     source,
     errorMessage,
     isSaving,
+    splitGroup,
+    isMatchingGroup,
+    groupErrorMessage,
+    chooseGroup,
+    clearGroup: resetGroup,
     updateReceiptDetails,
     setPayer,
     setUpfrontPayment,

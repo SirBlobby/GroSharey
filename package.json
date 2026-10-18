@@ -20,7 +20,8 @@
     "typecheck": "cd frontend && bun run typecheck",
     "preview:web": "bunx serve frontend/dist --single",
     "test:health": "curl -s http://localhost:8000/api/health",
-    "backfill:audit-log": "cd backend && uv run python -m server.maintenance.backfill_audit_log"
+    "backfill:audit-log": "cd backend && uv run python -m server.maintenance.backfill_audit_log",
+    "test:genai": "cd backend && uv run python scripts/match_items.py && uv run python scripts/test_group_split.py"
   },
   "devDependencies": {
     "concurrently": "^10.0.6"

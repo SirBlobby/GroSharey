@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import type { Friend, Item } from '../types';
-import type { ReceiptDetails, SplitPayment, UpfrontPayment } from '../services/splits';
+import type { ReceiptDetails, SplitGroup, SplitPayment, UpfrontPayment } from '../services/splits';
+import type { Group } from '../types/group';
 import { uid } from '../utils';
 import { BackIcon, EqualSplitIcon } from '../components/icons';
 import FriendModal from '../components/FriendModal';
 import ItemRow from '../components/ItemRow';
+import GroupSplitCard from '../components/manage/GroupSplitCard';
 import ReceiptDetailsForm from '../components/manage/ReceiptDetailsForm';
 import SplitSummary from '../components/SplitSummary';
 import '../styles/main.css';
@@ -21,6 +23,12 @@ interface Props {
   onPayerChange: (username: string) => void;
   onUpfrontPaymentChange: (username: string, upfrontPayment: UpfrontPayment | null) => void;
   onAddFriend: (username: string) => Promise<Friend>;
+  groups: Group[];
+  splitGroup: SplitGroup | null;
+  isMatchingGroup: boolean;
+  groupErrorMessage: string | null;
+  onChooseGroup: (group: Group) => void;
+  onClearGroup: () => void;
   errorMessage: string | null;
   isSaving: boolean;
   onBack: () => void;
@@ -29,7 +37,8 @@ interface Props {
 
 export default function ManageItemsScreen({
   items, onItemsChange, receiptDetails, onReceiptDetailsChange, friends, currentUsername, splitPayment,
-  onPayerChange, onUpfrontPaymentChange, onAddFriend, errorMessage, isSaving, onBack, onConfirm,
+  onPayerChange, onUpfrontPaymentChange, onAddFriend, groups, splitGroup, isMatchingGroup, groupErrorMessage,
+  onChooseGroup, onClearGroup, errorMessage, isSaving, onBack, onConfirm,
 }: Props) {
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [focusId, setFocusId] = useState<string | null>(null);
@@ -74,6 +83,14 @@ export default function ManageItemsScreen({
       <div className="manage-layout">
         <div className="manage-main">
           <ReceiptDetailsForm receiptDetails={receiptDetails} onChange={onReceiptDetailsChange} />
+          <GroupSplitCard
+            groups={groups}
+            splitGroup={splitGroup}
+            isMatching={isMatchingGroup}
+            errorMessage={groupErrorMessage}
+            onChooseGroup={onChooseGroup}
+            onClearGroup={onClearGroup}
+          />
           <div className="card items">
             <div className="items-header">
               <h2>Items</h2>

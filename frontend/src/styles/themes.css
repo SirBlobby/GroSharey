@@ -54,6 +54,90 @@ html[data-color-mode="dark"] {
   --color-shadow: rgba(0, 0, 0, 0.5);
 }
 
+html[data-color-vision="red-green"] {
+  --color-page-solid: #3a6ea5;
+  --color-card: #e6f0fa;
+  --color-surface-highlight: #f2f7fd;
+  --color-heading: #1b3f73;
+  --color-primary: #1b3f73;
+  --color-accent: #3a6ea5;
+  --color-border: #5b8fc7;
+  --color-divider: #e6f0fa;
+  --color-danger: #c0460a;
+  --color-info: #8e3a78;
+  --color-focus-ring: color-mix(in srgb, #c0460a 40%, transparent);
+}
+
+html[data-color-vision="blue-yellow"] {
+  --color-page-solid: #b8475f;
+  --color-card: #fcecef;
+  --color-surface-highlight: #fef6f8;
+  --color-heading: #00575e;
+  --color-primary: #00575e;
+  --color-accent: #b8475f;
+  --color-border: #d77a8c;
+  --color-divider: #fcecef;
+  --color-danger: #b30000;
+  --color-info: #5c3d2e;
+  --color-focus-ring: color-mix(in srgb, #00575e 40%, transparent);
+}
+
+html[data-color-vision="monochrome"] {
+  --color-page-solid: #6b6b6b;
+  --color-card: #f2f2f2;
+  --color-surface-highlight: #fafafa;
+  --color-heading: #1f1f1f;
+  --color-primary: #333333;
+  --color-accent: #6b6b6b;
+  --color-border: #8a8a8a;
+  --color-divider: #e0e0e0;
+  --color-danger: #000000;
+  --color-info: #5a5a5a;
+  --color-focus-ring: rgba(0, 0, 0, 0.45);
+}
+
+html[data-color-mode="dark"][data-color-vision="red-green"] {
+  --color-page-solid: #0f1f33;
+  --color-card: #172a42;
+  --color-surface: #1d3452;
+  --color-surface-highlight: #24406a;
+  --color-heading: #9cc4f2;
+  --color-primary: #3d78c2;
+  --color-accent: #3d78c2;
+  --color-border: #3d6799;
+  --color-divider: #24406a;
+  --color-danger: #ff9a4d;
+  --color-info: #e08ccb;
+}
+
+html[data-color-mode="dark"][data-color-vision="blue-yellow"] {
+  --color-page-solid: #2a1218;
+  --color-card: #3a1a22;
+  --color-surface: #45212b;
+  --color-surface-highlight: #552a36;
+  --color-heading: #7fd6dc;
+  --color-primary: #1b8a92;
+  --color-accent: #1b8a92;
+  --color-border: #8a4256;
+  --color-divider: #552a36;
+  --color-danger: #ff6b6b;
+  --color-info: #d9a77e;
+}
+
+html[data-color-mode="dark"][data-color-vision="monochrome"] {
+  --color-page-solid: #121212;
+  --color-card: #1e1e1e;
+  --color-surface: #262626;
+  --color-surface-highlight: #303030;
+  --color-heading: #f0f0f0;
+  --color-primary: #707070;
+  --color-accent: #707070;
+  --color-border: #5a5a5a;
+  --color-divider: #333333;
+  --color-danger: #ffffff;
+  --color-info: #b0b0b0;
+}
+
 html[data-contrast="high"] {
   --color-page-solid: var(--palette-navy);
   --color-page-gradient: none;

@@ -4,9 +4,11 @@ from server.config import settings
 from server.database import get_database
 from server.repositories.audit_log_repository import AuditLogRepository
 from server.repositories.friendship_repository import FriendshipRepository
+from server.repositories.group_repository import GroupRepository
 from server.repositories.payment_repository import PaymentRepository
 from server.repositories.profile_picture_repository import ProfilePictureRepository
 from server.repositories.receipt_image_repository import ReceiptImageRepository
+from server.repositories.shopping_list_repository import ShoppingListRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.account_service import AccountService
@@ -14,11 +16,16 @@ from server.services.audit_log_service import AuditLogService
 from server.services.auth_service import AuthService
 from server.services.email_service import EmailService
 from server.services.friend_service import FriendService
+from server.services.gemini_client import GeminiClient
+from server.services.group_service import GroupService
+from server.services.item_matching_service import ItemMatchingService
 from server.services.notification_service import NotificationService
 from server.services.payment_service import PaymentService
 from server.services.profile_service import ProfileService
 from server.services.receipt_image_service import ReceiptImageService
 from server.services.receipt_service import ReceiptService
+from server.services.shopping_list_matching_service import ShoppingListMatchingService
+from server.services.shopping_list_service import ShoppingListService
 from server.services.split_service import SplitService
 
 
@@ -43,8 +50,13 @@ def get_profile_service() -> ProfileService:
 
 
 @lru_cache
+def get_gemini_client() -> GeminiClient:
+    return GeminiClient(settings.gemini_api_key, settings.gemini_model, settings.gemini_fallback_model)
+
+
+@lru_cache
 def get_receipt_service() -> ReceiptService:
-    return ReceiptService(settings.gemini_api_key, settings.gemini_model, settings.gemini_fallback_model)
+    return ReceiptService(get_gemini_client())
 
 
 @lru_cache
@@ -106,6 +118,8 @@ def get_split_service() -> SplitService:
         get_notification_service(),
         get_receipt_image_service(),
         get_audit_log_service(),
+        get_group_service(),
+        get_shopping_list_matching_service(),
     )
 
 
@@ -113,4 +127,43 @@ def get_split_service() -> SplitService:
 def get_account_service() -> AccountService:
     return AccountService(
         get_user_repository(), get_split_repository(), get_payment_repository(), get_audit_log_service()
+    )
+
+
+@lru_cache
+def get_group_repository() -> GroupRepository:
+    return GroupRepository(get_database())
+
+
+@lru_cache
+def get_shopping_list_repository() -> ShoppingListRepository:
+    return ShoppingListRepository(get_database())
+
+
+@lru_cache
+def get_group_service() -> GroupService:
+    return GroupService(
+        get_user_repository(),
+        get_friendship_repository(),
+        get_group_repository(),
+        get_shopping_list_repository(),
+        get_audit_log_service(),
+    )
+
+
+@lru_cache
+def get_shopping_list_service() -> ShoppingListService:
+    return ShoppingListService(
+        get_user_repository(), get_group_repository(), get_shopping_list_repository(), get_audit_log_service()
+    )
+
+
+@lru_cache
+def get_shopping_list_matching_service() -> ShoppingListMatchingService:
+    return ShoppingListMatchingService(
+        get_user_repository(),
+        get_group_service(),
+        get_shopping_list_repository(),
+        ItemMatchingService(get_gemini_client()),
+        get_audit_log_service(),
     )

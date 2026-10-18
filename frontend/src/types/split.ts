@@ -19,6 +19,8 @@ export type SplitRequest = {
   payer_username: string | null;
   paid_in_full: string[];
   paid_amounts: Record<string, number>;
+  group_id: string | null;
+  shopping_list_matches: Record<string, string[]> | null;
 };
 
 export type ItemShare = {
@@ -50,7 +52,10 @@ export type SavedSplit = {
   store_address: string | null;
   purchase_date: string | null;
   receipt_image_id: string | null;
+  group_id: string | null;
+  group_name: string | null;
   created_by: string | null;
   created_at: string;
   emailed_usernames: string[];
+  crossed_off_items: string[];
 };

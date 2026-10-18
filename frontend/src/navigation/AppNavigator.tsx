@@ -5,6 +5,7 @@ import NotificationToasts from "../components/notifications/NotificationToasts";
 import { useAuth } from "../hooks/useAuth";
 import { useFriends } from "../hooks/useFriends";
 import { useGroceryRun } from "../hooks/useGroceryRun";
+import { useGroups } from "../hooks/useGroups";
 import { useNotifications } from "../hooks/useNotifications";
 import { useReceiptScanner } from "../hooks/useReceiptScanner";
 import { clearSharedUsername, readSharedUsername } from "../linking/sharedProfile";
@@ -14,14 +15,17 @@ import MainScreen from "../screens/MainScreen";
 import ManageItemsScreen from "../screens/ManageItemsScreen";
 import ScanReceiptScreen from "../screens/ScanReceiptScreen";
 import SettingsScreen from "../screens/SettingsScreen";
-import { convertUserToFriend } from "../services/friends";
+import ShoppingListsScreen from "../screens/ShoppingListsScreen";
+import { convertProfileToFriend, convertUserToFriend } from "../services/friends";
+import type { Friend } from "../types";
 import { AppNotification } from "../types/notification";
 
 type AppPage =
   | { name: "main" }
   | { name: "scan" }
   | { name: "manage" }
-  | { name: "confirmed" }
+  | { name: "confirmed"; crossedOffItems: string[] }
+  | { name: "lists"; listId: string | null }
   | { name: "settings"; section: SettingsSection }
   | { name: "profile"; username: string; returnPage: "main" | "settings" };
 
@@ -36,20 +40,33 @@ export default function AppNavigator() {
   const groceryRun = useGroceryRun();
   const receiptScanner = useReceiptScanner();
   const notificationCenter = useNotifications();
+  const groupList = useGroups();
   const [currentPage, setCurrentPage] = useState<AppPage>(getInitialPage);
 
   const assignableFriends = currentUser
     ? [convertUserToFriend(currentUser), ...friendList.friends]
     : friendList.friends;
 
+  function listSplitPeople(): Friend[] {
+    const splitGroupId = groceryRun.splitGroup?.groupId;
+    const splitGroup = groupList.groups.find((group) => group.id === splitGroupId);
+    const knownUsernames = new Set(assignableFriends.map((person) => person.username));
+    const otherMembers = (splitGroup?.members ?? [])
+      .filter((member) => !knownUsernames.has(member.username))
+      .map(convertProfileToFriend);
+    return [...assignableFriends, ...otherMembers];
+  }
+
   function showMain() {
     clearSharedUsername();
     friendList.refreshFriends();
+    groupList.refreshGroups();
     setCurrentPage({ name: "main" });
   }
 
   function showSettings(section: SettingsSection) {
     friendList.refreshFriends();
+    groupList.refreshGroups();
     setCurrentPage({ name: "settings", section });
   }
 
@@ -59,9 +76,18 @@ export default function AppNavigator() {
       showSettings("history");
     } else if (notification.category === "account") {
       showSettings("auditLog");
+    } else if (notification.category === "groups") {
+      showSettings("groups");
+    } else if (notification.category === "lists") {
+      showShoppingLists(null);
     } else if (notification.actor_username) {
       setCurrentPage({ name: "profile", username: notification.actor_username, returnPage: "main" });
     }
+  }
+
+  function showShoppingLists(listId: string | null) {
+    groupList.refreshGroups();
+    setCurrentPage({ name: "lists", listId });
   }
 
   function startScan() {
@@ -70,17 +96,19 @@ export default function AppNavigator() {
   }
 
   function startManualEntry() {
+    groupList.refreshGroups();
     groceryRun.startManualEntry();
     setCurrentPage({ name: "manage" });
   }
 
   function leaveManageItems() {
-    setCurrentPage({ name: groceryRun.source === "scan" ? "scan" : "main" });
+    setCurrentPage(groceryRun.source === "scan" ? { name: "scan" } : { name: "main" });
   }
 
   async function confirmGroceryRun() {
-    if (await groceryRun.saveGroceryRun()) {
-      setCurrentPage({ name: "confirmed" });
+    const savedSplit = await groceryRun.saveGroceryRun();
+    if (savedSplit) {
+      setCurrentPage({ name: "confirmed", crossedOffItems: savedSplit.crossed_off_items });
     }
   }
 
@@ -108,8 +136,14 @@ export default function AppNavigator() {
             splitPayment={groceryRun.splitPayment}
             onPayerChange={groceryRun.setPayer}
             onUpfrontPaymentChange={groceryRun.setUpfrontPayment}
-            friends={assignableFriends}
+            friends={listSplitPeople()}
             onAddFriend={friendList.addFriend}
+            groups={groupList.groups}
+            splitGroup={groceryRun.splitGroup}
+            isMatchingGroup={groceryRun.isMatchingGroup}
+            groupErrorMessage={groceryRun.groupErrorMessage}
+            onChooseGroup={groceryRun.chooseGroup}
+            onClearGroup={groceryRun.clearGroup}
             errorMessage={groceryRun.errorMessage}
             isSaving={groceryRun.isSaving}
             onBack={leaveManageItems}
@@ -117,7 +151,16 @@ export default function AppNavigator() {
           />
         );
       case "confirmed":
-        return <ConfirmedScreen onDone={showMain} />;
+        return <ConfirmedScreen crossedOffItems={currentPage.crossedOffItems} onDone={showMain} />;
+      case "lists":
+        return (
+          <ShoppingListsScreen
+            groups={groupList.groups}
+            currentUsername={currentUser?.username ?? ""}
+            initialListId={currentPage.listId}
+            onBack={showMain}
+          />
+        );
       case "settings":
         return (
           <SettingsScreen
@@ -127,6 +170,9 @@ export default function AppNavigator() {
             people={assignableFriends}
             onAddFriend={friendList.addFriend}
             onRemoveFriend={friendList.removeFriend}
+            groupList={groupList}
+            currentUsername={currentUser?.username ?? ""}
+            onOpenShoppingList={showShoppingLists}
             onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "settings" })}
             onBack={showMain}
           />
@@ -157,6 +203,10 @@ export default function AppNavigator() {
             onScan={startScan}
             onManual={startManualEntry}
             onShowSettings={() => showSettings("profile")}
+            onShowShoppingLists={() => showShoppingLists(null)}
+            groups={groupList.groups}
+            onOpenShoppingList={showShoppingLists}
+            onManageGroups={() => showSettings("groups")}
             onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "main" })}
             notificationCenter={notificationCenter}
             onOpenNotification={openNotification}

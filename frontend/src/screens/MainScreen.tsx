@@ -1,17 +1,22 @@
 import { useState } from 'react';
 import type { Friend } from '../types';
 import { money } from '../utils';
-import { BellAlertIcon, CheckIcon, ManualEntryIcon, ReceiptIcon, UserIcon } from '../components/icons';
+import { BellAlertIcon, CheckIcon, ManualEntryIcon, ReceiptIcon, ShoppingListsIcon, UserIcon } from '../components/icons';
 import Avatar from '../components/Avatar';
 import BalanceCard from '../components/BalanceCard';
 import FriendOverviewHeader from '../components/FriendOverviewHeader';
 import SharedSplits from '../components/profile/SharedSplits';
+import GroupOverviewCard from '../components/groups/GroupOverviewCard';
+import GroupSplits from '../components/groups/GroupSplits';
+import HomeGroupList from '../components/groups/HomeGroupList';
+import type { Group } from '../types/group';
 import Logo from '../components/Logo';
 import NotificationBell from '../components/notifications/NotificationBell';
 import type { NotificationCenter } from '../hooks/useNotifications';
 import type { AppNotification } from '../types/notification';
 import FriendModal from '../components/FriendModal';
 import '../styles/main.css';
+import '../styles/homeGroups.css';
 
 interface Props {
   currentUsername: string;
@@ -25,6 +30,10 @@ interface Props {
   onScan: () => void;
   onManual: () => void;
   onShowSettings: () => void;
+  onShowShoppingLists: () => void;
+  groups: Group[];
+  onOpenShoppingList: (listId: string | null) => void;
+  onManageGroups: () => void;
   onViewProfile: (username: string) => void;
   notificationCenter: NotificationCenter;
   onOpenNotification: (notification: AppNotification) => void;
@@ -32,15 +41,21 @@ interface Props {
 
 export default function MainScreen({
   currentUsername, friends, people, selectedFriend, errorMessage, onSelectFriend, onAddFriend, onSettleUp,
-  onScan, onManual, onShowSettings, onViewProfile, notificationCenter, onOpenNotification,
+  onScan, onManual, onShowSettings, onShowShoppingLists, onViewProfile, notificationCenter, onOpenNotification,
+  groups, onOpenShoppingList, onManageGroups,
 }: Props) {
   const [adding, setAdding] = useState(false);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const selectedGroup = groups.find((group) => group.id === selectedGroupId);
 
   return (
     <section className="screen">
       <div className="topbar">
         <span className="brand"><Logo className="brand-logo" />groSharey</span>
         <div className="topbar-actions">
+          <button type="button" aria-label="Shopping lists" title="Shopping lists" onClick={onShowShoppingLists}>
+            <ShoppingListsIcon />
+          </button>
           <NotificationBell notificationCenter={notificationCenter} onOpenNotification={onOpenNotification} />
           <button type="button" aria-label="Settings" onClick={onShowSettings}><UserIcon /></button>
         </div>
@@ -55,8 +70,8 @@ export default function MainScreen({
               <button
                 key={f.username}
                 type="button"
-                className={`friend ${f.username === selectedFriend?.username ? 'sel' : ''}`}
-                onClick={() => onSelectFriend(f.username)}
+                className={`friend ${!selectedGroup && f.username === selectedFriend?.username ? 'sel' : ''}`}
+                onClick={() => { setSelectedGroupId(null); onSelectFriend(f.username); }}
               >
                 <span className="friend-identity">
                   <Avatar friend={f} />
@@ -81,17 +96,36 @@ export default function MainScreen({
             ))}
           </div>
           <button type="button" className="plus" aria-label="Add friend" onClick={() => setAdding(true)}>+</button>
+          <HomeGroupList
+            groups={groups}
+            selectedGroupId={selectedGroup?.id ?? null}
+            onSelectGroup={setSelectedGroupId}
+            onNewGroup={onManageGroups}
+          />
         </div>
 
         <div className="home-details">
-          <BalanceCard
-            friend={selectedFriend}
-            onSettleUp={onSettleUp}
-            header={selectedFriend && <FriendOverviewHeader friend={selectedFriend} onViewProfile={onViewProfile} />}
-          />
+          {selectedGroup ? (
+            <GroupOverviewCard
+              group={selectedGroup}
+              friends={friends}
+              currentUsername={currentUsername}
+              onOpenShoppingList={onOpenShoppingList}
+              onManageGroups={onManageGroups}
+            />
+          ) : (
+            <BalanceCard
+              friend={selectedFriend}
+              onSettleUp={onSettleUp}
+              header={selectedFriend && <FriendOverviewHeader friend={selectedFriend} onViewProfile={onViewProfile} />}
+            />
+          )}
 
           <div className="home-lower">
-            {selectedFriend && (
+            {selectedGroup && (
+              <GroupSplits key={selectedGroup.id} group={selectedGroup} currentUsername={currentUsername} people={people} />
+            )}
+            {!selectedGroup && selectedFriend && (
               <SharedSplits
                 key={selectedFriend.username}
                 friendUsername={selectedFriend.username}

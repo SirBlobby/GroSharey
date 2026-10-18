@@ -83,3 +83,17 @@ export const EditIcon = () => <Icon icon="mdi:pencil-outline" width="1em" aria-h
 export const ShowPasswordIcon = () => <Icon icon="mdi:eye-outline" width="1em" aria-hidden="true" />;
 
 export const HidePasswordIcon = () => <Icon icon="mdi:eye-off-outline" width="1em" aria-hidden="true" />;
+
+export const GroupsIcon = () => <Icon icon="mdi:home-group" width="1em" aria-hidden="true" />;
+
+export const ShoppingListsIcon = () => <Icon icon="mdi:clipboard-list-outline" width={40} aria-hidden="true" />;
+
+export const ShoppingListIcon = () => <Icon icon="mdi:clipboard-list-outline" width="1em" aria-hidden="true" />;
+
+export const DeleteIcon = () => <Icon icon="mdi:trash-can-outline" width="1em" aria-hidden="true" />;
+
+export const MatchItemsIcon = () => <Icon icon="mdi:auto-fix" width="1em" aria-hidden="true" />;
+
+export const UncheckedBoxIcon = () => <Icon icon="mdi:checkbox-blank-outline" width="1em" aria-hidden="true" />;
+
+export const CheckedBoxIcon = () => <Icon icon="mdi:checkbox-marked" width="1em" aria-hidden="true" />;
