@@ -22,9 +22,14 @@ from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.audit_log_service import AuditLogService
-from server.services.audit_messages import describe_added_to_split, describe_saved_split
+from server.services.audit_messages import (
+    describe_added_to_split,
+    describe_recorded_as_payer,
+    describe_saved_split,
+)
 from server.services.notification_service import NotificationService
 from server.services.receipt_image_service import ReceiptImageService
+from server.services.user_mapper import convert_to_user
 
 # Real tax rates are round numbers (6%, 7.25%, 5.3%, 8.875%). Rounder rates are checked
 # first, so "6% on some items" wins over "4.325% on everything" when both fit.
@@ -175,6 +180,36 @@ def split_receipt(receipt: SplitReceipt, assignments: dict[str, list[str]], paye
     )
 
 
+def apply_upfront_payments(
+    split_result: SplitResult, paid_in_full: list[str], paid_amounts: dict[str, float]
+) -> SplitResult:
+    """Subtracts what people already paid the payer from what they owe on this split.
+    Paying more than your share is allowed; the extra becomes credit the payer owes back."""
+    people_by_username = {person.username: person for person in split_result.people}
+    full_usernames = {normalize_username(username) for username in paid_in_full}
+    paid_cents_by_username = {
+        normalize_username(username): to_cents(amount) for username, amount in paid_amounts.items() if amount
+    }
+    unknown_usernames = sorted((full_usernames | set(paid_cents_by_username)) - set(people_by_username))
+    if unknown_usernames:
+        raise BadRequestError(f"Not part of this split: {', '.join(unknown_usernames)}")
+
+    people = []
+    for person in split_result.people:
+        owes_cents = to_cents(person.owes)
+        if person.username in full_usernames:
+            paid_cents = owes_cents
+        else:
+            paid_cents = paid_cents_by_username.get(person.username, 0)
+        if paid_cents < 0:
+            raise BadRequestError("Paid amounts can't be negative")
+        if person.username == split_result.payer and paid_cents:
+            raise BadRequestError(f"@{person.username} paid at the store, so they can't also pay themselves")
+        remaining_cents = owes_cents - paid_cents
+        people.append(person.model_copy(update={"paid": to_dollars(paid_cents), "owes": to_dollars(remaining_cents)}))
+    return split_result.model_copy(update={"people": people})
+
+
 class SplitService:
     def __init__(
         self,
@@ -192,63 +227,96 @@ class SplitService:
         self.receipt_image_service = receipt_image_service
         self.audit_log_service = audit_log_service
 
-    def find_friends_assigned(self, assignments: dict[str, list[str]], payer: User) -> dict[str, StoredUser]:
-        """username -> account for everyone assigned besides the payer. Each must be the payer's friend."""
-        friends_by_username = {}
-        for username in {normalize_username(name) for names in assignments.values() for name in names}:
-            if username == payer.username:
-                continue
-            stored_user = self.user_repository.find_by_username(username)
-            if stored_user is None:
-                raise BadRequestError(f"No account with username '{username}'")
-            if not self.friendship_repository.are_friends(payer.id, stored_user.id):
-                raise BadRequestError(f"'{username}' isn't in your friends list")
-            friends_by_username[username] = stored_user
-        return friends_by_username
+    def find_friend(self, username: str, creator: User) -> StoredUser:
+        stored_user = self.user_repository.find_by_username(username)
+        if stored_user is None:
+            raise BadRequestError(f"No account with username '{username}'")
+        if not self.friendship_repository.are_friends(creator.id, stored_user.id):
+            raise BadRequestError(f"'{username}' isn't in your friends list")
+        return stored_user
 
-    def preview_split(self, split_request: SplitRequest, payer: User) -> SplitResult:
-        self.find_friends_assigned(split_request.assignments, payer)
-        return split_receipt(split_request.receipt, split_request.assignments, payer.username)
+    def find_friends_assigned(self, assignments: dict[str, list[str]], creator: User) -> dict[str, StoredUser]:
+        """username -> account for everyone assigned besides the creator. Each must be the creator's friend."""
+        assigned_usernames = {normalize_username(name) for names in assignments.values() for name in names}
+        return {
+            username: self.find_friend(username, creator)
+            for username in assigned_usernames
+            if username != creator.username
+        }
 
-    def save_split(self, split_request: SplitRequest, payer: User) -> SavedSplit:
-        friends_by_username = self.find_friends_assigned(split_request.assignments, payer)
+    def find_payer(self, split_request: SplitRequest, creator: User) -> User:
+        """Whoever paid at the store. Defaults to the person saving the split; otherwise one of their friends."""
+        payer_username = normalize_username(split_request.payer_username or creator.username)
+        if payer_username == creator.username:
+            return creator
+        return convert_to_user(self.find_friend(payer_username, creator))
+
+    def calculate_split(
+        self, split_request: SplitRequest, creator: User
+    ) -> tuple[SplitResult, User, dict[str, StoredUser]]:
+        payer = self.find_payer(split_request, creator)
+        friends_by_username = self.find_friends_assigned(split_request.assignments, creator)
         split_result = split_receipt(split_request.receipt, split_request.assignments, payer.username)
-        if all(person.owes == 0 for person in split_result.people):
+        split_result = apply_upfront_payments(split_result, split_request.paid_in_full, split_request.paid_amounts)
+        return split_result, payer, friends_by_username
+
+    def preview_split(self, split_request: SplitRequest, creator: User) -> SplitResult:
+        split_result, _, _ = self.calculate_split(split_request, creator)
+        return split_result
+
+    def save_split(self, split_request: SplitRequest, creator: User) -> SavedSplit:
+        split_result, payer, friends_by_username = self.calculate_split(split_request, creator)
+        if all(person.owes == 0 and person.paid == 0 for person in split_result.people):
             raise BadRequestError("Nobody owes anything on this receipt")
         receipt_image_id = split_request.receipt.receipt_image_id
         if receipt_image_id:
-            self.receipt_image_service.ensure_owned_by(receipt_image_id, payer.id)
+            self.receipt_image_service.ensure_owned_by(receipt_image_id, creator.id)
         user_ids_by_username = {username: friend.id for username, friend in friends_by_username.items()}
+        user_ids_by_username[creator.username] = creator.id
         user_ids_by_username[payer.username] = payer.id
         saved_split = self.split_repository.create(
             payer.id,
             split_result,
             user_ids_by_username,
             split_request.receipt.store_name,
+            split_request.receipt.store_address,
             split_request.receipt.purchase_date,
             receipt_image_id,
+            creator,
         )
-        self.record_saved_split(saved_split, payer, user_ids_by_username)
+        self.record_saved_split(saved_split, creator, payer, user_ids_by_username)
         emailed_usernames = self.notification_service.notify_people_who_owe(saved_split, payer, friends_by_username)
         return saved_split.model_copy(update={"emailed_usernames": emailed_usernames})
 
-    def record_saved_split(self, saved_split: SavedSplit, payer: User, user_ids_by_username: dict[str, str]) -> None:
+    def record_saved_split(
+        self, saved_split: SavedSplit, creator: User, payer: User, user_ids_by_username: dict[str, str]
+    ) -> None:
         self.audit_log_service.record(
-            payer.id,
+            creator.id,
             "splits",
             "saved_split",
             describe_saved_split(saved_split.store_name, saved_split.total),
-            payer.username,
+            creator.username,
         )
+        if payer.id != creator.id:
+            self.audit_log_service.record(
+                payer.id,
+                "splits",
+                "recorded_as_payer",
+                describe_recorded_as_payer(creator.username, saved_split.store_name, saved_split.total),
+                creator.username,
+                notify=True,
+            )
         for person in saved_split.people:
-            if person.username == payer.username:
+            if person.username in (payer.username, creator.username):
                 continue
             self.audit_log_service.record(
                 user_ids_by_username[person.username],
                 "splits",
                 "added_to_split",
-                describe_added_to_split(payer.username, saved_split.store_name, person.owes),
-                payer.username,
+                describe_added_to_split(creator.username, saved_split.store_name, person.owes, payer.username),
+                creator.username,
+                notify=True,
             )
 
     def list_splits(self, user_id: str) -> list[SavedSplit]:

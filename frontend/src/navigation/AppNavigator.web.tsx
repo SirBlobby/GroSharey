@@ -1,9 +1,11 @@
 import { useState } from "react";
 
 import { SettingsSection } from "../components/settings/settingsSections";
+import NotificationToasts from "../components/notifications/NotificationToasts";
 import { useAuth } from "../hooks/useAuth";
 import { useFriends } from "../hooks/useFriends";
 import { useGroceryRun } from "../hooks/useGroceryRun";
+import { useNotifications } from "../hooks/useNotifications";
 import { useReceiptScanner } from "../hooks/useReceiptScanner";
 import { clearSharedUsername, readSharedUsername } from "../linking/sharedProfile";
 import ConfirmedScreen from "../screens/ConfirmedScreen";
@@ -14,6 +16,7 @@ import ScanReceiptScreen from "../screens/ScanReceiptScreen";
 import SettingsScreen from "../screens/SettingsScreen";
 import SplitHistoryScreen from "../screens/SplitHistoryScreen";
 import { convertUserToFriend } from "../services/friends";
+import { AppNotification } from "../types/notification";
 
 type AppPage =
   | { name: "main" }
@@ -34,6 +37,7 @@ export default function AppNavigator() {
   const friendList = useFriends();
   const groceryRun = useGroceryRun();
   const receiptScanner = useReceiptScanner();
+  const notificationCenter = useNotifications();
   const [currentPage, setCurrentPage] = useState<AppPage>(getInitialPage);
 
   const assignableFriends = currentUser
@@ -49,6 +53,17 @@ export default function AppNavigator() {
   function showSettings(section: SettingsSection) {
     friendList.refreshFriends();
     setCurrentPage({ name: "settings", section });
+  }
+
+  function openNotification(notification: AppNotification) {
+    notificationCenter.markRead(notification.id);
+    if (notification.category === "splits") {
+      setCurrentPage({ name: "history" });
+    } else if (notification.category === "account") {
+      showSettings("auditLog");
+    } else if (notification.actor_username) {
+      setCurrentPage({ name: "profile", username: notification.actor_username, returnPage: "main" });
+    }
   }
 
   function startScan() {
@@ -71,70 +86,98 @@ export default function AppNavigator() {
     }
   }
 
-  switch (currentPage.name) {
-    case "scan":
-      return (
-        <ScanReceiptScreen
-          scanner={receiptScanner}
-          onBack={showMain}
-          onConfirm={(scannedReceipt) => {
-            groceryRun.loadScannedReceipt(scannedReceipt);
-            setCurrentPage({ name: "manage" });
-          }}
-        />
-      );
-    case "manage":
-      return (
-        <ManageItemsScreen
-          items={groceryRun.items}
-          onItemsChange={groceryRun.setItems}
-          receiptDetails={groceryRun.receiptDetails}
-          friends={assignableFriends}
-          onAddFriend={friendList.addFriend}
-          errorMessage={groceryRun.errorMessage}
-          isSaving={groceryRun.isSaving}
-          onBack={leaveManageItems}
-          onConfirm={confirmGroceryRun}
-        />
-      );
-    case "history":
-      return <SplitHistoryScreen people={assignableFriends} onBack={showMain} />;
-    case "confirmed":
-      return <ConfirmedScreen onDone={showMain} />;
-    case "settings":
-      return (
-        <SettingsScreen
-          activeSection={currentPage.section}
-          onSelectSection={(section) => setCurrentPage({ name: "settings", section })}
-          friends={friendList.friends}
-          onAddFriend={friendList.addFriend}
-          onRemoveFriend={friendList.removeFriend}
-          onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "settings" })}
-          onBack={showMain}
-        />
-      );
-    case "profile":
-      return (
-        <FriendProfileScreen
-          username={currentPage.username}
-          onBack={currentPage.returnPage === "settings" ? () => showSettings("friends") : showMain}
-        />
-      );
-    default:
-      return (
-        <MainScreen
-          friends={friendList.friends}
-          selectedFriend={friendList.selectedFriend}
-          errorMessage={friendList.errorMessage}
-          onSelectFriend={friendList.selectFriend}
-          onAddFriend={friendList.addFriend}
-          onSettleUp={friendList.settleUp}
-          onScan={startScan}
-          onManual={startManualEntry}
-          onShowSettings={() => showSettings("profile")}
-          onShowHistory={() => setCurrentPage({ name: "history" })}
-          onLogout={logOut}
-        />
-      );
+  function renderCurrentPage() {
+    switch (currentPage.name) {
+      case "scan":
+        return (
+          <ScanReceiptScreen
+            scanner={receiptScanner}
+            onBack={showMain}
+            onConfirm={(scannedReceipt) => {
+              groceryRun.loadScannedReceipt(scannedReceipt);
+              setCurrentPage({ name: "manage" });
+            }}
+          />
+        );
+      case "manage":
+        return (
+          <ManageItemsScreen
+            items={groceryRun.items}
+            onItemsChange={groceryRun.setItems}
+            receiptDetails={groceryRun.receiptDetails}
+            onReceiptDetailsChange={groceryRun.updateReceiptDetails}
+            currentUsername={currentUser?.username ?? ""}
+            splitPayment={groceryRun.splitPayment}
+            onPayerChange={groceryRun.setPayer}
+            onUpfrontPaymentChange={groceryRun.setUpfrontPayment}
+            friends={assignableFriends}
+            onAddFriend={friendList.addFriend}
+            errorMessage={groceryRun.errorMessage}
+            isSaving={groceryRun.isSaving}
+            onBack={leaveManageItems}
+            onConfirm={confirmGroceryRun}
+          />
+        );
+      case "history":
+        return <SplitHistoryScreen people={assignableFriends} onBack={showMain} />;
+      case "confirmed":
+        return <ConfirmedScreen onDone={showMain} />;
+      case "settings":
+        return (
+          <SettingsScreen
+            activeSection={currentPage.section}
+            onSelectSection={(section) => setCurrentPage({ name: "settings", section })}
+            friends={friendList.friends}
+            onAddFriend={friendList.addFriend}
+            onRemoveFriend={friendList.removeFriend}
+            onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "settings" })}
+            onBack={showMain}
+          />
+        );
+      case "profile":
+        return (
+          <FriendProfileScreen
+            username={currentPage.username}
+            friends={friendList.friends}
+            people={assignableFriends}
+            onAddFriend={friendList.addFriend}
+            onRemoveFriend={friendList.removeFriend}
+            onSettleUp={friendList.settleUp}
+            onBack={currentPage.returnPage === "settings" ? () => showSettings("friends") : showMain}
+          />
+        );
+      default:
+        return (
+          <MainScreen
+            currentUsername={currentUser?.username ?? ""}
+            friends={friendList.friends}
+            people={assignableFriends}
+            selectedFriend={friendList.selectedFriend}
+            errorMessage={friendList.errorMessage}
+            onSelectFriend={friendList.selectFriend}
+            onAddFriend={friendList.addFriend}
+            onSettleUp={friendList.settleUp}
+            onScan={startScan}
+            onManual={startManualEntry}
+            onShowSettings={() => showSettings("profile")}
+            onShowHistory={() => setCurrentPage({ name: "history" })}
+            onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "main" })}
+            notificationCenter={notificationCenter}
+            onOpenNotification={openNotification}
+            onLogout={logOut}
+          />
+        );
+    }
   }
+
+  return (
+    <>
+      {renderCurrentPage()}
+      <NotificationToasts
+        toasts={notificationCenter.toasts}
+        onOpenNotification={openNotification}
+        onDismiss={notificationCenter.dismissToast}
+      />
+    </>
+  );
 }

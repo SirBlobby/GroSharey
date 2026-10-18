@@ -70,7 +70,7 @@ class AuditLogBackfill:
                     person["user_id"],
                     "splits",
                     "added_to_split",
-                    describe_added_to_split(payer_username, split.get("store_name"), person["owes"]),
+                    describe_added_to_split(payer_username, split.get("store_name"), person["owes"], payer_username),
                     payer_username,
                     split["created_at"],
                 )

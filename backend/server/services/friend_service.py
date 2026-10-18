@@ -113,5 +113,10 @@ class FriendService:
             user_id, "friends", action, f"You {verb} @{friend_user.username} as a friend", current_username
         )
         self.audit_log_service.record(
-            friend_user.id, "friends", action, f"@{current_username} {verb} you as a friend", current_username
+            friend_user.id,
+            "friends",
+            action,
+            f"@{current_username} {verb} you as a friend",
+            current_username,
+            notify=True,
         )

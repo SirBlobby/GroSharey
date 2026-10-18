@@ -1,17 +1,16 @@
-import { useState } from "react";
+import { ReactNode } from "react";
 
 import type { Friend } from "../types";
-import { money, readErrorMessage } from "../utils";
+import { money } from "../utils";
+import PaymentForm from "./PaymentForm";
 
 type BalanceCardProps = {
   friend: Friend | undefined;
-  onSettleUp: (friend: Friend) => Promise<void>;
+  onSettleUp: (friend: Friend, amount: number) => Promise<void>;
+  header?: ReactNode;
 };
 
-export default function BalanceCard({ friend, onSettleUp }: BalanceCardProps) {
-  const [isSettling, setIsSettling] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
+export default function BalanceCard({ friend, onSettleUp, header }: BalanceCardProps) {
   if (!friend) {
     return (
       <div className="card owe">
@@ -23,6 +22,7 @@ export default function BalanceCard({ friend, onSettleUp }: BalanceCardProps) {
   if (friend.balance === 0) {
     return (
       <div className="card owe">
+        {header}
         <div>
           <h2>You and {friend.name}</h2>
           <div className="amt ok">are all settled up!</div>
@@ -34,20 +34,9 @@ export default function BalanceCard({ friend, onSettleUp }: BalanceCardProps) {
   const youOweFriend = friend.balance < 0;
   const hasPayLink = youOweFriend && Boolean(friend.paypalPayUrl || friend.venmoPayUrl);
 
-  async function settleUp(settlingFriend: Friend) {
-    setIsSettling(true);
-    setErrorMessage(null);
-    try {
-      await onSettleUp(settlingFriend);
-    } catch (error) {
-      setErrorMessage(readErrorMessage(error, "Couldn't record the payment"));
-    } finally {
-      setIsSettling(false);
-    }
-  }
-
   return (
     <div className="card owe">
+      {header}
       <div>
         <h2>{youOweFriend ? `You owe ${friend.name}` : `${friend.name} owes you`}</h2>
         <div className={`amt ${youOweFriend ? "" : "owed-to-you"}`}>{money(Math.abs(friend.balance))}</div>
@@ -64,10 +53,7 @@ export default function BalanceCard({ friend, onSettleUp }: BalanceCardProps) {
             venmo
           </a>
         )}
-        <button type="button" className="btn settle" disabled={isSettling} onClick={() => settleUp(friend)}>
-          {youOweFriend ? "Mark as paid" : "Mark as received"}
-        </button>
-        {errorMessage && <p className="error-text">{errorMessage}</p>}
+        <PaymentForm key={`${friend.username}:${friend.balance}`} friend={friend} onRecordPayment={onSettleUp} />
       </div>
     </div>
   );

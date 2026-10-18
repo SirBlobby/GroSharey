@@ -160,7 +160,9 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | GET | `/api/payments` | Yes | Your 50 most recent payments |
 | PUT | `/api/profiles/me/payment-handles` | Yes | Set `{"venmo_username": "...", "paypal_username": "..."}` so friends get pay buttons |
 | GET | `/api/receipts/images/<id>` | Yes | Stored receipt photo, for the person who scanned it and everyone in its split |
-| GET | `/api/audit-log` | Yes | Latest 200 account events (log ins, profile, friends, splits, payments) |
+| GET | `/api/audit-log?page=1&page_size=20&category=` | Yes | Paged account events, newest first. `category` is optional: account, profile, friends, splits, or payments |
+| GET | `/api/notifications?page=1&page_size=10` | Yes | Things other people did that involve you, with `unread_count` |
+| POST | `/api/notifications/read` | Yes | Mark `{"notification_ids": [...]}` as read, or all when the list is left out |
 | GET | `/api/health` | No | Health check |
 | GET | `/` | No | API name, status, and endpoint list |
 
@@ -223,7 +225,7 @@ Friendships are mutual and stored in the `friendships` collection. Saved splits 
 
 ### Email Notifications
 
-Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the payer's profile in the web app. `emailed_usernames` in the response says who was emailed. Recording a payment with `direction: "paid"` emails the person who got paid ("Alex paid you $7.07"), with what's still owed; `recipient_emailed` in the response says whether it went out. Payments recorded as `"received"` send nothing, since the person recording them already knows. If email isn't configured or sending fails, the split is still saved; the error is only logged.
+Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the web app. `emailed_usernames` in the response says who was emailed. Recording a payment with `direction: "paid"` emails the person who got paid ("Alex paid you $7.07"), with what's still owed; `recipient_emailed` in the response says whether it went out. Payments recorded as `"received"` send nothing, since the person recording them already knows. If email isn't configured or sending fails, the split is still saved; the error is only logged.
 
 ### Settling Up
 

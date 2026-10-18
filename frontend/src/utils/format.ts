@@ -26,6 +26,16 @@ export function formatReceiptDate(isoDate: string): string {
   return receiptDate.toLocaleDateString(undefined, { weekday: "short", year: "numeric", month: "long", day: "numeric" });
 }
 
+export function formatDateTime(isoDateTime: string): string {
+  return new Date(isoDateTime).toLocaleString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 export function readErrorMessage(error: unknown, fallbackMessage: string): string {
   return error instanceof Error ? error.message : fallbackMessage;
 }

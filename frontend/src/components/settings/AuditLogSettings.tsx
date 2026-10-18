@@ -2,7 +2,9 @@ import { ReactNode, useState } from "react";
 
 import { useAuditLog } from "../../hooks/useAuditLog";
 import { AuditCategory, AuditEvent } from "../../types/audit";
+import { formatDateTime } from "../../utils";
 import { AccountIcon, FriendsIcon, ProfileIcon, RefreshIcon, SplitsIcon, WalletIcon } from "../icons";
+import Pagination from "../Pagination";
 
 type CategoryFilter = AuditCategory | "all";
 
@@ -23,28 +25,22 @@ const CATEGORY_ICONS: Record<AuditCategory, ReactNode> = {
   payments: <WalletIcon />,
 };
 
-function formatEventTime(isoDateTime: string): string {
-  return new Date(isoDateTime).toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
-
 function isWarningEvent(auditEvent: AuditEvent): boolean {
   return auditEvent.action === "log_in_failed";
 }
 
 export default function AuditLogSettings() {
-  const { auditEvents, isLoading, errorMessage, refreshAuditLog } = useAuditLog();
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>("all");
+  const [page, setPage] = useState(1);
+  const { auditEvents, totalCount, pageCount, isLoading, errorMessage, refreshAuditLog } = useAuditLog(
+    categoryFilter === "all" ? null : categoryFilter,
+    page,
+  );
 
-  const visibleEvents =
-    categoryFilter === "all"
-      ? auditEvents
-      : auditEvents.filter((auditEvent) => auditEvent.category === categoryFilter);
+  function selectCategory(category: CategoryFilter) {
+    setCategoryFilter(category);
+    setPage(1);
+  }
 
   return (
     <div className="card settings-panel">
@@ -64,7 +60,7 @@ export default function AuditLogSettings() {
             role="radio"
             aria-checked={categoryFilter === filter.value}
             className={`option-button audit-filter ${categoryFilter === filter.value ? "selected" : ""}`}
-            onClick={() => setCategoryFilter(filter.value)}
+            onClick={() => selectCategory(filter.value)}
           >
             {filter.label}
           </button>
@@ -73,13 +69,13 @@ export default function AuditLogSettings() {
 
       {isLoading && <p className="description">Loading...</p>}
       {errorMessage && <p className="error-text">{errorMessage}</p>}
-      {!isLoading && !errorMessage && visibleEvents.length === 0 && (
+      {!isLoading && !errorMessage && auditEvents.length === 0 && (
         <p className="empty">Nothing here yet.</p>
       )}
 
-      {visibleEvents.length > 0 && (
+      {auditEvents.length > 0 && (
         <ul className="audit-list">
-          {visibleEvents.map((auditEvent) => (
+          {auditEvents.map((auditEvent) => (
             <li
               key={auditEvent.id}
               className={`audit-event ${isWarningEvent(auditEvent) ? "audit-event--warning" : ""}`}
@@ -87,12 +83,20 @@ export default function AuditLogSettings() {
               <span className="audit-event-icon">{CATEGORY_ICONS[auditEvent.category]}</span>
               <div className="audit-event-text">
                 <span className="audit-event-description">{auditEvent.description}</span>
-                <span className="audit-event-time">{formatEventTime(auditEvent.created_at)}</span>
+                <span className="audit-event-time">{formatDateTime(auditEvent.created_at)}</span>
               </div>
             </li>
           ))}
         </ul>
       )}
+
+      <Pagination
+        page={page}
+        pageCount={pageCount}
+        totalCount={totalCount}
+        itemLabel="events"
+        onPageChange={setPage}
+      />
     </div>
   );
 }

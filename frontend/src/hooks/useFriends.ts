@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
 
-import { addFriendByUsername, loadFriends, removeFriendByUsername, settleBalance } from "../services/friends";
+import { addFriendByUsername, loadFriends, recordPayment, removeFriendByUsername } from "../services/friends";
 import type { Friend } from "../types";
 import { readErrorMessage } from "../utils";
 
@@ -42,8 +42,8 @@ export function useFriends() {
     setSelectedUsername((currentUsername) => (currentUsername === username ? null : currentUsername));
   }
 
-  async function settleUp(friend: Friend): Promise<void> {
-    await settleBalance(friend);
+  async function settleUp(friend: Friend, amount: number): Promise<void> {
+    await recordPayment(friend, amount);
     await refreshFriends();
   }
 

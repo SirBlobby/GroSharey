@@ -61,3 +61,19 @@ export const RefreshIcon = () => <Icon icon="mdi:refresh" width="1em" aria-hidde
 export const SplitsIcon = () => <Icon icon="mdi:cart-outline" width="1em" aria-hidden="true" />;
 
 export const WalletIcon = () => <Icon icon="mdi:wallet-outline" width="1em" aria-hidden="true" />;
+
+export const PreviousPageIcon = () => <Icon icon="mdi:chevron-left" width="1em" aria-hidden="true" />;
+
+export const NextPageIcon = () => <Icon icon="mdi:chevron-right" width="1em" aria-hidden="true" />;
+
+export const ManualEntryIcon = () => <Icon icon="mdi:pencil-box-outline" width={64} color="#000" aria-hidden="true" />;
+
+export const BellIcon = () => <Icon icon="mdi:bell-outline" width="1em" aria-hidden="true" />;
+
+export const BellAlertIcon = () => <Icon icon="mdi:bell-ring" width="1em" aria-hidden="true" />;
+
+export const MarkReadIcon = () => <Icon icon="mdi:email-open-outline" width="1em" aria-hidden="true" />;
+
+export const ListIcon = () => <Icon icon="mdi:format-list-checks" width="1em" aria-hidden="true" />;
+
+export const EqualSplitIcon = () => <Icon icon="mdi:division" width="1em" aria-hidden="true" />;

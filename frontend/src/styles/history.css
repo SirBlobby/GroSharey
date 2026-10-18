@@ -21,6 +21,7 @@
 .history-card-title { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .history-store { font-family: var(--display); color: var(--forest); font-size: 1.8rem; line-height: 1.1; }
 .history-date { font-weight: 600; font-size: 1.05rem; opacity: 0.75; }
+.history-location { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; font-size: 1rem; opacity: 0.75; }
 .history-total { font-family: var(--display); color: var(--forest); font-size: 1.8rem; }
 
 .history-card-middle { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
@@ -32,7 +33,7 @@
 }
 .history-your-part { padding: 4px 10px; border-radius: 10px; color: var(--mint); font-weight: 600; font-size: 1.05rem; }
 .history-owe { background: var(--red); }
-.history-owed { background: var(--forest); }
+.history-owed { background: var(--blue); }
 
 .history-card-actions { display: flex; gap: 8px; flex-wrap: wrap; }
 .history-button {
@@ -55,3 +56,8 @@
 .history-items { list-style: none; margin: 0; padding: 0; }
 .history-items li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 12px; font-size: 1.05rem; }
 .history-items li + li { border-top: 2px solid var(--mint); }
+
+.shared-splits { display: flex; flex-direction: column; gap: 14px; padding: 22px 24px; }
+.shared-splits .history-header h2 { font-size: 2.2rem; }
+.history-paid-upfront { margin: 0; padding: 6px 12px; font-size: 1rem; font-weight: 600; color: var(--blue); border-bottom: 2px solid var(--mint); }
+.history-settled { background: var(--forest); }

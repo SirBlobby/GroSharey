@@ -30,17 +30,10 @@ class PaymentService:
             raise BadRequestError(f"'{friend_user.username}' isn't in your friends list")
 
         amount_cents = round(payment_request.amount * 100)
-        friend_owes_you_cents = self.friend_service.get_balance_in_cents(current_user.id, friend_user.id)
         if payment_request.direction == "received":
-            payer, recipient, payer_owes_cents = friend_user, current_user, friend_owes_you_cents
+            payer, recipient = friend_user, current_user
         else:
-            payer, recipient, payer_owes_cents = current_user, friend_user, -friend_owes_you_cents
-
-        # Paying more than is owed is almost always a typo, so it's rejected.
-        if amount_cents > max(payer_owes_cents, 0):
-            raise BadRequestError(
-                f"{payer.username} only owes {recipient.username} ${max(payer_owes_cents, 0) / 100:.2f}"
-            )
+            payer, recipient = current_user, friend_user
 
         payment = self.payment_repository.create(payer, recipient, amount_cents, payment_request.method, current_user)
         payment_summary = describe_payment(amount_cents, payer.username, recipient.username)
@@ -53,6 +46,7 @@ class PaymentService:
             "recorded_payment",
             f"@{current_user.username} recorded a {payment_summary}",
             current_user.username,
+            notify=True,
         )
         # Email the person who got paid, unless they recorded it themselves.
         if payment_request.direction == "paid":

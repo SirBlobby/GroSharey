@@ -1,29 +1,40 @@
 import { useState } from 'react';
 import type { Friend } from '../types';
 import { money } from '../utils';
-import { HistoryIcon, LogOutIcon, ReceiptIcon, UserIcon } from '../components/icons';
+import { BellAlertIcon, HistoryIcon, LogOutIcon, ManualEntryIcon, ReceiptIcon, UserIcon } from '../components/icons';
 import Avatar from '../components/Avatar';
 import BalanceCard from '../components/BalanceCard';
+import FriendOverviewHeader from '../components/FriendOverviewHeader';
+import SharedSplits from '../components/profile/SharedSplits';
 import Logo from '../components/Logo';
+import NotificationBell from '../components/notifications/NotificationBell';
+import type { NotificationCenter } from '../hooks/useNotifications';
+import type { AppNotification } from '../types/notification';
 import FriendModal from '../components/FriendModal';
 import '../styles/main.css';
 
 interface Props {
+  currentUsername: string;
   friends: Friend[];
+  people: Friend[];
   selectedFriend: Friend | undefined;
   errorMessage: string | null;
   onSelectFriend: (username: string) => void;
   onAddFriend: (username: string) => Promise<Friend>;
-  onSettleUp: (friend: Friend) => Promise<void>;
+  onSettleUp: (friend: Friend, amount: number) => Promise<void>;
   onScan: () => void;
   onManual: () => void;
   onShowSettings: () => void;
   onShowHistory: () => void;
+  onViewProfile: (username: string) => void;
+  notificationCenter: NotificationCenter;
+  onOpenNotification: (notification: AppNotification) => void;
   onLogout: () => void;
 }
 
 export default function MainScreen({
-  friends, selectedFriend, errorMessage, onSelectFriend, onAddFriend, onSettleUp, onScan, onManual, onShowSettings, onShowHistory, onLogout,
+  currentUsername, friends, people, selectedFriend, errorMessage, onSelectFriend, onAddFriend, onSettleUp,
+  onScan, onManual, onShowSettings, onShowHistory, onViewProfile, notificationCenter, onOpenNotification, onLogout,
 }: Props) {
   const [adding, setAdding] = useState(false);
 
@@ -32,6 +43,7 @@ export default function MainScreen({
       <div className="topbar">
         <span className="brand"><Logo className="brand-logo" />groSharey</span>
         <div className="topbar-actions">
+          <NotificationBell notificationCenter={notificationCenter} onOpenNotification={onOpenNotification} />
           <button type="button" onClick={onShowHistory}>History <HistoryIcon /></button>
           <button type="button" onClick={onLogout}>Log Out <LogOutIcon /></button>
           <button type="button" aria-label="Settings" onClick={onShowSettings}><UserIcon /></button>
@@ -54,25 +66,54 @@ export default function MainScreen({
                   <Avatar friend={f} />
                   <span>{f.name}</span>
                 </span>
-                {f.balance < 0 && <span className="badge">{money(-f.balance)}</span>}
-                {f.balance > 0 && <span className="badge badge--owed">{money(f.balance)}</span>}
+                {f.balance < 0 && (
+                  <span className="badge" title={`You owe ${f.name}`}>
+                    <BellAlertIcon /> {money(-f.balance)}
+                  </span>
+                )}
+                {f.balance > 0 && (
+                  <span className="badge badge--owed" title={`${f.name} owes you`}>
+                    <BellAlertIcon /> {money(f.balance)}
+                  </span>
+                )}
               </button>
             ))}
           </div>
           <button type="button" className="plus" aria-label="Add friend" onClick={() => setAdding(true)}>+</button>
         </div>
 
-        <BalanceCard friend={selectedFriend} onSettleUp={onSettleUp} />
+        <div className="home-details">
+          <BalanceCard
+            friend={selectedFriend}
+            onSettleUp={onSettleUp}
+            header={selectedFriend && <FriendOverviewHeader friend={selectedFriend} onViewProfile={onViewProfile} />}
+          />
 
-        <div className="card log">
-          <h2>Log a grocery run!</h2>
-          <div className="choices">
-            <button type="button" className="choice" onClick={onScan}>
-              Scan Receipt
-              <ReceiptIcon />
-            </button>
-            <span className="or">OR</span>
-            <button type="button" className="choice" onClick={onManual}>Manual<br />Entry</button>
+          <div className="home-lower">
+            {selectedFriend && (
+              <SharedSplits
+                key={selectedFriend.username}
+                friendUsername={selectedFriend.username}
+                friendName={selectedFriend.name}
+                currentUsername={currentUsername}
+                people={people}
+              />
+            )}
+
+            <div className="card log">
+              <h2>Log a grocery run!</h2>
+              <div className="choices">
+                <button type="button" className="choice" onClick={onScan}>
+                  <ReceiptIcon />
+                  Scan Receipt
+                </button>
+                <span className="or">OR</span>
+                <button type="button" className="choice" onClick={onManual}>
+                  <ManualEntryIcon />
+                  Manual Entry
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </div>

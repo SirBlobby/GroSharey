@@ -14,6 +14,7 @@ class SplitReceipt(BaseModel):
     """A parsed receipt from /api/receipts/parse fits this, and so do manually entered items."""
 
     store_name: str | None = None
+    store_address: str | None = None
     purchase_date: str | None = None
     items: list[SplitReceiptItem] = Field(min_length=1)
     tax: float | None = None
@@ -25,6 +26,9 @@ class SplitRequest(BaseModel):
     receipt: SplitReceipt
     # item id -> usernames sharing that item (the payer can be one of them)
     assignments: dict[str, list[str]] = Field(min_length=1)
+    payer_username: str | None = None
+    paid_in_full: list[str] = Field(default_factory=list)
+    paid_amounts: dict[str, float] = Field(default_factory=dict)
 
 
 class ItemShare(BaseModel):
@@ -42,8 +46,9 @@ class PersonSplit(BaseModel):
     tax: float
     tip: float
     total: float
-    # What this person owes the payer. 0 for the payer.
+    # What this person still owes the payer after anything paid upfront. 0 for the payer.
     owes: float
+    paid: float = 0
 
 
 class SplitResult(BaseModel):
@@ -57,8 +62,10 @@ class SplitResult(BaseModel):
 class SavedSplit(SplitResult):
     id: str
     store_name: str | None
+    store_address: str | None = None
     purchase_date: str | None
     receipt_image_id: str | None = None
+    created_by: str | None = None
     created_at: datetime
     # Who was emailed about this split when it was saved (empty when listing past splits).
     emailed_usernames: list[str] = []

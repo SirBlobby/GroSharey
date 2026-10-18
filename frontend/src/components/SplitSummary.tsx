@@ -1,20 +1,26 @@
 import { useState } from "react";
 
-import type { ReceiptDetails } from "../services/splits";
+import type { ReceiptDetails, SplitPayment, UpfrontPayment } from "../services/splits";
 import { estimateShares, sumItemPrices } from "../services/splitEstimate";
 import type { Friend, Item } from "../types";
 import { formatReceiptDate, money } from "../utils";
-import Avatar from "./Avatar";
 import { CalendarIcon, CheckIcon, LocationIcon, StoreIcon, ViewReceiptIcon } from "./icons";
+import ItemPickerModal from "./manage/ItemPickerModal";
+import PayerPicker from "./manage/PayerPicker";
+import PersonShareRow from "./manage/PersonShareRow";
 import ReceiptViewerModal from "./ReceiptViewerModal";
 
 type SplitSummaryProps = {
   items: Item[];
   receiptDetails: ReceiptDetails;
   friends: Friend[];
+  currentUsername: string;
+  splitPayment: SplitPayment;
   errorMessage: string | null;
   isSaving: boolean;
-  onToggleOnEveryItem: (username: string) => void;
+  onPayerChange: (username: string) => void;
+  onUpfrontPaymentChange: (username: string, upfrontPayment: UpfrontPayment | null) => void;
+  onSetPersonItems: (username: string, itemIds: string[]) => void;
   onConfirm: () => void;
 };
 
@@ -26,23 +32,27 @@ export default function SplitSummary({
   items,
   receiptDetails,
   friends,
+  currentUsername,
+  splitPayment,
   errorMessage,
   isSaving,
-  onToggleOnEveryItem,
+  onPayerChange,
+  onUpfrontPaymentChange,
+  onSetPersonItems,
   onConfirm,
 }: SplitSummaryProps) {
   const [isReceiptOpen, setIsReceiptOpen] = useState(false);
+  const [pickingItemsFor, setPickingItemsFor] = useState<Friend | null>(null);
   const subtotal = sumItemPrices(items);
   const total = subtotal + (receiptDetails.tax ?? 0) + (receiptDetails.tip ?? 0);
   const unassignedCount = items.filter((item) => item.usernames.length === 0).length;
-  const estimatedShares = estimateShares(items, receiptDetails);
+  const sharesByUsername = new Map(
+    estimateShares(items, receiptDetails).map((share) => [share.username, share.amount]),
+  );
+  const payerUsername = splitPayment.payerUsername ?? currentUsername;
 
-  function isOnEveryItem(username: string): boolean {
-    return items.length > 0 && items.every((item) => item.usernames.includes(username));
-  }
-
-  function findName(username: string): string {
-    return friends.find((friend) => friend.username === username)?.name ?? `@${username}`;
+  function findItemIds(username: string): string[] {
+    return items.filter((item) => item.usernames.includes(username)).map((item) => item.id);
   }
 
   return (
@@ -102,38 +112,26 @@ export default function SplitSummary({
         </div>
       </dl>
 
-      <div className="summary-section">
-        <h3>Add to every item</h3>
-        <div className="quick-assign">
-          {friends.map((friend) => (
-            <button
-              key={friend.username}
-              type="button"
-              className={`quick-assign-option ${isOnEveryItem(friend.username) ? "selected" : ""}`}
-              aria-pressed={isOnEveryItem(friend.username)}
-              onClick={() => onToggleOnEveryItem(friend.username)}
-            >
-              <Avatar friend={friend} />
-              <span className="quick-assign-name">{friend.name}</span>
-              {isOnEveryItem(friend.username) && <CheckIcon />}
-            </button>
-          ))}
-        </div>
-      </div>
+      <PayerPicker people={friends} payerUsername={payerUsername} onPayerChange={onPayerChange} />
 
-      {estimatedShares.length > 0 && (
-        <div className="summary-section">
-          <h3>Estimated shares</h3>
-          <ul className="share-list">
-            {estimatedShares.map((share) => (
-              <li key={share.username}>
-                <span>{findName(share.username)}</span>
-                <span>{money(share.amount)}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="summary-section">
+        <h3>People</h3>
+        <p className="description">Estimated shares. Final amounts are worked out when you confirm.</p>
+        <ul className="person-shares">
+          {friends.map((person) => (
+            <PersonShareRow
+              key={person.username}
+              person={person}
+              share={sharesByUsername.get(person.username) ?? 0}
+              itemCount={findItemIds(person.username).length}
+              isPayer={person.username === payerUsername}
+              upfrontPayment={splitPayment.upfrontPayments[person.username]}
+              onPickItems={() => setPickingItemsFor(person)}
+              onUpfrontPaymentChange={(upfrontPayment) => onUpfrontPaymentChange(person.username, upfrontPayment)}
+            />
+          ))}
+        </ul>
+      </div>
 
       {unassignedCount > 0 && (
         <p className="summary-warning">
@@ -145,6 +143,19 @@ export default function SplitSummary({
       <button type="button" className="btn summary-confirm" onClick={onConfirm} disabled={isSaving}>
         <CheckIcon /> {isSaving ? "Saving..." : "Confirm Split"}
       </button>
+
+      {pickingItemsFor && (
+        <ItemPickerModal
+          personName={pickingItemsFor.name}
+          items={items}
+          initialSelectedIds={findItemIds(pickingItemsFor.username)}
+          onDone={(itemIds) => {
+            onSetPersonItems(pickingItemsFor.username, itemIds);
+            setPickingItemsFor(null);
+          }}
+          onClose={() => setPickingItemsFor(null)}
+        />
+      )}
 
       {isReceiptOpen && receiptDetails.receiptImageId && (
         <ReceiptViewerModal

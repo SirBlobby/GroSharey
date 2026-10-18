@@ -1,88 +1,89 @@
-import { useEffect, useState } from "react";
-
-import { friendsApi } from "../api/friendsApi";
-import { AddFriendIcon, BackIcon, CheckIcon } from "../components/icons";
-import ProfileAvatar from "../components/ProfileAvatar";
+import BalanceCard from "../components/BalanceCard";
+import { BackIcon } from "../components/icons";
+import FriendProfileCard from "../components/profile/FriendProfileCard";
+import SharedSplits from "../components/profile/SharedSplits";
 import { useAuth } from "../hooks/useAuth";
-import { useFormSubmission } from "../hooks/useFormSubmission";
 import { useProfile } from "../hooks/useProfile";
+import type { Friend } from "../types";
+import "../styles/main.css";
 import "../styles/account.css";
+import "../styles/history.css";
+import "../styles/friendProfile.css";
 
 type FriendProfileScreenProps = {
   username: string;
+  friends: Friend[];
+  people: Friend[];
+  onAddFriend: (username: string) => Promise<Friend>;
+  onRemoveFriend: (username: string) => Promise<void>;
+  onSettleUp: (friend: Friend, amount: number) => Promise<void>;
   onBack: () => void;
 };
 
-export default function FriendProfileScreen({ username, onBack }: FriendProfileScreenProps) {
+export default function FriendProfileScreen({
+  username,
+  friends,
+  people,
+  onAddFriend,
+  onRemoveFriend,
+  onSettleUp,
+  onBack,
+}: FriendProfileScreenProps) {
   const { currentUser } = useAuth();
   const { profile, isLoading, errorMessage } = useProfile(username);
-  const [isFriendAdded, setIsFriendAdded] = useState(false);
-  const [isCheckingFriendship, setIsCheckingFriendship] = useState(true); // ADDED
-  const addFriendSubmission = useFormSubmission(async (friendUsername: string) => {
-    await friendsApi.addFriend(friendUsername);
-    setIsFriendAdded(true);
-  });
 
-  // check if already a friend
-  useEffect(() => {
-    let cancelled = false;
-    setIsFriendAdded(false);
-    setIsCheckingFriendship(true);
-
-    friendsApi
-      .listFriends()
-      .then((friends) => {
-        if (!cancelled) {
-          setIsFriendAdded(friends.some((friend) => friend.username === username));
-        }
-      })
-      .catch(() => {
-        // On failure, fall back to showing "Add Friend"
-      })
-      .finally(() => {
-        if (!cancelled) setIsCheckingFriendship(false);
-      });
-
-    return () => {
-      cancelled = true;
-    };
-  }, [username]);
-
+  const friend = friends.find((knownFriend) => knownFriend.username === profile?.username);
   const isOwnProfile = currentUser?.username === profile?.username;
 
   return (
-    <section className="screen account">
-      <div className="title-top">Profile</div>
-
-      <div className="card account-card">
-        {isLoading && <p className="description">Loading...</p>}
-        {errorMessage && <p className="error-text">{errorMessage}</p>}
-        {profile && (
-          <>
-            <ProfileAvatar profile={profile} />
-            <h2>{profile.display_name}</h2>
-            <p className="handle">@{profile.username}</p>
-          </>
-        )}
-        {profile && !isOwnProfile && (
-          <button
-            type="button"
-            className="btn"
-            disabled={isFriendAdded || isCheckingFriendship || addFriendSubmission.isSubmitting} // CHANGED: added isCheckingFriendship
-            onClick={() => addFriendSubmission.submit(profile.username)}
-          >
-            {isFriendAdded ? <CheckIcon /> : <AddFriendIcon />} {isFriendAdded ? "Friend Added!" : "Add Friend"}
-          </button>
-          
-        )}
-        {addFriendSubmission.errorMessage && <p className="error-text">{addFriendSubmission.errorMessage}</p>}
-      </div>
-
-      <div className="footer">
-        <button type="button" className="btn" onClick={onBack}>
+    <section className="screen friend-profile">
+      <div className="topbar">
+        <span>Profile</span>
+        <button type="button" onClick={onBack}>
           <BackIcon /> Back
         </button>
       </div>
+
+      {isLoading && <p className="friend-profile-message">Loading profile...</p>}
+      {errorMessage && <p className="friend-profile-message">{errorMessage}</p>}
+
+      {profile && currentUser && (
+        <div className="friend-profile-layout">
+          <FriendProfileCard
+            profile={profile}
+            friend={friend}
+            isOwnProfile={isOwnProfile}
+            onAddFriend={onAddFriend}
+            onRemoveFriend={onRemoveFriend}
+          />
+
+          <div className="friend-profile-details">
+            {friend && <BalanceCard friend={friend} onSettleUp={onSettleUp} />}
+            {friend && (
+              <SharedSplits
+                friendUsername={friend.username}
+                friendName={friend.name}
+                currentUsername={currentUser.username}
+                people={people}
+              />
+            )}
+            {!friend && !isOwnProfile && (
+              <div className="card friend-profile-invite">
+                <h2>Split groceries together</h2>
+                <p className="description">
+                  Add {profile.display_name} as a friend to assign them items, track who owes what, and settle up.
+                </p>
+              </div>
+            )}
+            {isOwnProfile && (
+              <div className="card friend-profile-invite">
+                <h2>This is your profile</h2>
+                <p className="description">This is what your friends see when they open your link or QR code.</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

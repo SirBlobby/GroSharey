@@ -184,18 +184,14 @@ def test_payment_lowers_balance_for_both_sides(client):
     assert len(client.get("/api/payments", headers=alex).json) == 2
 
 
-def test_overpaying_is_rejected(client):
+def test_overpaying_leaves_a_credit(client):
     sachi, alex = owe_sachi_for_ice_cream(client)
     response = client.post(
-        "/api/payments", json={"friend_username": "sachi", "amount": 10.01, "direction": "paid"}, headers=alex
+        "/api/payments", json={"friend_username": "sachi", "amount": 12.00, "direction": "paid"}, headers=alex
     )
-    assert response.status_code == 400
-    assert "only owes" in response.json["detail"]
-    # Sachi doesn't owe Alex anything, so she can't "pay" him.
-    response = client.post(
-        "/api/payments", json={"friend_username": "alex", "amount": 1.00, "direction": "paid"}, headers=sachi
-    )
-    assert response.status_code == 400
+    assert response.status_code == 201
+    assert friends_by_username(client, sachi)["alex"]["balance"] == -2.00
+    assert friends_by_username(client, alex)["sachi"]["balance"] == 2.00
 
 
 def test_pay_links_appear_only_for_the_person_who_owes(client):

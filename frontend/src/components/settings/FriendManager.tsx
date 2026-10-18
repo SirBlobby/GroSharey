@@ -1,9 +1,11 @@
 import { FormEvent, useState } from "react";
 
+import { usePagination } from "../../hooks/usePagination";
 import type { Friend } from "../../types";
 import { readErrorMessage } from "../../utils";
 import FriendManagerRow from "./FriendManagerRow";
 import { AddFriendIcon } from "../icons";
+import Pagination from "../Pagination";
 
 type FriendManagerProps = {
   friends: Friend[];
@@ -17,6 +19,8 @@ export default function FriendManager({ friends, onAddFriend, onRemoveFriend, on
   const [isAdding, setIsAdding] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  const friendPages = usePagination(friends);
 
   const normalizedUsername = newUsername.trim().toLowerCase().replace(/^@/, "");
 
@@ -88,7 +92,7 @@ export default function FriendManager({ friends, onAddFriend, onRemoveFriend, on
         <p className="empty">No friends yet.<br />Add one by username or have them scan your QR code.</p>
       ) : (
         <ul className="manager-list">
-          {friends.map((friend) => (
+          {friendPages.pageItems.map((friend) => (
             <FriendManagerRow
               key={friend.username}
               friend={friend}
@@ -98,6 +102,13 @@ export default function FriendManager({ friends, onAddFriend, onRemoveFriend, on
           ))}
         </ul>
       )}
+      <Pagination
+        page={friendPages.page}
+        pageCount={friendPages.pageCount}
+        totalCount={friendPages.totalCount}
+        itemLabel="friends"
+        onPageChange={friendPages.setPage}
+      />
     </div>
   );
 }

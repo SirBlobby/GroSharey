@@ -15,7 +15,7 @@
   background: none; border: 3px solid transparent; border-radius: 18px;
   padding: 12px 16px; font-size: 1.35rem; font-weight: 600; text-align: left;
 }
-.settings-menu-item:hover { background: var(--white); }
+.settings-menu-item:hover { background: var(--white); border-color: var(--green); }
 .settings-menu-item.active { background: var(--white); border-color: var(--forest); color: var(--forest); }
 
 .settings-panel { min-height: 0; overflow: auto; display: flex; flex-direction: column; gap: 18px; padding: 24px 28px; }
@@ -73,7 +73,6 @@
 }
 .settings-field input:focus { border-color: var(--forest); outline: none; box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
 .settings-group .btn { min-width: 140px; font-size: 1.3rem; padding: 10px 18px; }
-.danger-button { border-color: var(--red); color: var(--red); }
 
 @media (max-width: 820px) {
   .settings-layout { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }

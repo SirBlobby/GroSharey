@@ -4,6 +4,7 @@ from server.routes.audit_routes import audit_blueprint
 from server.routes.auth_routes import auth_blueprint
 from server.routes.friend_routes import friend_blueprint
 from server.routes.health_routes import health_blueprint
+from server.routes.notification_routes import notification_blueprint
 from server.routes.payment_routes import payment_blueprint
 from server.routes.profile_routes import profile_blueprint
 from server.routes.receipt_routes import receipt_blueprint
@@ -21,3 +22,4 @@ def register_routes(application: Flask) -> None:
     application.register_blueprint(split_blueprint)
     application.register_blueprint(payment_blueprint)
     application.register_blueprint(audit_blueprint)
+    application.register_blueprint(notification_blueprint)
