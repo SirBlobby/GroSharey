@@ -77,7 +77,8 @@
 .trip-filter { align-self: flex-start; }
 
 @media (max-width: 720px) {
-  .trip-banner .group-action { flex: 1; justify-content: center; }
+  .trip-banner .group-action { flex: 1 1 100%; justify-content: center; }
+  .trip-banner input { flex: 1 1 0; }
 }
 
 .budget-bar { display: flex; flex-direction: column; gap: 4px; width: 100%; font-weight: 600; font-size: 1rem; }

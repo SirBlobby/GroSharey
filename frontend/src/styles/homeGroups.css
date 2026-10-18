@@ -74,4 +74,4 @@
   .group-balance-name { font-size: 1.05rem; }
   .group-balance-amount { font-size: 0.9rem; }
 }
-.group-overview .trip-banner { flex-basis: 100%; }
+.group-overview .trip-banner, .group-overview .budget-bar { flex: 0 0 auto; width: 100%; min-width: 0; }

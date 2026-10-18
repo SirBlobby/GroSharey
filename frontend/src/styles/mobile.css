@@ -1,7 +1,7 @@
 @media (max-width: 720px) {
   html { --base-font-size: 14px; }
 
-  .screen { padding: 8px 8px 16px; overflow-y: auto; }
+  .screen { padding: 8px 8px 16px; overflow-y: auto; overflow-x: hidden; }
   .main-grid, .home-lower, .settings-layout { flex: none; overflow: visible; }
   .home-details, .home-lower { display: contents; }
   .home-lower > .log { order: -1; }
