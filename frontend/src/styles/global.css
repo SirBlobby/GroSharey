@@ -1,13 +1,4 @@
 :root {
-  color-scheme: light;
-  --navy: #1a1856;
-  --forest: #2a6100;
-  --green: #47a152;
-  --mint: #dbfacf;
-  --white: #fff;
-  --red: #b00000;
-  --blue: #1d5fbf;
-  --gray: #d9d9d9;
   --radius-large: 14px;
   --radius-medium: 10px;
   --radius-small: 6px;
@@ -16,15 +7,17 @@
 }
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
+html { font-size: calc(var(--base-font-size, 16px) * var(--text-scale, 1)); }
 body {
   margin: 0;
-  background: var(--green);
+  background-color: var(--color-page-solid);
+  background-image: var(--color-page-gradient);
   font-family: var(--body);
-  color: var(--navy);
+  color: var(--color-text);
   overflow: hidden;
 }
 button { font: inherit; color: inherit; cursor: pointer; }
-h1, h2 { font-family: var(--display); color: var(--forest); margin: 0; font-weight: 400; }
+h1, h2 { font-family: var(--display); color: var(--color-heading); margin: 0; font-weight: 400; }
 
 .screen {
   position: absolute;
@@ -39,44 +32,42 @@ h1, h2 { font-family: var(--display); color: var(--forest); margin: 0; font-weig
 @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
 .card {
-  background: var(--mint);
-  border: 6px solid var(--white);
+  background: var(--color-card);
+  border: 3px solid var(--color-primary);
   border-radius: var(--radius-large);
   padding: 24px;
-  box-shadow: 0 0 0 3px var(--forest);
 }
 .title-top {
   font-family: var(--display);
-  color: var(--mint);
+  color: var(--color-on-strong);
   text-align: center;
   font-size: 1.6rem;
   margin: 4px 0 12px;
 }
 .btn {
-  background: var(--mint);
-  border: 5px solid var(--forest);
-  color: var(--forest);
+  background: var(--color-card);
+  border: 5px solid var(--color-primary);
+  color: var(--color-heading);
   font-family: var(--display);
   font-size: 1.6rem;
   border-radius: var(--radius-medium);
   padding: 14px 8px;
   min-width: 150px;
 }
-.btn:hover { background: var(--white); }
+.btn:hover { background: var(--color-surface); }
 .plus {
   width: 56px; height: 56px; flex: none;
   border-radius: 50%; border: 0;
-  background: var(--forest); color: #fff;
+  background: var(--color-primary); color: var(--color-on-strong);
   font-size: 2.2rem; line-height: 1;
   display: grid; place-items: center;
 }
-.plus:hover { background: var(--navy); }
-:focus-visible { outline: 3px solid var(--navy); outline-offset: 2px; }
+.plus:hover { background: var(--color-ink); }
+:focus-visible { outline: 3px solid var(--color-outline); outline-offset: 2px; }
 button:disabled { opacity: 0.6; cursor: default; }
-.btn:disabled:hover { background: var(--mint); }
-.error-text { color: var(--red); font-weight: 600; margin: 8px 0; }
+.btn:disabled:hover { background: var(--color-card); }
+.error-text { color: var(--color-danger); font-weight: 600; margin: 8px 0; }
 .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
-html[data-text-size="large"] { font-size: 112.5%; }
 html[data-reduce-motion="true"] *, html[data-reduce-motion="true"] *::before, html[data-reduce-motion="true"] *::after {
   animation-duration: 0.01s !important; transition-duration: 0.01s !important;
 }
@@ -87,19 +78,19 @@ html[data-reduce-motion="true"] *, html[data-reduce-motion="true"] *::before, ht
   mask: url("/fihh_logo.png") center / contain no-repeat;
 }
 .brand { display: flex; align-items: center; gap: 14px; font-size: 2.4rem; line-height: 1; }
-.brand-logo { width: 72px; height: 72px; color: var(--mint); }
+.brand-logo { width: 72px; height: 72px; color: var(--color-on-strong); }
 .footer { display: flex; justify-content: flex-end; align-items: center; flex-wrap: wrap; gap: 40px; padding: 14px 24px 6px; }
-.danger-button { border-color: var(--red); color: var(--red); }
-.danger-button:hover { background: var(--red); color: var(--mint); }
-.loading-screen { align-items: center; justify-content: center; gap: 12px; color: var(--mint); font-family: var(--display); font-size: 1.6rem; }
-.loading-logo { width: 120px; height: 120px; color: var(--mint); animation: loading-pulse 1.2s ease-in-out infinite alternate; }
+.danger-button { border-color: var(--color-danger); color: var(--color-danger); }
+.danger-button:hover { background: var(--color-danger); color: var(--color-on-strong); }
+.loading-screen { align-items: center; justify-content: center; gap: 12px; color: var(--color-on-strong); font-family: var(--display); font-size: 1.6rem; }
+.loading-logo { width: 120px; height: 120px; color: var(--color-on-strong); animation: loading-pulse 1.2s ease-in-out infinite alternate; }
 @keyframes loading-pulse { from { opacity: 0.5; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 .password-wrap { position: relative; display: flex; }
 .password-wrap .password-input { flex: 1; width: 100%; min-width: 0; padding-right: 52px; }
 .password-toggle {
   position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
   display: grid; place-items: center; width: 40px; height: 34px;
-  background: var(--mint); border: 2px solid var(--green); border-radius: var(--radius-small);
-  color: var(--forest); font-size: 1.3rem;
+  background: var(--color-card); border: 2px solid var(--color-border); border-radius: var(--radius-small);
+  color: var(--color-heading); font-size: 1.3rem;
 }
-.password-toggle:hover { border-color: var(--forest); background: #fff; }
+.password-toggle:hover { border-color: var(--color-primary); background: var(--color-surface); }

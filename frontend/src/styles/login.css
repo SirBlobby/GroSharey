@@ -1,30 +1,30 @@
 .login { align-items: center; justify-content: safe center; overflow: auto; }
 .login .card { width: min(470px, 100%); text-align: center; padding: 44px 24px 36px; }
-.login-logo { width: 120px; height: 120px; margin: 0 auto 12px; color: var(--forest); }
+.login-logo { width: 120px; height: 120px; margin: 0 auto 12px; color: var(--color-heading); }
 .login .welcome { font-size: 1.7rem; font-weight: 600; margin: 0; }
 .login h1 { font-size: clamp(3rem, 10vw, 4.6rem); margin: 14px 0 30px; }
 .login .tag { font-size: 1.6rem; font-weight: 600; line-height: 1.1; margin: 0 0 32px; }
 .google {
   display: inline-flex; align-items: center; gap: 14px;
-  background: #fff; border: 1px solid #999; border-radius: var(--radius-small);
+  background: var(--color-surface); border: 1px solid #999; border-radius: var(--radius-small);
   padding: 20px 34px;
   font-family: 'Outfit', sans-serif; font-size: 1.4rem; color: #222;
 }
 .auth-form { display: flex; flex-direction: column; gap: 14px; text-align: left; }
 .auth-field { display: flex; flex-direction: column; gap: 6px; font-weight: 600; font-size: 1.2rem; }
 .auth-field input {
-  font: 600 1.2rem var(--body); color: var(--navy);
-  background: #fff; border: 2px solid var(--green); border-radius: var(--radius-small); padding: 10px 12px;
+  font: 600 1.2rem var(--body); color: var(--color-text);
+  background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-small); padding: 10px 12px;
 }
-.auth-field input:focus { border-color: var(--forest); outline: none; box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
+.auth-field input:focus { border-color: var(--color-primary); outline: none; box-shadow: 0 0 0 3px var(--color-focus-ring); }
 .auth-form .btn { margin-top: 8px; }
 .switch-link {
   margin-top: 20px; background: none; border: 0;
-  font-weight: 600; font-size: 1.1rem; color: var(--forest); text-decoration: underline;
+  font-weight: 600; font-size: 1.1rem; color: var(--color-heading); text-decoration: underline;
 }
 .auth-back {
   display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
-  background: none; border: 0; color: var(--mint);
+  background: none; border: 0; color: var(--color-on-strong);
   font-family: var(--display); font-size: 1.3rem;
 }
 .auth-back:hover { text-decoration: underline; text-underline-offset: 4px; }

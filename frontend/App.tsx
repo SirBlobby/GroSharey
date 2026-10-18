@@ -1,11 +1,12 @@
 import { StatusBar } from "expo-status-bar";
+import { useCallback, useState } from "react";
 import { Platform, StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
 import { captureReceiptImageForWebView } from "./src/media/receiptImage";
 import WebApp from "./src/WebApp";
 
-const APP_BACKGROUND_COLOR = "#47a152";
+const DEFAULT_PAGE_COLOR = "#25a18e";
 
 const DOM_HOST_FALLBACK_SCRIPT = [
   `window.$$EXPO_DOM_HOST_OS = window.$$EXPO_DOM_HOST_OS || ${JSON.stringify(Platform.OS)};`,
@@ -13,16 +14,21 @@ const DOM_HOST_FALLBACK_SCRIPT = [
   "true;",
 ].join("\n");
 
-export default function App() {
+function MobileApp() {
+  const [pageColor, setPageColor] = useState(DEFAULT_PAGE_COLOR);
+  const updatePageColor = useCallback((nextPageColor: string) => setPageColor(nextPageColor), []);
+  const pageBackground = { backgroundColor: pageColor };
+
   return (
     <SafeAreaProvider>
-      <SafeAreaView style={styles.container} edges={["top", "bottom"]}>
+      <SafeAreaView style={[styles.container, pageBackground]} edges={["top", "bottom"]}>
         <WebApp
-          captureReceiptImage={Platform.OS === "web" ? undefined : captureReceiptImageForWebView}
+          captureReceiptImage={captureReceiptImageForWebView}
+          onPageColorChange={updatePageColor}
           dom={{
             useExpoDOMWebView: false,
             injectedJavaScriptBeforeContentLoaded: DOM_HOST_FALLBACK_SCRIPT,
-            style: styles.webApp,
+            style: [styles.webApp, pageBackground],
             mediaCapturePermissionGrantType: "grant",
             allowsInlineMediaPlayback: true,
             bounces: false,
@@ -35,13 +41,18 @@ export default function App() {
   );
 }
 
+export default function App() {
+  if (Platform.OS === "web") {
+    return <WebApp />;
+  }
+  return <MobileApp />;
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: APP_BACKGROUND_COLOR,
   },
   webApp: {
     flex: 1,
-    backgroundColor: APP_BACKGROUND_COLOR,
   },
 });

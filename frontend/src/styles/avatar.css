@@ -1,13 +1,13 @@
 .av {
   width: 60px; height: 60px; flex: none; aspect-ratio: 1;
   border-radius: 25%;
-  border: 6px solid var(--navy);
-  background: var(--mint);
+  border: 6px solid var(--color-outline);
+  background: var(--color-card);
   font: 600 1.35rem var(--body);
-  color: var(--navy);
+  color: var(--color-text);
   display: grid; place-items: center;
   padding: 0;
   overflow: hidden;
 }
 .av-picture { width: 100%; height: 100%; object-fit: cover; display: block; }
-.av--button:hover { border-color: var(--red); }
+.av--button:hover { border-color: var(--color-danger); }

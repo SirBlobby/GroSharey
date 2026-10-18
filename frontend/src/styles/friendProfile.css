@@ -1,7 +1,7 @@
 .friend-profile { overflow: auto; }
 .friend-profile-message {
   align-self: center; margin: 24px 0; padding: 12px 18px;
-  background: var(--mint); border: 3px solid var(--white); border-radius: var(--radius-medium);
+  background: var(--color-card); border: 3px solid var(--color-primary); border-radius: var(--radius-medium);
   font-weight: 600; font-size: 1.2rem;
 }
 .friend-profile-layout {
@@ -14,14 +14,14 @@
   display: flex; flex-direction: column; align-items: center; gap: 12px;
   text-align: center; padding: 32px 24px;
 }
-.friend-profile-name { font-family: var(--display); color: var(--forest); font-size: 2.6rem; line-height: 1; }
+.friend-profile-name { font-family: var(--display); color: var(--color-heading); font-size: 2.6rem; line-height: 1; }
 .friend-status {
   display: inline-flex; align-items: center; gap: 6px;
   padding: 6px 12px; border-radius: var(--radius-small);
-  background: #fff; border: 3px solid var(--green);
+  background: var(--color-surface); border: 3px solid var(--color-border);
   font-weight: 600; font-size: 1.1rem;
 }
-.friend-status--friends { background: var(--forest); border-color: var(--forest); color: var(--mint); }
+.friend-status--friends { background: var(--color-primary); border-color: var(--color-primary); color: var(--color-on-strong); }
 .friend-profile-action { width: 100%; font-size: 1.4rem; padding: 10px 12px; }
 
 .friend-profile-details { min-height: 0; display: flex; flex-direction: column; gap: 12px; }

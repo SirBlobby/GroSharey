@@ -2,11 +2,11 @@ import { Icon } from '@iconify/react';
 
 export const GoogleLogo = () => <Icon icon="logos:google-icon" width={34} aria-hidden="true" />;
 
-export const UserIcon = () => <Icon icon="mdi:account-circle-outline" width={40} color="#dbfacf" aria-hidden="true" />;
+export const UserIcon = () => <Icon icon="mdi:account-circle-outline" width={40} aria-hidden="true" />;
 
-export const ReceiptIcon = () => <Icon icon="mdi:receipt-text-outline" width={64} color="#000" aria-hidden="true" />;
+export const ReceiptIcon = () => <Icon icon="mdi:receipt-text-outline" width={64} aria-hidden="true" />;
 
-export const CameraIcon = () => <Icon icon="mdi:camera-outline" width={100} color="#222" aria-hidden="true" />;
+export const CameraIcon = () => <Icon icon="mdi:camera-outline" width={100} aria-hidden="true" />;
 
 export const CloseIcon = () => <Icon icon="mdi:close" width="1em" aria-hidden="true" />;
 
@@ -66,7 +66,7 @@ export const PreviousPageIcon = () => <Icon icon="mdi:chevron-left" width="1em" 
 
 export const NextPageIcon = () => <Icon icon="mdi:chevron-right" width="1em" aria-hidden="true" />;
 
-export const ManualEntryIcon = () => <Icon icon="mdi:pencil-box-outline" width={64} color="#000" aria-hidden="true" />;
+export const ManualEntryIcon = () => <Icon icon="mdi:pencil-box-outline" width={64} aria-hidden="true" />;
 
 export const BellIcon = () => <Icon icon="mdi:bell-outline" width="1em" aria-hidden="true" />;
 

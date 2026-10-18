@@ -1,11 +1,11 @@
 @media (max-width: 720px) {
-  html { font-size: 14px; }
+  html { --base-font-size: 14px; }
 
   .screen { padding: 8px 8px 16px; overflow-y: auto; }
   .main-grid, .home-lower, .settings-layout, .history-panel { flex: none; overflow: visible; }
   .home-details { overflow: visible; padding: 0; margin: 0; }
   .settings-panel, .settings-menu, .history-list, .home-lower .shared-splits, .manager-list { overflow: visible; }
-  .card { border-width: 4px; padding: 14px; box-shadow: 0 0 0 2px var(--forest); }
+  .card { padding: 14px; }
   .card h2 { font-size: 1.8rem; }
   .title-top { font-size: 1.3rem; margin: 2px 0 8px; }
 
@@ -50,7 +50,7 @@
   .choice svg { width: 36px; height: 36px; }
   .home-lower > .log:only-child .or::before, .home-lower > .log:only-child .or::after { display: block; }
   .or { display: flex; align-items: center; gap: 10px; font-size: 1.1rem; }
-  .or::before, .or::after { content: ""; flex: 1; height: 3px; background: var(--green); }
+  .or::before, .or::after { content: ""; flex: 1; height: 3px; background: var(--color-border); }
 
   .history-card { padding: 12px; }
   .history-store, .history-total { font-size: 1.4rem; }
