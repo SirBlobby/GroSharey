@@ -22,15 +22,6 @@
   margin-top: 20px; background: none; border: 0;
   font-weight: 600; font-size: 1.1rem; color: var(--forest); text-decoration: underline;
 }
-.password-wrap { position: relative; display: flex; }
-.password-wrap input { flex: 1; min-width: 0; padding-right: 52px; }
-.password-toggle {
-  position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-  display: grid; place-items: center; width: 40px; height: 34px;
-  background: var(--mint); border: 2px solid var(--green); border-radius: var(--radius-small);
-  color: var(--forest); font-size: 1.3rem;
-}
-.password-toggle:hover { border-color: var(--forest); background: #fff; }
 .auth-back {
   display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
   background: none; border: 0; color: var(--mint);

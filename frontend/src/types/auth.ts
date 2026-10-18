@@ -27,3 +27,13 @@ export type AuthResponse = {
   token_type: string;
   user: User;
 };
+
+export type UsernameChange = {
+  username: string;
+  current_password: string;
+};
+
+export type PasswordChange = {
+  current_password: string;
+  new_password: string;
+};

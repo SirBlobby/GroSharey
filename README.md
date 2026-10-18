@@ -93,7 +93,6 @@ Run from the project root.
 | `bun run preview:web` | Serve the built frontend locally |
 | `bun run typecheck` | Type check the frontend |
 | `bun run test:health` | Check that the backend is running |
-| `bun run test:backend` | Run the backend tests (uses an in-memory database) |
 | `bun run backfill:audit-log` | Add audit log entries for friendships, splits, and payments made before the audit log existed (safe to run more than once) |
 
 Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env` before running.
@@ -149,7 +148,9 @@ Email and password accounts stored in the MongoDB `users` collection. Passwords 
 | POST | `/api/auth/signup` | No | Create an account, returns token and user |
 | POST | `/api/auth/login` | No | Log in, returns token and user |
 | GET | `/api/auth/me` | Yes | Current user |
-| GET | `/api/profiles/<username>` | Yes | Public profile (id, username, display name, picture URL) |
+| PUT | `/api/auth/me/username` | Yes | Change username with `{"username", "current_password"}` (usernames are unique) |
+| PUT | `/api/auth/me/password` | Yes | Change password with `{"current_password", "new_password"}` |
+| GET | `/api/profiles/<username or email>` | Yes | Public profile (id, username, display name, picture URL) |
 | PUT | `/api/profiles/me/picture` | Yes | Upload profile picture as `{"image_base64": "..."}` |
 | GET | `/api/profiles/<username>/picture` | No | Profile picture image |
 | POST | `/api/receipts/parse` | Yes | Read a receipt photo sent as `{"image_base64": "..."}`, returns items and totals as JSON |

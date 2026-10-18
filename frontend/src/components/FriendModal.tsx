@@ -74,7 +74,7 @@ export default function FriendModal({
         <div className="newf">
           <input
             value={newUsername}
-            placeholder="Friend's username"
+            placeholder="Friend's username or email"
             autoCapitalize="none"
             onChange={(e) => setNewUsername(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && add()}

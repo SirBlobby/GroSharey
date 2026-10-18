@@ -1,4 +1,4 @@
-import { AuthResponse, LogInCredentials, SignUpDetails, User } from "../types/auth";
+import { AuthResponse, LogInCredentials, PasswordChange, SignUpDetails, User, UsernameChange } from "../types/auth";
 import { apiClient } from "./apiClient";
 
 export const authApi = {
@@ -6,4 +6,6 @@ export const authApi = {
   logIn: (credentials: LogInCredentials) => apiClient.post<AuthResponse>("/auth/login", credentials),
   getCurrentUser: () => apiClient.get<User>("/auth/me"),
   logOut: () => apiClient.post<null>("/auth/logout", {}),
+  changeUsername: (usernameChange: UsernameChange) => apiClient.put<User>("/auth/me/username", usernameChange),
+  changePassword: (passwordChange: PasswordChange) => apiClient.put<null>("/auth/me/password", passwordChange),
 };

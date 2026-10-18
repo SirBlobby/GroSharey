@@ -78,6 +78,16 @@ class SplitRepository:
         )
         return [convert_document_to_split(split_document) for split_document in split_documents]
 
+    def rename_user(self, user_id: str, username: str) -> None:
+        self.splits_collection.update_many({"payer_id": user_id}, {"$set": {"payer_username": username}})
+        self.splits_collection.update_many({"created_by_id": user_id}, {"$set": {"created_by_username": username}})
+        for split_document in self.splits_collection.find({"people.user_id": user_id}, {"people": 1}):
+            people = [
+                {**person, "username": username} if person["user_id"] == user_id else person
+                for person in split_document["people"]
+            ]
+            self.splits_collection.update_one({"_id": split_document["_id"]}, {"$set": {"people": people}})
+
     def is_receipt_image_shared_with(self, receipt_image_id: str, user_id: str) -> bool:
         return (
             self.splits_collection.find_one(

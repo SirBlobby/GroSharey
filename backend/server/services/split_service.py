@@ -183,8 +183,6 @@ def split_receipt(receipt: SplitReceipt, assignments: dict[str, list[str]], paye
 def apply_upfront_payments(
     split_result: SplitResult, paid_in_full: list[str], paid_amounts: dict[str, float]
 ) -> SplitResult:
-    """Subtracts what people already paid the payer from what they owe on this split.
-    Paying more than your share is allowed; the extra becomes credit the payer owes back."""
     people_by_username = {person.username: person for person in split_result.people}
     full_usernames = {normalize_username(username) for username in paid_in_full}
     paid_cents_by_username = {
@@ -236,7 +234,6 @@ class SplitService:
         return stored_user
 
     def find_friends_assigned(self, assignments: dict[str, list[str]], creator: User) -> dict[str, StoredUser]:
-        """username -> account for everyone assigned besides the creator. Each must be the creator's friend."""
         assigned_usernames = {normalize_username(name) for names in assignments.values() for name in names}
         return {
             username: self.find_friend(username, creator)
@@ -245,7 +242,6 @@ class SplitService:
         }
 
     def find_payer(self, split_request: SplitRequest, creator: User) -> User:
-        """Whoever paid at the store. Defaults to the person saving the split; otherwise one of their friends."""
         payer_username = normalize_username(split_request.payer_username or creator.username)
         if payer_username == creator.username:
             return creator

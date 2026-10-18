@@ -76,3 +76,11 @@ class PaymentRepository:
             ]
         )
         return {total["_id"]: total["amount_cents"] for total in totals}
+
+    def rename_user(self, user_id: str, username: str) -> None:
+        for id_field, username_field in (
+            ("from_user_id", "from_username"),
+            ("to_user_id", "to_username"),
+            ("recorded_by_user_id", "recorded_by_username"),
+        ):
+            self.payments_collection.update_many({id_field: user_id}, {"$set": {username_field: username}})

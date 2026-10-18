@@ -9,6 +9,7 @@ from server.repositories.profile_picture_repository import ProfilePictureReposit
 from server.repositories.receipt_image_repository import ReceiptImageRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
+from server.services.account_service import AccountService
 from server.services.audit_log_service import AuditLogService
 from server.services.auth_service import AuthService
 from server.services.email_service import EmailService
@@ -105,4 +106,11 @@ def get_split_service() -> SplitService:
         get_notification_service(),
         get_receipt_image_service(),
         get_audit_log_service(),
+    )
+
+
+@lru_cache
+def get_account_service() -> AccountService:
+    return AccountService(
+        get_user_repository(), get_split_repository(), get_payment_repository(), get_audit_log_service()
     )

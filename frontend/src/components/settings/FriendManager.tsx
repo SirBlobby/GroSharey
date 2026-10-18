@@ -63,12 +63,12 @@ export default function FriendManager({ friends, onAddFriend, onRemoveFriend, on
       </div>
 
       <form className="add-friend-form" onSubmit={handleAdd}>
-        <label htmlFor="add-friend-username">Add a friend by username</label>
+        <label htmlFor="add-friend-username">Add a friend by username or email</label>
         <div className="find-row">
           <input
             id="add-friend-username"
             value={newUsername}
-            placeholder="username"
+            placeholder="username or email"
             autoCapitalize="none"
             onChange={(event) => setNewUsername(event.target.value)}
           />

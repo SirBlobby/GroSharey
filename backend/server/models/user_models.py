@@ -6,6 +6,13 @@ from pydantic import BaseModel, EmailStr, Field, field_validator
 USERNAME_PATTERN = re.compile(r"^[a-z0-9_]{3,30}$")
 
 
+def validate_username_format(username: object) -> str:
+    normalized_username = str(username).strip().lower()
+    if not USERNAME_PATTERN.match(normalized_username):
+        raise ValueError("Username must be 3 to 30 characters using letters, numbers, or underscores")
+    return normalized_username
+
+
 class SignUpRequest(BaseModel):
     email: EmailStr
     username: str
@@ -15,15 +22,27 @@ class SignUpRequest(BaseModel):
     @field_validator("username", mode="before")
     @classmethod
     def validate_username(cls, username: object) -> str:
-        normalized_username = str(username).strip().lower()
-        if not USERNAME_PATTERN.match(normalized_username):
-            raise ValueError("Username must be 3 to 30 characters using letters, numbers, or underscores")
-        return normalized_username
+        return validate_username_format(username)
 
     @field_validator("display_name", mode="before")
     @classmethod
     def strip_display_name(cls, display_name: object) -> str:
         return str(display_name).strip()
+
+
+class ChangeUsernameRequest(BaseModel):
+    username: str
+    current_password: str = Field(min_length=1, max_length=128)
+
+    @field_validator("username", mode="before")
+    @classmethod
+    def validate_username(cls, username: object) -> str:
+        return validate_username_format(username)
+
+
+class ChangePasswordRequest(BaseModel):
+    current_password: str = Field(min_length=1, max_length=128)
+    new_password: str = Field(min_length=8, max_length=128)
 
 
 class LogInRequest(BaseModel):

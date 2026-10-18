@@ -5,6 +5,8 @@ import { useAuth } from "../../hooks/useAuth";
 import { useFormSubmission } from "../../hooks/useFormSubmission";
 import { PaymentHandles } from "../../types/auth";
 import { LogOutIcon } from "../icons";
+import PasswordForm from "./account/PasswordForm";
+import UsernameForm from "./account/UsernameForm";
 
 function formatDate(isoDate: string): string {
   return new Date(isoDate).toLocaleDateString(undefined, { year: "numeric", month: "long", day: "numeric" });
@@ -45,6 +47,9 @@ export default function AccountSettings() {
         <dt>Member since</dt>
         <dd>{formatDate(currentUser.created_at)}</dd>
       </dl>
+
+      <UsernameForm />
+      <PasswordForm />
 
       <form className="settings-group" onSubmit={handleSave}>
         <h3>Payment Links</h3>

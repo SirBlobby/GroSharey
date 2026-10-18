@@ -31,8 +31,11 @@ class ProfileService:
             raise NotFoundError("User", username)
         return stored_user
 
-    def get_profile_by_username(self, username: str) -> PublicProfile:
-        return convert_to_public_profile(self.find_stored_user_by_username(username))
+    def get_profile_by_username(self, username_or_email: str) -> PublicProfile:
+        stored_user = self.user_repository.find_by_username_or_email(username_or_email)
+        if stored_user is None:
+            raise NotFoundError("User", username_or_email)
+        return convert_to_public_profile(stored_user)
 
     def upload_profile_picture(self, user_id: str, image_base64: str) -> User:
         compressed_image = compress_image_losslessly(decode_base64_image(image_base64))

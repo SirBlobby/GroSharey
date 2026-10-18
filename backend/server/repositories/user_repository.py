@@ -45,6 +45,12 @@ class UserRepository:
         user_document = self.users_collection.find_one({"username": username})
         return convert_document_to_user(user_document) if user_document else None
 
+    def find_by_username_or_email(self, username_or_email: str) -> StoredUser | None:
+        cleaned_value = username_or_email.strip().lower()
+        if "@" in cleaned_value[1:]:
+            return self.find_by_email(cleaned_value)
+        return self.find_by_username(cleaned_value.removeprefix("@"))
+
     def find_by_id(self, user_id: str) -> StoredUser | None:
         if not ObjectId.is_valid(user_id):
             return None
@@ -86,3 +92,13 @@ class UserRepository:
             {"$set": {"venmo_username": venmo_username, "paypal_username": paypal_username}},
         )
         return self.find_by_id(user_id)
+
+    def set_username(self, user_id: str, username: str) -> StoredUser | None:
+        try:
+            self.users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"username": username}})
+        except DuplicateKeyError:
+            raise ConflictError("That username is already taken")
+        return self.find_by_id(user_id)
+
+    def set_password_hash(self, user_id: str, password_hash: str) -> None:
+        self.users_collection.update_one({"_id": ObjectId(user_id)}, {"$set": {"password_hash": password_hash}})

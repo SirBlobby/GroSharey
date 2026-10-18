@@ -93,8 +93,10 @@ class FriendService:
         friend_users = self.user_repository.find_by_ids(self.friendship_repository.list_friend_ids(user_id))
         return self.build_friends(user_id, friend_users)
 
-    def add_friend(self, user_id: str, username: str) -> Friend:
-        friend_user = self.find_user_by_username(username)
+    def add_friend(self, user_id: str, username_or_email: str) -> Friend:
+        friend_user = self.user_repository.find_by_username_or_email(username_or_email)
+        if friend_user is None:
+            raise NotFoundError("User", username_or_email)
         if friend_user.id == user_id:
             raise BadRequestError("You can't add yourself as a friend")
         self.friendship_repository.add(user_id, friend_user.id)
