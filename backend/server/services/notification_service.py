@@ -1,5 +1,4 @@
 from html import escape
-from urllib.parse import urlencode
 
 from server.models.payment_models import PaymentMethod
 from server.models.split_models import PersonSplit, SavedSplit
@@ -19,18 +18,10 @@ class NotificationService:
         self.email_service = email_service
         self.app_url = app_url.rstrip("/")
 
-    def build_payer_link(self, payer: User) -> str:
-        # Opens the payer's profile in the web app, after logging in if needed.
-        return self.build_profile_link(payer.username)
-
-    def build_profile_link(self, username: str) -> str:
-        return f"{self.app_url}/?{urlencode({'user': username})}"
-
     def build_split_email(
         self, saved_split: SavedSplit, payer: User, person: PersonSplit, recipient: StoredUser
     ) -> OutgoingEmail:
         store_text = f" at {saved_split.store_name}" if saved_split.store_name else ""
-        payer_link = self.build_payer_link(payer)
         item_lines = [f"{item.name}: {format_money(item.total)}" for item in person.items]
         extras = []
         if person.tip:
@@ -46,7 +37,7 @@ class NotificationService:
                 *extras,
                 "",
                 f"You owe {payer.display_name} {format_money(person.owes)}.",
-                f"Pay or see details: {payer_link}",
+                f"Pay or see details: {self.app_url}",
             ]
         )
 
@@ -56,7 +47,7 @@ class NotificationService:
             f"<p>{escape(payer.display_name)} bought groceries{escape(store_text)} and split them with you.</p>"
             f"<ul>{html_items}</ul>"
             f"<p><strong>You owe {escape(payer.display_name)} {format_money(person.owes)}.</strong></p>"
-            f'<p><a href="{escape(payer_link)}">Pay {escape(payer.display_name)} in GroSharey</a></p>'
+            f'<p><a href="{escape(self.app_url)}">Pay {escape(payer.display_name)} in GroSharey</a></p>'
         )
         return OutgoingEmail(
             to_address=recipient.email,
@@ -100,7 +91,6 @@ class NotificationService:
             balance_text = f"{payer.display_name} still owes you {format_money(still_owed_cents / 100)}."
         else:
             balance_text = f"You and {payer.display_name} are all settled up."
-        profile_link = self.build_profile_link(payer.username)
 
         text_body = "\n".join(
             [
@@ -110,7 +100,7 @@ class NotificationService:
                 balance_text,
                 "",
                 f"If you didn't get it, check with {payer.display_name}.",
-                f"See your balance: {profile_link}",
+                f"See your balance: {self.app_url}",
             ]
         )
         html_body = (
@@ -119,7 +109,7 @@ class NotificationService:
             f"{escape(method_text)} in GroSharey.</p>"
             f"<p>{escape(balance_text)}</p>"
             f"<p>If you didn't get it, check with {escape(payer.display_name)}.</p>"
-            f'<p><a href="{escape(profile_link)}">See your balance in GroSharey</a></p>'
+            f'<p><a href="{escape(self.app_url)}">See your balance in GroSharey</a></p>'
         )
         outgoing_email = OutgoingEmail(
             to_address=recipient.email,

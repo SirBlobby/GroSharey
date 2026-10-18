@@ -114,7 +114,8 @@ def test_people_who_owe_get_an_email(monkeypatch):
     html_body = message.get_body(("html",)).get_content()
     assert "Milk: $3.00" in text_body
     assert "at Costco" in text_body
-    assert "https://grosharey.example/?user=sachi" in text_body
+    assert "https://grosharey.example" in text_body
+    assert 'href="https://grosharey.example"' in html_body
     assert "<b>V</b>" not in html_body  # names are escaped in the HTML version
     assert "&lt;b&gt;V&lt;/b&gt;" in html_body
 
@@ -172,7 +173,7 @@ def test_person_who_got_paid_gets_an_email(monkeypatch):
     text_body = message.get_body(("plain",)).get_content()
     assert "by Venmo" in text_body
     assert "Alex still owes you $2.00." in text_body
-    assert "https://grosharey.example/?user=alex" in text_body
+    assert "See your balance: https://grosharey.example" in text_body
 
     client.post(
         "/api/payments",
