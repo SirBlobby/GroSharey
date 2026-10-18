@@ -1,0 +1,43 @@
+.manage-body {
+  flex: 1; min-height: 0; overflow: auto;
+  display: grid; gap: 20px; align-content: start;
+  grid-template-columns: minmax(300px, 42%) 1fr;
+}
+.items { padding: 20px 16px 28px; display: flex; flex-direction: column; align-items: center; }
+.items h2, .spacer { font-size: 2.6rem; height: 72px; display: flex; align-items: center; justify-content: center; }
+.item-rows { width: 100%; }
+.row {
+  display: flex; align-items: center; gap: 8px;
+  width: 100%; height: 84px; padding: 0 12px;
+  border-top: 3px solid var(--green);
+}
+.row:last-child { border-bottom: 3px solid var(--green); }
+.row:focus-within { background: #fff; border-radius: 26px; border-color: transparent; }
+.row input {
+  min-width: 0; outline: none;
+  font: 600 1.35rem var(--body); color: var(--navy);
+  background: #fff; border: 2px solid var(--green); border-radius: 10px; padding: 8px 10px;
+}
+.row:focus-within input { background: var(--mint); }
+.row input:hover { border-color: var(--forest); }
+.row input:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(71, 161, 82, 0.35); }
+.row .name { flex: 1; }
+.price-wrap { position: relative; width: 110px; flex: none; }
+.price-wrap span {
+  position: absolute; left: 10px; top: 50%; transform: translateY(-50%);
+  font-weight: 600; font-size: 1.35rem; pointer-events: none;
+}
+.price-wrap input { width: 100%; padding-left: 24px; text-align: right; }
+.del { background: none; border: 0; color: var(--red); font-size: 1.6rem; width: 30px; flex: none; opacity: 0.55; }
+.del:hover { opacity: 1; }
+.items .plus { margin-top: 22px; }
+.total { margin-top: 14px; align-self: flex-end; padding-right: 16px; font-weight: 600; font-size: 1.3rem; }
+.empty { padding: 28px 10px; font-size: 1.25rem; font-weight: 600; text-align: center; opacity: 0.7; }
+.assign { display: flex; flex-direction: column; padding-top: 16px; }
+.arow { height: 84px; display: flex; align-items: center; gap: 12px; }
+.arow .plus { width: 44px; height: 44px; font-size: 1.8rem; }
+.footer { display: flex; justify-content: flex-end; gap: 40px; padding: 14px 24px 6px; }
+@media (max-width: 720px) {
+  .manage-body { grid-template-columns: 1fr; }
+  .assign { display: none; }
+}

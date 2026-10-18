@@ -1,0 +1,31 @@
+.overlay {
+  position: fixed; inset: 0; z-index: 50;
+  background: rgba(26, 24, 86, 0.55);
+  display: flex; align-items: center; justify-content: center;
+  padding: 16px;
+  animation: fade 0.15s ease;
+}
+.modal { width: min(420px, 100%); max-height: 90%; overflow: auto; text-align: center; }
+.modal h2 { font-size: 2rem; margin-bottom: 12px; }
+.opt {
+  display: flex; align-items: center; gap: 14px; width: 100%;
+  background: #fff; border: 3px solid var(--green); border-radius: 16px;
+  padding: 10px 14px; margin-bottom: 10px;
+  font-size: 1.35rem; font-weight: 600; text-align: left;
+}
+.opt .av { width: 44px; height: 44px; border-width: 4px; font-size: 1rem; }
+.opt .chk {
+  margin-left: auto; width: 28px; height: 28px;
+  border: 3px solid var(--green); border-radius: 8px;
+  display: grid; place-items: center; color: #fff; font-size: 1.1rem;
+}
+.opt.on { border-color: var(--forest); background: var(--mint); }
+.opt.on .chk { background: var(--forest); border-color: var(--forest); }
+.newf { display: flex; gap: 8px; margin: 14px 0; }
+.newf input {
+  flex: 1; min-width: 0; padding: 10px;
+  font: 600 1.2rem var(--body); color: var(--navy);
+  border: 2px solid var(--green); border-radius: 10px;
+}
+.newf .btn { min-width: 0; font-size: 1.2rem; padding: 6px 14px; border-width: 3px; }
+.modal-actions { display: flex; gap: 12px; justify-content: center; }

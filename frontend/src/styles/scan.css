@@ -1,0 +1,14 @@
+.scan-card { flex: 1; min-height: 0; display: flex; padding: 40px 60px; }
+.frame {
+  flex: 1; background: var(--gray); color: #222;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px;
+}
+.frame .lbl { font-family: var(--display); color: #000; font-size: 1.5rem; min-height: 1.5em; }
+.actions { display: flex; justify-content: center; align-items: center; gap: 60px; padding: 18px 0 6px; }
+.shutter {
+  width: 72px; height: 72px; padding: 0; border-radius: 50%;
+  background: var(--mint); border: 6px solid var(--forest);
+  outline: 4px solid var(--mint); outline-offset: -1px;
+}
+.shutter:active { transform: scale(0.92); }
+@media (max-width: 720px) { .scan-card { padding: 16px; } }

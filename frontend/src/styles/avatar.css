@@ -1,0 +1,11 @@
+.av {
+  width: 60px; height: 60px; flex: none;
+  border-radius: 50%;
+  border: 6px solid var(--navy);
+  background: var(--mint);
+  font: 600 1.35rem var(--body);
+  color: var(--navy);
+  display: grid; place-items: center;
+  padding: 0;
+}
+.av--button:hover { border-color: var(--red); }
