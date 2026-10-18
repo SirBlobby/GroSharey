@@ -1,59 +1,55 @@
 :root {
   color-scheme: light;
-  --palette-navy: #1d3557;
-  --palette-deep-teal: #0f5f63;
+  /* Original Figma palette */
+  --palette-navy: #1a1856;
+  --palette-forest: #2a6100;
   --palette-grocery-green: #47a152;
-  --palette-sea-green: #25a18e;
-  --palette-fresh-green: #7ae582;
-  --palette-ocean-blue: #1768ac;
-  --palette-sky-blue: #06bee1;
-  --palette-foam: #eef9f4;
-  --palette-seafoam: #bfe8dd;
-  --palette-coral: #e63946;
+  --palette-mint: #dbfacf;
+  --palette-red: #b00000;
+  --palette-blue: #1d5fbf;
+  --palette-gray: #d9d9d9;
 
-  --color-page-solid: var(--palette-sea-green);
-  --color-page-gradient: linear-gradient(
-    160deg, var(--palette-grocery-green) 0%, var(--palette-sea-green) 50%, var(--palette-ocean-blue) 100%
-  );
-  --color-card: var(--palette-foam);
+  --color-page-solid: var(--palette-grocery-green);
+  --color-page-gradient: none;
+  --color-card: var(--palette-mint);
   --color-surface: #ffffff;
-  --color-surface-highlight: color-mix(in srgb, var(--palette-seafoam) 55%, #ffffff);
-  --color-muted-surface: #d7e6e4;
+  --color-surface-highlight: color-mix(in srgb, var(--palette-mint) 55%, #ffffff);
+  --color-muted-surface: var(--palette-gray);
   --color-text: var(--palette-navy);
-  --color-heading: var(--palette-deep-teal);
-  --color-primary: var(--palette-deep-teal);
-  --color-on-strong: var(--palette-foam);
+  --color-heading: var(--palette-forest);
+  --color-primary: var(--palette-forest);
+  --color-on-strong: #ffffff;
   --color-ink: var(--palette-navy);
   --color-outline: var(--palette-navy);
-  --color-accent: var(--palette-sea-green);
-  --color-border: var(--palette-sea-green);
-  --color-divider: var(--palette-seafoam);
-  --color-danger: var(--palette-coral);
-  --color-info: var(--palette-ocean-blue);
-  --color-focus-ring: color-mix(in srgb, var(--palette-sky-blue) 45%, transparent);
+  --color-accent: var(--palette-grocery-green);
+  --color-border: var(--palette-grocery-green);
+  --color-divider: var(--palette-mint);
+  --color-danger: var(--palette-red);
+  --color-info: var(--palette-blue);
+  --color-focus-ring: color-mix(in srgb, var(--palette-blue) 40%, transparent);
   --color-overlay: color-mix(in srgb, var(--palette-navy) 60%, transparent);
   --color-shadow: color-mix(in srgb, var(--palette-navy) 30%, transparent);
 }
 
 html[data-color-mode="dark"] {
   color-scheme: dark;
-  --color-page-solid: #0d2422;
-  --color-page-gradient: linear-gradient(160deg, #10301b 0%, #0c2a2b 50%, #0b1f3d 100%);
-  --color-card: #12232a;
-  --color-surface: #182f35;
-  --color-surface-highlight: #1d3d42;
-  --color-muted-surface: #233539;
-  --color-text: #e6f1ef;
-  --color-heading: #8fdccb;
-  --color-primary: #1f8a7a;
-  --color-on-strong: #f4fbfa;
-  --color-ink: #050d12;
-  --color-outline: #e6f1ef;
-  --color-accent: var(--palette-sea-green);
-  --color-border: #2a6a66;
-  --color-divider: #21424a;
-  --color-danger: #ff6b74;
-  --color-info: #5cc8ef;
+  --color-page-solid: #12260f;
+  --color-page-gradient: none;
+  --color-card: #1a2e18;
+  --color-surface: #213a1f;
+  --color-surface-highlight: #2a4a27;
+  --color-muted-surface: #2b3a2a;
+  --color-text: #e7f5e1;
+  --color-heading: #a9e39a;
+  --color-primary: #4f9a3a;
+  --color-on-strong: #f4fbf1;
+  --color-ink: #060d05;
+  --color-outline: #e7f5e1;
+  --color-accent: var(--palette-grocery-green);
+  --color-border: #3f7a39;
+  --color-divider: #2f4a2c;
+  --color-danger: #ff6b6b;
+  --color-info: #7fb2ff;
   --color-overlay: rgba(0, 0, 0, 0.65);
   --color-shadow: rgba(0, 0, 0, 0.5);
 }
@@ -85,7 +81,7 @@ html[data-color-mode="dark"][data-contrast="high"] {
   --color-surface-highlight: #111111;
   --color-text: #ffffff;
   --color-heading: #ffffff;
-  --color-primary: #1f8a7a;
+  --color-primary: #4f9a3a;
   --color-on-strong: #ffffff;
   --color-ink: #000000;
   --color-outline: #ffffff;

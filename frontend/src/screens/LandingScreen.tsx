@@ -10,35 +10,37 @@ type LandingScreenProps = {
 export default function LandingScreen({ onShowLogIn, onShowSignUp }: LandingScreenProps) {
   return (
     <section className="screen landing">
-      <header className="landing-nav">
-        <span className="brand">
-          <Logo className="brand-logo" />
-          groSharey
-        </span>
-        <div className="landing-nav-actions">
-          <button type="button" className="landing-nav-link" onClick={onShowLogIn}>
-            Log In
-          </button>
-          <button type="button" className="btn landing-nav-signup" onClick={onShowSignUp}>
-            Sign Up
-          </button>
-        </div>
-      </header>
+      <div className="landing-band landing-band--top">
+        <header className="landing-nav">
+          <span className="brand">
+            <Logo className="brand-logo" />
+            groSharey
+          </span>
+          <div className="landing-nav-actions">
+            <button type="button" className="landing-nav-link" onClick={onShowLogIn}>
+              Log In
+            </button>
+            <button type="button" className="btn landing-nav-signup" onClick={onShowSignUp}>
+              Sign Up
+            </button>
+          </div>
+        </header>
 
-      <div className="card landing-hero">
-        <Logo className="landing-hero-logo" />
-        <h1>Split groceries, not friendships.</h1>
-        <p className="landing-hero-text">
-          groSharey is a reliable grocery price-splitting app for roommates. Scan a receipt, assign items, and
-          everyone knows exactly what they owe.
-        </p>
-        <div className="landing-hero-actions">
-          <button type="button" className="btn landing-primary" onClick={onShowSignUp}>
-            Get Started
-          </button>
-          <button type="button" className="btn" onClick={onShowLogIn}>
-            I have an account
-          </button>
+        <div className="landing-hero">
+          <Logo className="landing-hero-logo" />
+          <h1>Split groceries, not friendships.</h1>
+          <p className="landing-hero-text">
+            Wanna save the time you spend splitting grocery costs with your roommates? With groSharey, just scan
+            your receipt, assign items, and bam! Everyone knows exactly what they owe.
+          </p>
+          <div className="landing-hero-actions">
+            <button type="button" className="btn landing-primary" onClick={onShowSignUp}>
+              Get Started
+            </button>
+            <button type="button" className="btn" onClick={onShowLogIn}>
+              I have an account
+            </button>
+          </div>
         </div>
       </div>
 
@@ -68,11 +70,13 @@ export default function LandingScreen({ onShowLogIn, onShowSignUp }: LandingScre
         </ul>
       </div>
 
-      <div className="card landing-cta">
-        <h2>Ready to stop doing grocery math?</h2>
-        <button type="button" className="btn landing-primary" onClick={onShowSignUp}>
-          Create your free account
-        </button>
+      <div className="landing-band landing-band--bottom">
+        <div className="landing-cta">
+          <h2>Ready to stop doing grocery math?</h2>
+          <button type="button" className="btn landing-primary" onClick={onShowSignUp}>
+            Create your free account
+          </button>
+        </div>
       </div>
     </section>
   );

@@ -14,7 +14,7 @@ export const APPEARANCE_CHANGE_EVENT = "grosharey-appearance-change";
 
 export const DEFAULT_APPEARANCE: AppearanceSettings = {
   textSize: "normal",
-  colorMode: "system",
+  colorMode: "light",
   highContrast: false,
   reduceMotion: false,
 };

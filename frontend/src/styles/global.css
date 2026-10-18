@@ -4,14 +4,20 @@
   --radius-small: 6px;
   --display: 'Itim', 'Chewy', cursive;
   --body: 'Josefin Sans', system-ui, sans-serif;
+  /* Doodle overlay on every page: scaled to cover without stretching, centered, never repeated */
+  --page-art: url("/background-doodles.png");
 }
+html[data-contrast="high"] { --page-art: none; }
 *, *::before, *::after { box-sizing: border-box; }
 html, body, #root { height: 100%; }
 html { font-size: calc(var(--base-font-size, 16px) * var(--text-scale, 1)); }
 body {
   margin: 0;
   background-color: var(--color-page-solid);
-  background-image: var(--color-page-gradient);
+  background-image: var(--page-art), var(--color-page-gradient);
+  background-size: cover, cover;
+  background-position: center, center;
+  background-repeat: no-repeat, no-repeat;
   font-family: var(--body);
   color: var(--color-text);
   overflow: hidden;
