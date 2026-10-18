@@ -1,16 +1,24 @@
 import { useState } from "react";
 
 import Logo from "../components/Logo";
+import { isRunningInMobileApp } from "../config/platform";
 import { useAuth } from "../hooks/useAuth";
+import { readSharedUsername } from "../linking/sharedProfile";
+import LandingScreen from "../screens/LandingScreen";
 import LogInScreen from "../screens/LogInScreen";
 import SignUpScreen from "../screens/SignUpScreen";
 import AppNavigator from "./AppNavigator";
 
-type AuthPage = "logIn" | "signUp";
+type AuthPage = "landing" | "logIn" | "signUp";
+
+function getInitialAuthPage(): AuthPage {
+  return isRunningInMobileApp() || readSharedUsername() ? "logIn" : "landing";
+}
 
 export default function RootNavigator() {
   const { currentUser, isLoading } = useAuth();
-  const [authPage, setAuthPage] = useState<AuthPage>("logIn");
+  const [authPage, setAuthPage] = useState<AuthPage>(getInitialAuthPage);
+  const showLanding = isRunningInMobileApp() ? undefined : () => setAuthPage("landing");
 
   if (isLoading) {
     return (
@@ -25,9 +33,13 @@ export default function RootNavigator() {
     return <AppNavigator />;
   }
 
-  if (authPage === "signUp") {
-    return <SignUpScreen onShowLogIn={() => setAuthPage("logIn")} />;
+  if (authPage === "landing") {
+    return <LandingScreen onShowLogIn={() => setAuthPage("logIn")} onShowSignUp={() => setAuthPage("signUp")} />;
   }
 
-  return <LogInScreen onShowSignUp={() => setAuthPage("signUp")} />;
+  if (authPage === "signUp") {
+    return <SignUpScreen onShowLogIn={() => setAuthPage("logIn")} onShowLanding={showLanding} />;
+  }
+
+  return <LogInScreen onShowSignUp={() => setAuthPage("signUp")} onShowLanding={showLanding} />;
 }

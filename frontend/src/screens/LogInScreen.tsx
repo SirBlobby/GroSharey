@@ -7,9 +7,10 @@ import { useFormSubmission } from "../hooks/useFormSubmission";
 
 type LogInScreenProps = {
   onShowSignUp: () => void;
+  onShowLanding?: () => void;
 };
 
-export default function LogInScreen({ onShowSignUp }: LogInScreenProps) {
+export default function LogInScreen({ onShowSignUp, onShowLanding }: LogInScreenProps) {
   const { logIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -21,7 +22,7 @@ export default function LogInScreen({ onShowSignUp }: LogInScreenProps) {
   }
 
   return (
-    <AuthCard switchPageLabel="Need an account? Create one" onSwitchPage={onShowSignUp}>
+    <AuthCard switchPageLabel="Need an account? Create one" onSwitchPage={onShowSignUp} onBack={onShowLanding}>
       <form className="auth-form" onSubmit={handleSubmit}>
         <AuthField
           label="Email"

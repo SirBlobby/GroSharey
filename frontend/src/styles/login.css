@@ -31,3 +31,9 @@
   color: var(--forest); font-size: 1.3rem;
 }
 .password-toggle:hover { border-color: var(--forest); background: #fff; }
+.auth-back {
+  display: inline-flex; align-items: center; gap: 6px; margin-bottom: 12px;
+  background: none; border: 0; color: var(--mint);
+  font-family: var(--display); font-size: 1.3rem;
+}
+.auth-back:hover { text-decoration: underline; text-underline-offset: 4px; }

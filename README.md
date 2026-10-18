@@ -59,6 +59,7 @@ frontend/
 
 | Page | Screen |
 |------|--------|
+| Landing page about the project (website only, the mobile app opens at log in) | `LandingScreen.tsx`, `components/landing/` |
 | Log in and create account | `LogInScreen.tsx`, `SignUpScreen.tsx` |
 | Friends, balances, and settle up | `MainScreen.tsx` |
 | Scan a receipt | `ScanReceiptScreen.tsx` |
