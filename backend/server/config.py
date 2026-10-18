@@ -25,6 +25,11 @@ class Settings:
     gemini_api_key: str = os.getenv("GEMINI_API_KEY", "")
     gemini_model: str = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
     gemini_fallback_model: str = os.getenv("GEMINI_FALLBACK_MODEL", "gemini-flash-lite-latest")
+    email_sender_address: str = os.getenv("EMAIL_SENDER_ADDRESS", "")
+    email_app_password: str = os.getenv("EMAIL_APP_PASSWORD", "").replace(" ", "")
+    smtp_host: str = os.getenv("SMTP_HOST", "smtp.gmail.com")
+    smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
+    app_url: str = os.getenv("APP_URL", "http://localhost:8081")
 
 
 def validate_settings(current_settings: Settings) -> None:

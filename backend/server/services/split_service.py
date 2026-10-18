@@ -17,10 +17,11 @@ from server.models.split_models import (
     SplitRequest,
     SplitResult,
 )
-from server.models.user_models import User
+from server.models.user_models import StoredUser, User
 from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
+from server.services.notification_service import NotificationService
 
 # Real tax rates are round numbers (6%, 7.25%, 5.3%, 8.875%). Rounder rates are checked
 # first, so "6% on some items" wins over "4.325% on everything" when both fit.
@@ -177,41 +178,47 @@ class SplitService:
         user_repository: UserRepository,
         friendship_repository: FriendshipRepository,
         split_repository: SplitRepository,
+        notification_service: NotificationService,
     ):
         self.user_repository = user_repository
         self.friendship_repository = friendship_repository
         self.split_repository = split_repository
+        self.notification_service = notification_service
 
-    def find_participant_ids(self, assignments: dict[str, list[str]], payer: User) -> dict[str, str]:
-        """username -> user id for everyone assigned. Each must be the payer or the payer's friend."""
-        user_ids_by_username = {payer.username: payer.id}
+    def find_friends_assigned(self, assignments: dict[str, list[str]], payer: User) -> dict[str, StoredUser]:
+        """username -> account for everyone assigned besides the payer. Each must be the payer's friend."""
+        friends_by_username = {}
         for username in {normalize_username(name) for names in assignments.values() for name in names}:
-            if username in user_ids_by_username:
+            if username == payer.username:
                 continue
             stored_user = self.user_repository.find_by_username(username)
             if stored_user is None:
                 raise BadRequestError(f"No account with username '{username}'")
             if not self.friendship_repository.are_friends(payer.id, stored_user.id):
                 raise BadRequestError(f"'{username}' isn't in your friends list")
-            user_ids_by_username[username] = stored_user.id
-        return user_ids_by_username
+            friends_by_username[username] = stored_user
+        return friends_by_username
 
     def preview_split(self, split_request: SplitRequest, payer: User) -> SplitResult:
-        self.find_participant_ids(split_request.assignments, payer)
+        self.find_friends_assigned(split_request.assignments, payer)
         return split_receipt(split_request.receipt, split_request.assignments, payer.username)
 
     def save_split(self, split_request: SplitRequest, payer: User) -> SavedSplit:
-        user_ids_by_username = self.find_participant_ids(split_request.assignments, payer)
+        friends_by_username = self.find_friends_assigned(split_request.assignments, payer)
         split_result = split_receipt(split_request.receipt, split_request.assignments, payer.username)
         if all(person.owes == 0 for person in split_result.people):
             raise BadRequestError("Nobody owes anything on this receipt")
-        return self.split_repository.create(
+        user_ids_by_username = {username: friend.id for username, friend in friends_by_username.items()}
+        user_ids_by_username[payer.username] = payer.id
+        saved_split = self.split_repository.create(
             payer.id,
             split_result,
             user_ids_by_username,
             split_request.receipt.store_name,
             split_request.receipt.purchase_date,
         )
+        emailed_usernames = self.notification_service.notify_people_who_owe(saved_split, payer, friends_by_username)
+        return saved_split.model_copy(update={"emailed_usernames": emailed_usernames})
 
     def list_splits(self, user_id: str) -> list[SavedSplit]:
         return self.split_repository.list_for_user(user_id)

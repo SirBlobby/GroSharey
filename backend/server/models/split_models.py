@@ -58,3 +58,5 @@ class SavedSplit(SplitResult):
     store_name: str | None
     purchase_date: str | None
     created_at: datetime
+    # Who was emailed about this split when it was saved (empty when listing past splits).
+    emailed_usernames: list[str] = []

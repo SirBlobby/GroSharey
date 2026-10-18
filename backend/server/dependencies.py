@@ -8,7 +8,9 @@ from server.repositories.profile_picture_repository import ProfilePictureReposit
 from server.repositories.split_repository import SplitRepository
 from server.repositories.user_repository import UserRepository
 from server.services.auth_service import AuthService
+from server.services.email_service import EmailService
 from server.services.friend_service import FriendService
+from server.services.notification_service import NotificationService
 from server.services.payment_service import PaymentService
 from server.services.profile_service import ProfileService
 from server.services.receipt_service import ReceiptService
@@ -63,5 +65,15 @@ def get_payment_service() -> PaymentService:
 
 
 @lru_cache
+def get_notification_service() -> NotificationService:
+    email_service = EmailService(
+        settings.email_sender_address, settings.email_app_password, settings.smtp_host, settings.smtp_port
+    )
+    return NotificationService(email_service, settings.app_url)
+
+
+@lru_cache
 def get_split_service() -> SplitService:
-    return SplitService(get_user_repository(), get_friendship_repository(), get_split_repository())
+    return SplitService(
+        get_user_repository(), get_friendship_repository(), get_split_repository(), get_notification_service()
+    )

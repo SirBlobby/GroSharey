@@ -196,6 +196,10 @@ The logged-in user is the payer, and everyone assigned must be the payer or one 
 
 Friendships are mutual and stored in the `friendships` collection. Saved splits go in the `splits` collection, one document per receipt. Payments go in the `payments` collection. Balances are not stored; `GET /api/friends` adds them up from saved splits and payments, so the history always explains the totals.
 
+### Email Notifications
+
+Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the payer's profile in the web app. `emailed_usernames` in the response says who was emailed. If email isn't configured or sending fails, the split is still saved; the error is only logged.
+
 ### Settling Up
 
 `POST /api/payments` records money changing hands. `direction` is `"paid"` (you paid the friend) or `"received"` (the friend paid you), and either friend can record it. Amounts over what's owed are rejected as likely typos.
@@ -215,6 +219,10 @@ When you owe a friend who has set their Venmo or PayPal.me name, their entry in 
 | `JWT_EXPIRATION_MINUTES` | Token lifetime, default 10080 (7 days) |
 | `GEMINI_API_KEY` | Google Gemini key for receipt scanning, free at [aistudio.google.com/apikey](https://aistudio.google.com/apikey) |
 | `GEMINI_MODEL` | Gemini model for receipt scanning, default `gemini-flash-latest` |
+| `EMAIL_SENDER_ADDRESS` | Gmail address that sends "you owe" emails; leave blank to skip emails |
+| `EMAIL_APP_PASSWORD` | 16-character Gmail app password from [myaccount.google.com/apppasswords](https://myaccount.google.com/apppasswords) (needs 2-Step Verification) |
+| `SMTP_HOST` / `SMTP_PORT` | Email server, default `smtp.gmail.com` / `587` |
+| `APP_URL` | Frontend URL for links in emails, same as the frontend's `EXPO_PUBLIC_APP_URL` |
 | `GEMINI_FALLBACK_MODEL` | Model tried once when `GEMINI_MODEL` is overloaded, default `gemini-flash-lite-latest` |
 
 Generate a secret key with `openssl rand -hex 32`.

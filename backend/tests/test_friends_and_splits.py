@@ -32,6 +32,7 @@ def client(monkeypatch):
         dependencies.get_split_service,
         dependencies.get_payment_repository,
         dependencies.get_payment_service,
+        dependencies.get_notification_service,
     ):
         dependency.cache_clear()
     yield app.test_client()
