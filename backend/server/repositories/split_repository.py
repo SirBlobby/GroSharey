@@ -88,6 +88,15 @@ class SplitRepository:
             ]
             self.splits_collection.update_one({"_id": split_document["_id"]}, {"$set": {"people": people}})
 
+    def list_unpaid_splits(self, payer_id: str, debtor_id: str, limit: int) -> tuple[list[SavedSplit], int]:
+        unpaid_filter = {
+            "payer_id": payer_id,
+            "people": {"$elemMatch": {"user_id": debtor_id, "owes_cents": {"$gt": 0}}},
+        }
+        split_documents = self.splits_collection.find(unpaid_filter).sort("created_at", DESCENDING).limit(limit)
+        splits = [convert_document_to_split(split_document) for split_document in split_documents]
+        return splits, self.splits_collection.count_documents(unpaid_filter)
+
     def is_receipt_image_shared_with(self, receipt_image_id: str, user_id: str) -> bool:
         return (
             self.splits_collection.find_one(

@@ -1,7 +1,9 @@
+from datetime import datetime
 from urllib.parse import quote, urlencode
 
 from server.errors import BadRequestError, NotFoundError
 from server.models.friend_models import Friend
+from server.models.split_models import SavedSplit
 from server.models.user_models import StoredUser
 from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.payment_repository import PaymentRepository
@@ -10,11 +12,34 @@ from server.repositories.user_repository import UserRepository
 from server.services.audit_log_service import AuditLogService
 from server.services.user_mapper import convert_to_public_profile
 
-PAYMENT_NOTE = "GroSharey groceries"
+DEFAULT_PAYMENT_NOTE = "groSharey groceries"
+MAX_SPLITS_IN_PAYMENT_NOTE = 3
 
 
-def build_venmo_pay_url(venmo_username: str, amount: float) -> str:
-    query = urlencode({"txn": "pay", "amount": f"{amount:.2f}", "note": PAYMENT_NOTE})
+def describe_split_date(split: SavedSplit) -> str:
+    split_date = split.created_at
+    if split.purchase_date:
+        try:
+            split_date = datetime.strptime(split.purchase_date, "%Y-%m-%d")
+        except ValueError:
+            pass
+    return f"{split_date:%b} {split_date.day}"
+
+
+def build_payment_note(unpaid_splits: list[SavedSplit], unpaid_split_count: int) -> str:
+    if not unpaid_splits:
+        return DEFAULT_PAYMENT_NOTE
+    split_descriptions = [
+        f"{split.store_name or 'Groceries'} {describe_split_date(split)}" for split in unpaid_splits
+    ]
+    remaining_count = unpaid_split_count - len(unpaid_splits)
+    if remaining_count > 0:
+        split_descriptions.append(f"and {remaining_count} more")
+    return f"{DEFAULT_PAYMENT_NOTE}: {', '.join(split_descriptions)}"
+
+
+def build_venmo_pay_url(venmo_username: str, amount: float, note: str) -> str:
+    query = urlencode({"txn": "pay", "amount": f"{amount:.2f}", "note": note})
     return f"https://venmo.com/{quote(venmo_username)}?{query}"
 
 
@@ -76,7 +101,9 @@ class FriendService:
                     venmo_username=friend_user.venmo_username,
                     paypal_username=friend_user.paypal_username,
                     venmo_pay_url=(
-                        build_venmo_pay_url(friend_user.venmo_username, amount_you_owe)
+                        build_venmo_pay_url(
+                            friend_user.venmo_username, amount_you_owe, self.build_note_for(friend_user.id, user_id)
+                        )
                         if amount_you_owe and friend_user.venmo_username
                         else None
                     ),
@@ -88,6 +115,12 @@ class FriendService:
                 )
             )
         return sorted(friends, key=lambda friend: friend.display_name.lower())
+
+    def build_note_for(self, payer_id: str, debtor_id: str) -> str:
+        unpaid_splits, unpaid_split_count = self.split_repository.list_unpaid_splits(
+            payer_id, debtor_id, MAX_SPLITS_IN_PAYMENT_NOTE
+        )
+        return build_payment_note(unpaid_splits, unpaid_split_count)
 
     def list_friends(self, user_id: str) -> list[Friend]:
         friend_users = self.user_repository.find_by_ids(self.friendship_repository.list_friend_ids(user_id))
