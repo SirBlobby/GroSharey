@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { useDeviceActions } from "../context/DeviceActionsContext";
-import { captureReceiptImage, ReceiptImageSource } from "../media/receiptImage";
+import { captureReceiptImage, ReceiptImage, ReceiptImageSource } from "../media/receiptImage";
 import { parseReceipt, ScannedReceipt } from "../services/receipt";
 
 type ScannerStatus = "idle" | "reading" | "done" | "error";
@@ -19,9 +19,17 @@ export function useReceiptScanner() {
     setErrorMessage(null);
     try {
       const receiptImage = await captureImage(source);
-      if (!receiptImage) {
-        return null;
-      }
+      return receiptImage ? await readImage(receiptImage) : null;
+    } catch (error) {
+      setErrorMessage(error instanceof Error ? error.message : "Couldn't read the receipt");
+      setStatus("error");
+      return null;
+    }
+  }
+
+  async function readImage(receiptImage: ReceiptImage): Promise<ScannedReceipt | null> {
+    setErrorMessage(null);
+    try {
       setImageUri(receiptImage.uri);
       setStatus("reading");
       const receipt = await parseReceipt(receiptImage.base64);
@@ -42,5 +50,5 @@ export function useReceiptScanner() {
     setScannedReceipt(null);
   }
 
-  return { status, errorMessage, imageUri, scannedReceipt, scan, reset };
+  return { status, errorMessage, imageUri, scannedReceipt, scan, readImage, reset };
 }
