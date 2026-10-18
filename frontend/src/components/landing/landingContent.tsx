@@ -87,12 +87,12 @@ export const LANDING_FEATURES: LandingFeature[] = [
   {
     icon: <PriceTagIcon />,
     title: "Price Watch",
-    description: "See where things are cheapest. \"Eggs were $1.20 cheaper at Aldi\" shows up right on your list.",
+    description: "AI matches the same item across receipts, so \"eggs were $1.20 cheaper at Aldi\" shows up right on your list.",
   },
   {
     icon: <RecapIcon />,
-    title: "Yearly Recap",
-    description: "Your apartment's year in groceries, from the top buy to your shopping buddy, on a card you can share.",
+    title: "Yearly and group recaps",
+    description: "Your apartment's year in groceries: the top buy, who paid for the most runs, and each roommate's share, on a card you can share.",
   },
   {
     icon: <EqualSplitIcon />,

@@ -52,8 +52,11 @@ Living with roommates means shared groceries, and shared groceries mean someone 
 - **Item disputes** for anything you didn't actually get
 - **Group budgets** with a progress bar and alerts before you go over
 - **Monthly PDF reports** for reimbursements
-- **Price Watch** that compares what you paid for the same thing at different stores, like "eggs were $1.20 cheaper at Aldi", and shows the cheapest store right on your shopping list
-- **Yearly Recap** for you or your apartment, with your top buys, favorite store, and shopping buddy, plus a card you can share. Group recaps show each roommate's share, how many runs they paid for, and their top buy
+
+### Insights
+- **Price Watch** compares what you paid for the same thing at different stores, like "eggs were $1.20 cheaper at Aldi". AI matches items even when receipts name them differently, and the cheapest store shows up right on your shopping list.
+- **Yearly Recap** sums up your year: grocery runs, items bought, money spent, top buys, favorite store, and shopping buddy, on a card you can share.
+- **Group recaps** open from any group on the home screen and show each roommate's share, how many runs they paid for, and their top buy.
 
 ### Talk to it
 - **Voice assistant** powered by Gemini and ElevenLabs that can run almost the whole app. Try:
