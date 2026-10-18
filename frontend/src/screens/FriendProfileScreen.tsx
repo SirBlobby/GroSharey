@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { friendsApi } from "../api/friendsApi";
 import { AddFriendIcon, BackIcon, CheckIcon } from "../components/icons";
@@ -17,10 +17,36 @@ export default function FriendProfileScreen({ username, onBack }: FriendProfileS
   const { currentUser } = useAuth();
   const { profile, isLoading, errorMessage } = useProfile(username);
   const [isFriendAdded, setIsFriendAdded] = useState(false);
+  const [isCheckingFriendship, setIsCheckingFriendship] = useState(true); // ADDED
   const addFriendSubmission = useFormSubmission(async (friendUsername: string) => {
     await friendsApi.addFriend(friendUsername);
     setIsFriendAdded(true);
   });
+
+  // check if already a friend
+  useEffect(() => {
+    let cancelled = false;
+    setIsFriendAdded(false);
+    setIsCheckingFriendship(true);
+
+    friendsApi
+      .listFriends()
+      .then((friends) => {
+        if (!cancelled) {
+          setIsFriendAdded(friends.some((friend) => friend.username === username));
+        }
+      })
+      .catch(() => {
+        // On failure, fall back to showing "Add Friend"
+      })
+      .finally(() => {
+        if (!cancelled) setIsCheckingFriendship(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [username]);
 
   const isOwnProfile = currentUser?.username === profile?.username;
 
@@ -42,11 +68,12 @@ export default function FriendProfileScreen({ username, onBack }: FriendProfileS
           <button
             type="button"
             className="btn"
-            disabled={isFriendAdded || addFriendSubmission.isSubmitting}
+            disabled={isFriendAdded || isCheckingFriendship || addFriendSubmission.isSubmitting} // CHANGED: added isCheckingFriendship
             onClick={() => addFriendSubmission.submit(profile.username)}
           >
             {isFriendAdded ? <CheckIcon /> : <AddFriendIcon />} {isFriendAdded ? "Friend Added!" : "Add Friend"}
           </button>
+          
         )}
         {addFriendSubmission.errorMessage && <p className="error-text">{addFriendSubmission.errorMessage}</p>}
       </div>
