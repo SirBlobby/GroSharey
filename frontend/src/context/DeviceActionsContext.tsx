@@ -4,6 +4,7 @@ import type { ReceiptImage, ReceiptImageSource } from "../media/receiptImage";
 
 export type DeviceActions = {
   captureReceiptImage?: (source: ReceiptImageSource) => Promise<ReceiptImage | null>;
+  scanQrCode?: () => Promise<string | null>;
 };
 
 const DeviceActionsContext = createContext<DeviceActions>({});

@@ -5,6 +5,7 @@ from server.database import get_database
 from server.repositories.audit_log_repository import AuditLogRepository
 from server.repositories.friendship_repository import FriendshipRepository
 from server.repositories.group_repository import GroupRepository
+from server.repositories.pantry_repository import PantryRepository
 from server.repositories.payment_repository import PaymentRepository
 from server.repositories.profile_picture_repository import ProfilePictureRepository
 from server.repositories.receipt_image_repository import ReceiptImageRepository
@@ -18,14 +19,18 @@ from server.services.email_service import EmailService
 from server.services.friend_service import FriendService
 from server.services.gemini_client import GeminiClient
 from server.services.group_service import GroupService
+from server.services.group_trip_service import GroupTripService
 from server.services.item_matching_service import ItemMatchingService
 from server.services.notification_service import NotificationService
+from server.services.pantry_service import PantryService
 from server.services.payment_service import PaymentService
 from server.services.profile_service import ProfileService
 from server.services.receipt_image_service import ReceiptImageService
 from server.services.receipt_service import ReceiptService
 from server.services.shopping_list_matching_service import ShoppingListMatchingService
 from server.services.shopping_list_service import ShoppingListService
+from server.services.split_dispute_service import SplitDisputeService
+from server.services.split_report_service import SplitReportService
 from server.services.split_service import SplitService
 
 
@@ -120,6 +125,7 @@ def get_split_service() -> SplitService:
         get_audit_log_service(),
         get_group_service(),
         get_shopping_list_matching_service(),
+        get_group_trip_service(),
     )
 
 
@@ -147,6 +153,7 @@ def get_group_service() -> GroupService:
         get_friendship_repository(),
         get_group_repository(),
         get_shopping_list_repository(),
+        get_split_repository(),
         get_audit_log_service(),
     )
 
@@ -154,7 +161,11 @@ def get_group_service() -> GroupService:
 @lru_cache
 def get_shopping_list_service() -> ShoppingListService:
     return ShoppingListService(
-        get_user_repository(), get_group_repository(), get_shopping_list_repository(), get_audit_log_service()
+        get_user_repository(),
+        get_group_repository(),
+        get_shopping_list_repository(),
+        get_pantry_repository(),
+        get_audit_log_service(),
     )
 
 
@@ -164,6 +175,34 @@ def get_shopping_list_matching_service() -> ShoppingListMatchingService:
         get_user_repository(),
         get_group_service(),
         get_shopping_list_repository(),
+        get_pantry_repository(),
         ItemMatchingService(get_gemini_client()),
         get_audit_log_service(),
     )
+
+
+@lru_cache
+def get_split_dispute_service() -> SplitDisputeService:
+    return SplitDisputeService(get_split_repository(), get_audit_log_service())
+
+
+@lru_cache
+def get_pantry_repository() -> PantryRepository:
+    return PantryRepository(get_database())
+
+
+@lru_cache
+def get_pantry_service() -> PantryService:
+    return PantryService(
+        get_shopping_list_service(), get_shopping_list_repository(), get_pantry_repository(), get_audit_log_service()
+    )
+
+
+@lru_cache
+def get_group_trip_service() -> GroupTripService:
+    return GroupTripService(get_group_service(), get_group_repository(), get_audit_log_service())
+
+
+@lru_cache
+def get_split_report_service() -> SplitReportService:
+    return SplitReportService(get_split_repository())

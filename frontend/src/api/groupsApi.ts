@@ -8,6 +8,8 @@ export const groupsApi = {
     apiClient.put<Group>(`/groups/${groupId}`, groupRequest),
   deleteGroup: (groupId: string) => apiClient.delete<null>(`/groups/${groupId}`),
   leaveGroup: (groupId: string) => apiClient.post<null>(`/groups/${groupId}/leave`, {}),
+  startTrip: (groupId: string, store: string) => apiClient.post<Group>(`/groups/${groupId}/trip`, { store }),
+  endTrip: (groupId: string) => apiClient.delete<Group>(`/groups/${groupId}/trip`),
   matchItems: (groupId: string, items: { id: string; name: string }[]) =>
     apiClient.post<GroupItemMatches>(`/groups/${groupId}/match-items`, { items }),
 };

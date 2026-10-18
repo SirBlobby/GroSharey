@@ -42,6 +42,20 @@ export type PersonSplit = {
   paid: number;
 };
 
+export type DisputeStatus = "open" | "dismissed" | "removed";
+
+export type ItemDispute = {
+  id: string;
+  item_id: string;
+  item_name: string;
+  username: string;
+  reason: string | null;
+  status: DisputeStatus;
+  created_at: string;
+  resolved_by: string | null;
+  resolved_at: string | null;
+};
+
 export type SavedSplit = {
   id: string;
   payer: string;
@@ -56,6 +70,7 @@ export type SavedSplit = {
   group_name: string | null;
   created_by: string | null;
   created_at: string;
+  disputes: ItemDispute[];
   emailed_usernames: string[];
   crossed_off_items: string[];
 };

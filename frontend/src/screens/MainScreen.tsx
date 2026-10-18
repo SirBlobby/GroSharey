@@ -4,6 +4,8 @@ import { money } from '../utils';
 import { BellAlertIcon, CheckIcon, ManualEntryIcon, ReceiptIcon, ShoppingListsIcon, UserIcon } from '../components/icons';
 import Avatar from '../components/Avatar';
 import BalanceCard from '../components/BalanceCard';
+import PendingPaymentsCard from '../components/payments/PendingPaymentsCard';
+import type { Payment } from '../types/payment';
 import FriendOverviewHeader from '../components/FriendOverviewHeader';
 import SharedSplits from '../components/profile/SharedSplits';
 import GroupOverviewCard from '../components/groups/GroupOverviewCard';
@@ -27,6 +29,9 @@ interface Props {
   onSelectFriend: (username: string) => void;
   onAddFriend: (username: string) => Promise<Friend>;
   onSettleUp: (friend: Friend, amount: number) => Promise<void>;
+  paymentsToConfirm: Payment[];
+  paymentsAwaitingFriends: Payment[];
+  onConfirmPayment: (paymentId: string) => Promise<void>;
   onScan: () => void;
   onManual: () => void;
   onShowSettings: () => void;
@@ -34,6 +39,8 @@ interface Props {
   groups: Group[];
   onOpenShoppingList: (listId: string | null) => void;
   onManageGroups: () => void;
+  onStartTrip: (groupId: string, store: string) => Promise<void>;
+  onEndTrip: (groupId: string) => Promise<void>;
   onViewProfile: (username: string) => void;
   notificationCenter: NotificationCenter;
   onOpenNotification: (notification: AppNotification) => void;
@@ -42,7 +49,8 @@ interface Props {
 export default function MainScreen({
   currentUsername, friends, people, selectedFriend, errorMessage, onSelectFriend, onAddFriend, onSettleUp,
   onScan, onManual, onShowSettings, onShowShoppingLists, onViewProfile, notificationCenter, onOpenNotification,
-  groups, onOpenShoppingList, onManageGroups,
+  groups, onOpenShoppingList, onManageGroups, onStartTrip, onEndTrip,
+  paymentsToConfirm, paymentsAwaitingFriends, onConfirmPayment,
 }: Props) {
   const [adding, setAdding] = useState(false);
   const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
@@ -105,6 +113,11 @@ export default function MainScreen({
         </div>
 
         <div className="home-details">
+          <PendingPaymentsCard
+            paymentsToConfirm={paymentsToConfirm}
+            peopleByUsername={new Map(people.map((person) => [person.username, person]))}
+            onConfirm={onConfirmPayment}
+          />
           {selectedGroup ? (
             <GroupOverviewCard
               group={selectedGroup}
@@ -112,11 +125,16 @@ export default function MainScreen({
               currentUsername={currentUsername}
               onOpenShoppingList={onOpenShoppingList}
               onManageGroups={onManageGroups}
+              onStartTrip={onStartTrip}
+              onEndTrip={onEndTrip}
             />
           ) : (
             <BalanceCard
               friend={selectedFriend}
               onSettleUp={onSettleUp}
+              waitingAmount={paymentsAwaitingFriends
+                .filter((payment) => payment.to_username === selectedFriend?.username)
+                .reduce((total, payment) => total + payment.amount, 0)}
               header={selectedFriend && <FriendOverviewHeader friend={selectedFriend} onViewProfile={onViewProfile} />}
             />
           )}

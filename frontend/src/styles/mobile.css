@@ -3,7 +3,8 @@
 
   .screen { padding: 8px 8px 16px; overflow-y: auto; }
   .main-grid, .home-lower, .settings-layout { flex: none; overflow: visible; }
-  .home-details { overflow: visible; padding: 0; margin: 0; }
+  .home-details, .home-lower { display: contents; }
+  .home-lower > .log { order: -1; }
   .settings-panel, .settings-menu, .history-list, .home-lower .shared-splits, .manager-list { overflow: visible; }
   .card { padding: 14px; }
   .card h2 { font-size: 1.8rem; }
@@ -64,8 +65,8 @@
   .row { padding: 10px; }
   .row input { font-size: 1.1rem; }
   .price-wrap { width: 96px; }
-  .receipt-fields { grid-template-columns: 1fr 1fr; }
-  .receipt-field--wide { grid-column: span 2; }
+  .receipt-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .receipt-field--wide, .receipt-field--date { grid-column: span 2; }
   .person-share-top { flex-wrap: wrap; }
 
   .scan-card { padding: 10px; }
@@ -85,7 +86,10 @@
   .find-row { flex-wrap: wrap; }
   .find-row input { flex-basis: 100%; }
   .find-row .btn { flex: 1; }
-  .manager-row { padding: 10px; gap: 10px; }
+  .manager-row { padding: 10px; gap: 8px 10px; }
+  .manager-row .av { width: 48px; height: 48px; border-width: 4px; font-size: 1rem; }
+  .manager-row-balance { font-size: 1rem; }
+  .manager-row-remove { font-size: 1rem; padding: 4px 10px; }
   .manager-row-name { font-size: 1.25rem; }
   .audit-header { flex-wrap: wrap; }
 

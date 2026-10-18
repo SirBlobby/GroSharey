@@ -57,3 +57,40 @@
 .history-paid-upfront { margin: 0; padding: 6px 12px; font-size: 1rem; font-weight: 600; color: var(--color-info); border-bottom: 2px solid var(--color-divider); }
 .history-settled { background: var(--color-primary); }
 .history-neutral { background: var(--color-muted-surface); color: var(--color-text); }
+
+.history-item { display: flex; flex-direction: column; gap: 6px; }
+.history-items li.history-item { display: flex; flex-direction: column; align-items: stretch; }
+.history-item-row { display: flex; justify-content: space-between; gap: 12px; }
+.history-item-name { display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.dispute-tag { padding: 1px 6px; border-radius: var(--radius-small); font-size: 0.85rem; font-weight: 600; color: var(--color-on-strong); }
+.dispute-tag--open { background: var(--color-danger); }
+.dispute-tag--removed { background: var(--color-primary); }
+.dispute-tag--dismissed { background: var(--color-muted-surface); color: var(--color-text); }
+.dispute-button {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 6px;
+  background: none; border: 2px solid var(--color-danger); border-radius: var(--radius-small);
+  padding: 2px 8px; font-weight: 600; font-size: 0.9rem; color: var(--color-danger);
+}
+.dispute-button:hover { background: var(--color-danger); color: var(--color-on-strong); }
+.dispute-form { display: flex; gap: 6px; flex-wrap: wrap; }
+.dispute-form input {
+  flex: 1 1 180px; min-width: 0; padding: 6px 8px; font: 600 1rem var(--body); color: var(--color-text);
+  background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-small);
+}
+.dispute-form input:focus { border-color: var(--color-primary); outline: none; }
+.dispute-count {
+  display: inline-flex; align-items: center; gap: 6px; padding: 6px 10px;
+  background: var(--color-danger); color: var(--color-on-strong); border-radius: var(--radius-small); font-weight: 600;
+}
+.dispute-review { border: 3px solid var(--color-danger); border-radius: var(--radius-medium); padding: 10px 12px; display: flex; flex-direction: column; gap: 8px; }
+.dispute-review h3 { margin: 0; display: flex; align-items: center; gap: 6px; font-family: var(--display); font-weight: 400; color: var(--color-danger); font-size: 1.3rem; }
+.dispute-review-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.dispute-review-item + .dispute-review-item { border-top: 2px solid var(--color-divider); padding-top: 10px; }
+.dispute-review-text { margin: 0 0 6px; font-weight: 600; }
+.dispute-review-reason { display: block; font-weight: 400; font-style: italic; opacity: 0.85; }
+.dispute-review-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+@media (max-width: 720px) {
+  .dispute-review-actions .history-button { flex: 1; justify-content: center; }
+  .dispute-form .history-button { flex: 1; justify-content: center; }
+}

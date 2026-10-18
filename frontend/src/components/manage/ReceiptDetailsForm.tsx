@@ -63,7 +63,7 @@ export default function ReceiptDetailsForm({ receiptDetails, onChange }: Receipt
             onChange={(event) => onChange({ storeAddress: readTextOrNull(event.target.value) })}
           />
         </label>
-        <label className="receipt-field">
+        <label className="receipt-field receipt-field--date">
           <span>
             <CalendarIcon /> Date
           </span>

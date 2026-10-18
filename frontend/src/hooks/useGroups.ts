@@ -46,7 +46,30 @@ export function useGroups() {
     setGroups((currentGroups) => currentGroups.filter((group) => group.id !== groupId));
   }
 
-  return { groups, isLoading, errorMessage, refreshGroups, createGroup, updateGroup, deleteGroup, leaveGroup };
+  function replaceGroup(updatedGroup: Group) {
+    setGroups((currentGroups) => currentGroups.map((group) => (group.id === updatedGroup.id ? updatedGroup : group)));
+  }
+
+  async function startTrip(groupId: string, store: string): Promise<void> {
+    replaceGroup(await groupsApi.startTrip(groupId, store));
+  }
+
+  async function endTrip(groupId: string): Promise<void> {
+    replaceGroup(await groupsApi.endTrip(groupId));
+  }
+
+  return {
+    groups,
+    isLoading,
+    errorMessage,
+    refreshGroups,
+    createGroup,
+    updateGroup,
+    deleteGroup,
+    leaveGroup,
+    startTrip,
+    endTrip,
+  };
 }
 
 export type GroupList = ReturnType<typeof useGroups>;

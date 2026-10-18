@@ -38,6 +38,10 @@ export async function captureReceiptImage(source: ReceiptImageSource): Promise<R
   }
 
   const { uri, width, height } = pickerResult.assets[0];
+  return shrinkReceiptPhoto(uri, width, height);
+}
+
+export async function shrinkReceiptPhoto(uri: string, width: number, height: number): Promise<ReceiptImage> {
   const manipulatorContext = ImageManipulator.manipulate(uri);
   if (Math.max(width, height) > MAX_RECEIPT_LONG_EDGE) {
     manipulatorContext.resize(
@@ -57,10 +61,13 @@ export async function captureReceiptImage(source: ReceiptImageSource): Promise<R
   return { uri: savedImage.uri, base64: savedImage.base64 };
 }
 
-export async function captureReceiptImageForWebView(source: ReceiptImageSource): Promise<ReceiptImage | null> {
-  const receiptImage = await captureReceiptImage(source);
+export function prepareForWebView(receiptImage: ReceiptImage | null): ReceiptImage | null {
   if (!receiptImage) {
     return null;
   }
   return { uri: `data:image/jpeg;base64,${receiptImage.base64}`, base64: receiptImage.base64 };
+}
+
+export async function captureReceiptImageForWebView(source: ReceiptImageSource): Promise<ReceiptImage | null> {
+  return prepareForWebView(await captureReceiptImage(source));
 }

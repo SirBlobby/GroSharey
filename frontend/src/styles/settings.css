@@ -108,3 +108,13 @@
 
 .settings-menu-logout { margin-top: auto; color: var(--color-danger); }
 .settings-menu-logout:hover { border-color: var(--color-danger); }
+
+.report-export-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: stretch; }
+.report-export-row input {
+  padding: 8px 10px; font: 600 1.1rem var(--body); color: var(--color-text);
+  background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-small);
+}
+.report-export-row .btn { min-width: 0; font-size: 1.2rem; padding: 8px 16px; border-width: 3px; }
+@media (max-width: 720px) {
+  .report-export-row input, .report-export-row .btn { flex: 1 1 100%; }
+}

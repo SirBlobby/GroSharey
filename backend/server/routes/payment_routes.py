@@ -20,3 +20,17 @@ def record_payment():
 def list_payments():
     payments = get_payment_service().list_payments(g.current_user.id)
     return jsonify([payment.model_dump(mode="json") for payment in payments])
+
+
+@payment_blueprint.get("/pending")
+@require_authentication
+def list_pending_payments():
+    payments = get_payment_service().list_pending_payments(g.current_user.id)
+    return jsonify([payment.model_dump(mode="json") for payment in payments])
+
+
+@payment_blueprint.post("/<payment_id>/confirm")
+@require_authentication
+def confirm_payment(payment_id: str):
+    payment = get_payment_service().confirm_payment(payment_id, g.current_user)
+    return jsonify(payment.model_dump(mode="json"))

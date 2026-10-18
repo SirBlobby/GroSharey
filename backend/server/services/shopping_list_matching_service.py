@@ -10,6 +10,7 @@ from server.models.shopping_list_models import (
 )
 from server.models.split_models import SavedSplit, SplitRequest
 from server.models.user_models import User
+from server.repositories.pantry_repository import PantryRepository
 from server.repositories.shopping_list_repository import ShoppingListRepository
 from server.repositories.user_repository import UserRepository
 from server.services.audit_log_service import AuditLogService
@@ -33,12 +34,14 @@ class ShoppingListMatchingService:
         user_repository: UserRepository,
         group_service: GroupService,
         shopping_list_repository: ShoppingListRepository,
+        pantry_repository: PantryRepository,
         item_matching_service: ItemMatchingService,
         audit_log_service: AuditLogService,
     ):
         self.user_repository = user_repository
         self.group_service = group_service
         self.shopping_list_repository = shopping_list_repository
+        self.pantry_repository = pantry_repository
         self.item_matching_service = item_matching_service
         self.audit_log_service = audit_log_service
 
@@ -104,6 +107,7 @@ class ShoppingListMatchingService:
             stored_list.id, bought_ids, creator.id, saved_split.id, saved_split.store_name
         )
         bought_items = [open_items_by_id[shopping_item_id] for shopping_item_id in bought_ids]
+        self.pantry_repository.stock_items(stored_list.id, bought_items)
         self.record_crossed_off(stored_list, bought_items, creator)
         return [item.name for item in bought_items]
 

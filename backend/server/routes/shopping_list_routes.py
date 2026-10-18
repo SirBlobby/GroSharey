@@ -1,7 +1,7 @@
 from flask import Blueprint, g, jsonify, request
 
 from server.authentication import require_authentication
-from server.dependencies import get_shopping_list_service
+from server.dependencies import get_pantry_service, get_shopping_list_service
 from server.models.shopping_list_models import (
     AddShoppingListItemRequest,
     CreateShoppingListRequest,
@@ -55,4 +55,18 @@ def update_shopping_list_item(list_id: str, item_id: str):
 @require_authentication
 def remove_shopping_list_item(list_id: str, item_id: str):
     shopping_list = get_shopping_list_service().remove_item(list_id, item_id, g.current_user)
+    return jsonify(shopping_list.model_dump(mode="json"))
+
+
+@shopping_list_blueprint.post("/<list_id>/pantry/<pantry_item_id>/running-low")
+@require_authentication
+def mark_pantry_item_running_low(list_id: str, pantry_item_id: str):
+    shopping_list = get_pantry_service().mark_running_low(list_id, pantry_item_id, g.current_user)
+    return jsonify(shopping_list.model_dump(mode="json"))
+
+
+@shopping_list_blueprint.delete("/<list_id>/pantry/<pantry_item_id>")
+@require_authentication
+def use_up_pantry_item(list_id: str, pantry_item_id: str):
+    shopping_list = get_pantry_service().use_up(list_id, pantry_item_id, g.current_user)
     return jsonify(shopping_list.model_dump(mode="json"))

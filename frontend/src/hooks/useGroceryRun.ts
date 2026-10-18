@@ -17,13 +17,10 @@ import { Group } from "../types/group";
 import { SavedSplit } from "../types/split";
 import { readErrorMessage } from "../utils";
 
-export type GroceryRunSource = "scan" | "manual";
-
 export function useGroceryRun() {
   const [items, setItems] = useState<Item[]>([]);
   const [receiptDetails, setReceiptDetails] = useState<ReceiptDetails>(EMPTY_RECEIPT_DETAILS);
   const [splitPayment, setSplitPayment] = useState<SplitPayment>(EMPTY_SPLIT_PAYMENT);
-  const [source, setSource] = useState<GroceryRunSource>("manual");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [splitGroup, setSplitGroup] = useState<SplitGroup | null>(null);
@@ -39,7 +36,6 @@ export function useGroceryRun() {
     setItems([]);
     setReceiptDetails(EMPTY_RECEIPT_DETAILS);
     setSplitPayment(EMPTY_SPLIT_PAYMENT);
-    setSource("manual");
     setErrorMessage(null);
     resetGroup();
   }
@@ -56,7 +52,6 @@ export function useGroceryRun() {
       warnings: scannedReceipt.warnings,
     });
     setSplitPayment(EMPTY_SPLIT_PAYMENT);
-    setSource("scan");
     setErrorMessage(null);
     resetGroup();
   }
@@ -125,7 +120,6 @@ export function useGroceryRun() {
     setItems,
     receiptDetails,
     splitPayment,
-    source,
     errorMessage,
     isSaving,
     splitGroup,

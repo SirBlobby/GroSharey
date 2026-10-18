@@ -28,6 +28,7 @@ export default function GroupEditorModal({ group, friends, currentUsername, onSa
   const [selectedUsernames, setSelectedUsernames] = useState<Set<string>>(
     new Set((group?.members ?? []).map((member) => member.username).filter((username) => username !== currentUsername)),
   );
+  const [monthlyBudget, setMonthlyBudget] = useState(group?.monthly_budget ? String(group.monthly_budget) : "");
   const [isSaving, setIsSaving] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const choosablePeople = listChoosablePeople(group, friends, currentUsername);
@@ -59,7 +60,12 @@ export default function GroupEditorModal({ group, friends, currentUsername, onSa
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      await onSave({ name: groupName.trim(), member_usernames: [...selectedUsernames] });
+      const budgetAmount = parseFloat(monthlyBudget);
+      await onSave({
+        name: groupName.trim(),
+        member_usernames: [...selectedUsernames],
+        monthly_budget: budgetAmount > 0 ? budgetAmount : null,
+      });
       onClose();
     } catch (error) {
       setErrorMessage(readErrorMessage(error, "Couldn't save this group"));
@@ -82,6 +88,16 @@ export default function GroupEditorModal({ group, friends, currentUsername, onSa
             maxLength={50}
             placeholder="Apartment 4B"
             onChange={(event) => setGroupName(event.target.value)}
+          />
+        </label>
+
+        <label className="group-editor-name">
+          Monthly grocery budget (optional)
+          <input
+            value={monthlyBudget}
+            inputMode="decimal"
+            placeholder="400.00"
+            onChange={(event) => setMonthlyBudget(event.target.value)}
           />
         </label>
 

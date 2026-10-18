@@ -1,11 +1,14 @@
 import { useState } from "react";
 
+import { useSplitDisputes } from "../../hooks/useSplitDisputes";
 import { describeSplitStanding } from "../../services/splitStanding";
 import type { Friend } from "../../types";
 import { SavedSplit } from "../../types/split";
 import { formatReceiptDate, money } from "../../utils";
 import Avatar from "../Avatar";
-import { CollapseIcon, ExpandIcon, LocationIcon, ViewReceiptIcon } from "../icons";
+import { CollapseIcon, DisputeIcon, ExpandIcon, LocationIcon, ViewReceiptIcon } from "../icons";
+import DisputeReviewList from "./DisputeReviewList";
+import SplitPersonItems from "./SplitPersonItems";
 
 type SplitHistoryCardProps = {
   split: SavedSplit;
@@ -14,6 +17,7 @@ type SplitHistoryCardProps = {
   unpaidForSplit: Map<string, number>;
   focusUsername?: string;
   onViewReceipt: (receiptImageId: string) => void;
+  onSplitChange: (updatedSplit: SavedSplit) => void;
 };
 
 function describeSplitDate(split: SavedSplit): string {
@@ -35,8 +39,12 @@ export default function SplitHistoryCard({
   unpaidForSplit,
   focusUsername,
   onViewReceipt,
+  onSplitChange,
 }: SplitHistoryCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const splitDisputes = useSplitDisputes(split, onSplitChange);
+  const canReviewDisputes = split.payer === currentUsername || split.created_by === currentUsername;
+  const openDisputeCount = split.disputes.filter((dispute) => dispute.status === "open").length;
   const yourPart = describeSplitStanding(split, currentUsername, unpaidForSplit, focusUsername);
 
   function findName(username: string): string {
@@ -86,11 +94,25 @@ export default function SplitHistoryCard({
           {isExpanded ? <CollapseIcon /> : <ExpandIcon />}
           {isExpanded ? "Hide Details" : "Details"}
         </button>
+        {openDisputeCount > 0 && (
+          <span className="dispute-count">
+            <DisputeIcon /> {openDisputeCount} disputed
+          </span>
+        )}
       </div>
 
       {isExpanded && (
         <div className="history-details">
           <p className="history-payer">Paid by {findName(split.payer)}</p>
+          {canReviewDisputes && (
+            <DisputeReviewList
+              disputes={split.disputes}
+              isSending={splitDisputes.isSending}
+              findName={findName}
+              onResolve={splitDisputes.resolveDispute}
+            />
+          )}
+          {splitDisputes.errorMessage && <p className="error-text">{splitDisputes.errorMessage}</p>}
           {split.people.map((person) => (
             <div key={person.username} className="history-person">
               <div className="history-person-header">
@@ -103,14 +125,13 @@ export default function SplitHistoryCard({
                   {person.owes < 0 ? `, owed ${money(-person.owes)} back` : `, ${money(person.owes)} left`}
                 </p>
               )}
-              <ul className="history-items">
-                {person.items.map((itemShare) => (
-                  <li key={itemShare.item_id}>
-                    <span>{itemShare.name}</span>
-                    <span>{money(itemShare.total)}</span>
-                  </li>
-                ))}
-              </ul>
+              <SplitPersonItems
+                items={person.items}
+                disputes={split.disputes.filter((dispute) => dispute.username === person.username)}
+                canDispute={person.username === currentUsername && split.payer !== currentUsername}
+                isSending={splitDisputes.isSending}
+                onDispute={splitDisputes.disputeItem}
+              />
             </div>
           ))}
           {split.tax_note && <p className="description">{split.tax_note}</p>}

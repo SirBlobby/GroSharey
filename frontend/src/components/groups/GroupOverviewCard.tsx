@@ -4,6 +4,8 @@ import { Group } from "../../types/group";
 import { money } from "../../utils";
 import Avatar from "../Avatar";
 import { EditIcon, GroupsIcon, ShoppingListIcon } from "../icons";
+import BudgetBar from "./BudgetBar";
+import TripBanner from "./TripBanner";
 
 type GroupOverviewCardProps = {
   group: Group;
@@ -11,6 +13,8 @@ type GroupOverviewCardProps = {
   currentUsername: string;
   onOpenShoppingList: (listId: string | null) => void;
   onManageGroups: () => void;
+  onStartTrip: (groupId: string, store: string) => Promise<void>;
+  onEndTrip: (groupId: string) => Promise<void>;
 };
 
 function describeBalance(friend: Friend | undefined): { label: string; className: string } {
@@ -32,6 +36,8 @@ export default function GroupOverviewCard({
   currentUsername,
   onOpenShoppingList,
   onManageGroups,
+  onStartTrip,
+  onEndTrip,
 }: GroupOverviewCardProps) {
   const friendsByUsername = new Map(friends.map((friend) => [friend.username, friend]));
   const otherMembers = group.members.filter((member) => member.username !== currentUsername);
@@ -76,6 +82,9 @@ export default function GroupOverviewCard({
           );
         })}
       </ul>
+
+      <BudgetBar group={group} />
+      <TripBanner group={group} currentUsername={currentUsername} onStartTrip={onStartTrip} onEndTrip={onEndTrip} />
     </div>
   );
 }

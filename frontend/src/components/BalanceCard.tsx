@@ -3,14 +3,22 @@ import { ReactNode } from "react";
 import type { Friend } from "../types";
 import { money } from "../utils";
 import PaymentForm from "./PaymentForm";
+import "../styles/payments.css";
 
 type BalanceCardProps = {
   friend: Friend | undefined;
   onSettleUp: (friend: Friend, amount: number) => Promise<void>;
+  waitingAmount?: number;
   header?: ReactNode;
 };
 
-export default function BalanceCard({ friend, onSettleUp, header }: BalanceCardProps) {
+export default function BalanceCard({ friend, onSettleUp, waitingAmount = 0, header }: BalanceCardProps) {
+  const waitingNote = friend && waitingAmount > 0 && (
+    <p className="payment-waiting">
+      Waiting for {friend.name} to confirm {money(waitingAmount)} you paid
+    </p>
+  );
+
   if (!friend) {
     return (
       <div className="card owe">
@@ -26,6 +34,7 @@ export default function BalanceCard({ friend, onSettleUp, header }: BalanceCardP
         <div className="balance-summary">
           <h2>You and {friend.name}</h2>
           <div className="amt ok">are all settled up!</div>
+          {waitingNote}
         </div>
       </div>
     );
@@ -40,6 +49,7 @@ export default function BalanceCard({ friend, onSettleUp, header }: BalanceCardP
       <div className="balance-summary">
         <h2>{youOweFriend ? `You owe ${friend.name}` : `${friend.name} owes you`}</h2>
         <div className={`amt ${youOweFriend ? "" : "owed-to-you"}`}>{money(Math.abs(friend.balance))}</div>
+        {waitingNote}
       </div>
       <div className="pay">
         {hasPayLink && "pay with"}

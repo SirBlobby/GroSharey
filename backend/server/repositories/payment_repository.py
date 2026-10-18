@@ -1,12 +1,14 @@
 from datetime import datetime, timezone
 
+from bson import ObjectId
 from pymongo import DESCENDING
 from pymongo.database import Database
 
-from server.models.payment_models import Payment, PaymentMethod
+from server.models.payment_models import Payment, PaymentMethod, PaymentStatus
 from server.models.user_models import StoredUser, User
 
 PAYMENT_HISTORY_LIMIT = 50
+CONFIRMED_ONLY = {"status": {"$ne": "pending"}}
 
 
 def convert_document_to_payment(payment_document: dict) -> Payment:
@@ -17,6 +19,8 @@ def convert_document_to_payment(payment_document: dict) -> Payment:
         amount=payment_document["amount_cents"] / 100,
         method=payment_document["method"],
         recorded_by=payment_document["recorded_by_username"],
+        status=payment_document.get("status", "confirmed"),
+        confirmed_at=payment_document.get("confirmed_at"),
         created_at=payment_document["created_at"],
     )
 
@@ -35,6 +39,7 @@ class PaymentRepository:
         amount_cents: int,
         method: PaymentMethod,
         recorded_by: User,
+        status: PaymentStatus,
     ) -> Payment:
         payment_document = {
             "from_user_id": from_user.id,
@@ -46,6 +51,8 @@ class PaymentRepository:
             "method": method,
             "recorded_by_user_id": recorded_by.id,
             "recorded_by_username": recorded_by.username,
+            "status": status,
+            "confirmed_at": datetime.now(timezone.utc) if status == "confirmed" else None,
             "created_at": datetime.now(timezone.utc),
         }
         insert_result = self.payments_collection.insert_one(payment_document)
@@ -60,13 +67,39 @@ class PaymentRepository:
         )
         return [convert_document_to_payment(payment_document) for payment_document in payment_documents]
 
+    def list_pending_for_user(self, user_id: str) -> list[Payment]:
+        payment_documents = self.payments_collection.find(
+            {"participant_ids": user_id, "status": "pending"}
+        ).sort("created_at", DESCENDING)
+        return [convert_document_to_payment(payment_document) for payment_document in payment_documents]
+
+    def find_pending_for_recipient(self, payment_id: str, recipient_id: str) -> Payment | None:
+        if not ObjectId.is_valid(payment_id):
+            return None
+        payment_document = self.payments_collection.find_one(
+            {"_id": ObjectId(payment_id), "to_user_id": recipient_id, "status": "pending"}
+        )
+        return convert_document_to_payment(payment_document) if payment_document else None
+
+    def find_user_ids(self, payment_id: str) -> tuple[str, str] | None:
+        payment_document = self.payments_collection.find_one(
+            {"_id": ObjectId(payment_id)}, {"from_user_id": 1, "to_user_id": 1}
+        )
+        return (payment_document["from_user_id"], payment_document["to_user_id"]) if payment_document else None
+
+    def confirm(self, payment_id: str) -> None:
+        self.payments_collection.update_one(
+            {"_id": ObjectId(payment_id)},
+            {"$set": {"status": "confirmed", "confirmed_at": datetime.now(timezone.utc)}},
+        )
+
     def sum_paid_to_user(self, user_id: str) -> dict[str, int]:
         """sender id -> cents that sender has paid user_id."""
-        return self.sum_amounts({"to_user_id": user_id}, "$from_user_id")
+        return self.sum_amounts({"to_user_id": user_id, **CONFIRMED_ONLY}, "$from_user_id")
 
     def sum_paid_by_user(self, user_id: str) -> dict[str, int]:
         """recipient id -> cents user_id has paid that recipient."""
-        return self.sum_amounts({"from_user_id": user_id}, "$to_user_id")
+        return self.sum_amounts({"from_user_id": user_id, **CONFIRMED_ONLY}, "$to_user_id")
 
     def sum_amounts(self, match: dict, group_by_field: str) -> dict[str, int]:
         totals = self.payments_collection.aggregate(

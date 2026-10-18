@@ -1,33 +1,72 @@
+import { useState } from "react";
+
 import { convertProfileToFriend } from "../../services/friends";
-import { NewShoppingListItem, ShoppingList } from "../../types/shoppingList";
+import { Group } from "../../types/group";
+import { NewShoppingListItem, ShoppingList, ShoppingListItem } from "../../types/shoppingList";
+import TripBanner from "../groups/TripBanner";
 import { DeleteIcon, GroupsIcon } from "../icons";
 import AddShoppingItemForm from "./AddShoppingItemForm";
+import PantrySection from "./PantrySection";
 import ShoppingListItemRow from "./ShoppingListItemRow";
+
+function isForStore(itemStore: string | null, tripStore: string): boolean {
+  if (!itemStore) {
+    return true;
+  }
+  const itemStoreName = itemStore.toLowerCase();
+  const tripStoreName = tripStore.toLowerCase();
+  return itemStoreName.includes(tripStoreName) || tripStoreName.includes(itemStoreName);
+}
 
 type ShoppingListPanelProps = {
   shoppingList: ShoppingList;
+  group: Group | undefined;
   currentUsername: string;
+  onStartTrip: (groupId: string, store: string) => Promise<void>;
+  onEndTrip: (groupId: string) => Promise<void>;
   onAddItem: (newItem: NewShoppingListItem) => Promise<boolean>;
   onSetItemCrossedOff: (itemId: string, isCrossedOff: boolean) => void;
   onRemoveItem: (itemId: string) => void;
+  onMarkRunningLow: (pantryItemId: string) => void;
+  onRemovePantryItem: (pantryItemId: string) => void;
   onDeleteList: () => void;
 };
 
 export default function ShoppingListPanel({
   shoppingList,
+  group,
   currentUsername,
+  onStartTrip,
+  onEndTrip,
   onAddItem,
   onSetItemCrossedOff,
   onRemoveItem,
+  onMarkRunningLow,
+  onRemovePantryItem,
   onDeleteList,
 }: ShoppingListPanelProps) {
   const members = shoppingList.members.map((member) =>
     member.username === currentUsername ? { ...convertProfileToFriend(member), name: "You" } : convertProfileToFriend(member),
   );
   const membersByUsername = new Map(members.map((member) => [member.username, member]));
-  const openItems = shoppingList.items.filter((item) => !item.is_crossed_off);
+  const [isFilteringByTrip, setIsFilteringByTrip] = useState(true);
+  const tripStore = group?.active_trip?.store ?? null;
+  const openItems = shoppingList.items.filter(
+    (item) => !item.is_crossed_off && (!tripStore || !isFilteringByTrip || isForStore(item.store, tripStore)),
+  );
+  const hiddenItemCount = shoppingList.items.filter((item) => !item.is_crossed_off).length - openItems.length;
   const crossedOffItems = shoppingList.items.filter((item) => item.is_crossed_off);
   const isGroupList = shoppingList.group_id !== null;
+
+  function addItemAgain(item: ShoppingListItem) {
+    onAddItem({
+      name: item.name,
+      quantity: item.quantity,
+      store: item.store,
+      notes: item.notes,
+      requested_by: isGroupList && membersByUsername.has(item.requested_by) ? item.requested_by : null,
+    });
+  }
 
   function renderItems(items: ShoppingList["items"]) {
     return (
@@ -38,6 +77,7 @@ export default function ShoppingListPanel({
             item={item}
             requester={isGroupList ? membersByUsername.get(item.requested_by) : undefined}
             onToggle={() => onSetItemCrossedOff(item.id, !item.is_crossed_off)}
+            onAddAgain={() => addItemAgain(item)}
             onRemove={() => onRemoveItem(item.id)}
           />
         ))}
@@ -64,6 +104,23 @@ export default function ShoppingListPanel({
         </p>
       )}
 
+      {group && (
+        <TripBanner group={group} currentUsername={currentUsername} onStartTrip={onStartTrip} onEndTrip={onEndTrip} />
+      )}
+      {tripStore && (
+        <label className="toggle-row trip-filter">
+          <input
+            type="checkbox"
+            checked={isFilteringByTrip}
+            onChange={(event) => setIsFilteringByTrip(event.target.checked)}
+          />
+          <span>
+            Only show items for {tripStore}
+            {isFilteringByTrip && hiddenItemCount > 0 && ` (${hiddenItemCount} hidden)`}
+          </span>
+        </label>
+      )}
+
       <AddShoppingItemForm
         key={shoppingList.id}
         members={members}
@@ -80,6 +137,14 @@ export default function ShoppingListPanel({
           {renderItems(crossedOffItems)}
         </div>
       )}
+
+      <PantrySection
+        pantryItems={shoppingList.pantry}
+        membersByUsername={membersByUsername}
+        isGroupList={isGroupList}
+        onMarkRunningLow={onMarkRunningLow}
+        onUseUp={onRemovePantryItem}
+      />
     </div>
   );
 }

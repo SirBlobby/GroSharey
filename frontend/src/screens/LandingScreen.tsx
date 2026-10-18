@@ -30,8 +30,9 @@ export default function LandingScreen({ onShowLogIn, onShowSignUp }: LandingScre
           <Logo className="landing-hero-logo" />
           <h1>Split groceries, not friendships.</h1>
           <p className="landing-hero-text">
-            Wanna save the time you spend splitting grocery costs with your roommates? With groSharey, just scan
-            your receipt, assign items, and bam! Everyone knows exactly what they owe.
+            Wanna save the time you spend splitting grocery costs with your roommates? With groSharey, keep one
+            shared list, scan your receipt, and AI hands each item to whoever asked for it. Bam! Everyone knows
+            exactly what they owe.
           </p>
           <div className="landing-hero-actions">
             <button type="button" className="btn landing-primary" onClick={onShowSignUp}>

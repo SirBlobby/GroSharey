@@ -1,16 +1,23 @@
 import type { Friend } from "../../types";
 import { ShoppingListItem } from "../../types/shoppingList";
 import Avatar from "../Avatar";
-import { CheckedBoxIcon, CloseIcon, EditIcon, LocationIcon, UncheckedBoxIcon } from "../icons";
+import { AddAgainIcon, CheckedBoxIcon, CloseIcon, EditIcon, LocationIcon, UncheckedBoxIcon } from "../icons";
 
 type ShoppingListItemRowProps = {
   item: ShoppingListItem;
   requester: Friend | undefined;
   onToggle: () => void;
+  onAddAgain: () => void;
   onRemove: () => void;
 };
 
-export default function ShoppingListItemRow({ item, requester, onToggle, onRemove }: ShoppingListItemRowProps) {
+export default function ShoppingListItemRow({
+  item,
+  requester,
+  onToggle,
+  onAddAgain,
+  onRemove,
+}: ShoppingListItemRowProps) {
   return (
     <li className={`shopping-item ${item.is_crossed_off ? "shopping-item--crossed" : ""}`}>
       <button
@@ -50,6 +57,11 @@ export default function ShoppingListItemRow({ item, requester, onToggle, onRemov
           <Avatar friend={requester} />
           <span>{requester.name}</span>
         </span>
+      )}
+      {item.is_crossed_off && (
+        <button type="button" className="shopping-item-add-again" onClick={onAddAgain}>
+          <AddAgainIcon /> <span>Add again</span>
+        </button>
       )}
       <button type="button" className="del" aria-label={`Remove ${item.name}`} onClick={onRemove}>
         <CloseIcon />

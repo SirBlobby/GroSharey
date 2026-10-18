@@ -7,6 +7,7 @@ import { useFriends } from "../hooks/useFriends";
 import { useGroceryRun } from "../hooks/useGroceryRun";
 import { useGroups } from "../hooks/useGroups";
 import { useNotifications } from "../hooks/useNotifications";
+import { usePendingPayments } from "../hooks/usePendingPayments";
 import { useReceiptScanner } from "../hooks/useReceiptScanner";
 import { clearSharedUsername, readSharedUsername } from "../linking/sharedProfile";
 import ConfirmedScreen from "../screens/ConfirmedScreen";
@@ -41,6 +42,7 @@ export default function AppNavigator() {
   const receiptScanner = useReceiptScanner();
   const notificationCenter = useNotifications();
   const groupList = useGroups();
+  const pendingPayments = usePendingPayments(currentUser?.username ?? "");
   const [currentPage, setCurrentPage] = useState<AppPage>(getInitialPage);
 
   const assignableFriends = currentUser
@@ -60,6 +62,7 @@ export default function AppNavigator() {
   function showMain() {
     clearSharedUsername();
     friendList.refreshFriends();
+    pendingPayments.refreshPendingPayments();
     groupList.refreshGroups();
     setCurrentPage({ name: "main" });
   }
@@ -76,6 +79,9 @@ export default function AppNavigator() {
       showSettings("history");
     } else if (notification.category === "account") {
       showSettings("auditLog");
+    } else if (notification.category === "payments" && notification.actor_username) {
+      friendList.selectFriend(notification.actor_username);
+      showMain();
     } else if (notification.category === "groups") {
       showSettings("groups");
     } else if (notification.category === "lists") {
@@ -83,6 +89,16 @@ export default function AppNavigator() {
     } else if (notification.actor_username) {
       setCurrentPage({ name: "profile", username: notification.actor_username, returnPage: "main" });
     }
+  }
+
+  async function settleUp(friend: Friend, amount: number) {
+    await friendList.settleUp(friend, amount);
+    await pendingPayments.refreshPendingPayments();
+  }
+
+  async function confirmPayment(paymentId: string) {
+    await pendingPayments.confirmPayment(paymentId);
+    await friendList.refreshFriends();
   }
 
   function showShoppingLists(listId: string | null) {
@@ -101,9 +117,6 @@ export default function AppNavigator() {
     setCurrentPage({ name: "manage" });
   }
 
-  function leaveManageItems() {
-    setCurrentPage(groceryRun.source === "scan" ? { name: "scan" } : { name: "main" });
-  }
 
   async function confirmGroceryRun() {
     const savedSplit = await groceryRun.saveGroceryRun();
@@ -146,7 +159,7 @@ export default function AppNavigator() {
             onClearGroup={groceryRun.clearGroup}
             errorMessage={groceryRun.errorMessage}
             isSaving={groceryRun.isSaving}
-            onBack={leaveManageItems}
+            onBack={showMain}
             onConfirm={confirmGroceryRun}
           />
         );
@@ -155,7 +168,7 @@ export default function AppNavigator() {
       case "lists":
         return (
           <ShoppingListsScreen
-            groups={groupList.groups}
+            groupList={groupList}
             currentUsername={currentUser?.username ?? ""}
             initialListId={currentPage.listId}
             onBack={showMain}
@@ -185,7 +198,7 @@ export default function AppNavigator() {
             people={assignableFriends}
             onAddFriend={friendList.addFriend}
             onRemoveFriend={friendList.removeFriend}
-            onSettleUp={friendList.settleUp}
+            onSettleUp={settleUp}
             onBack={currentPage.returnPage === "settings" ? () => showSettings("friends") : showMain}
           />
         );
@@ -199,7 +212,10 @@ export default function AppNavigator() {
             errorMessage={friendList.errorMessage}
             onSelectFriend={friendList.selectFriend}
             onAddFriend={friendList.addFriend}
-            onSettleUp={friendList.settleUp}
+            onSettleUp={settleUp}
+            paymentsToConfirm={pendingPayments.paymentsToConfirm}
+            paymentsAwaitingFriends={pendingPayments.paymentsAwaitingFriends}
+            onConfirmPayment={confirmPayment}
             onScan={startScan}
             onManual={startManualEntry}
             onShowSettings={() => showSettings("profile")}
@@ -207,6 +223,8 @@ export default function AppNavigator() {
             groups={groupList.groups}
             onOpenShoppingList={showShoppingLists}
             onManageGroups={() => showSettings("groups")}
+            onStartTrip={groupList.startTrip}
+            onEndTrip={groupList.endTrip}
             onViewProfile={(username) => setCurrentPage({ name: "profile", username, returnPage: "main" })}
             notificationCenter={notificationCenter}
             onOpenNotification={openNotification}

@@ -3,7 +3,9 @@ import { useCallback, useState } from "react";
 import { Platform, StyleSheet } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-import { captureReceiptImageForWebView } from "./src/media/receiptImage";
+import NativeQrScanner from "./src/native/NativeQrScanner";
+import NativeReceiptCamera from "./src/native/NativeReceiptCamera";
+import { useNativeCameras } from "./src/native/useNativeCameras";
 import WebApp from "./src/WebApp";
 
 const DEFAULT_PAGE_COLOR = "#25a18e";
@@ -18,12 +20,14 @@ function MobileApp() {
   const [pageColor, setPageColor] = useState(DEFAULT_PAGE_COLOR);
   const updatePageColor = useCallback((nextPageColor: string) => setPageColor(nextPageColor), []);
   const pageBackground = { backgroundColor: pageColor };
+  const nativeCameras = useNativeCameras();
 
   return (
     <SafeAreaProvider>
       <SafeAreaView style={[styles.container, pageBackground]} edges={["top", "bottom"]}>
         <WebApp
-          captureReceiptImage={captureReceiptImageForWebView}
+          captureReceiptImage={nativeCameras.captureReceiptImage}
+          scanQrCode={nativeCameras.scanQrCode}
           onPageColorChange={updatePageColor}
           dom={{
             useExpoDOMWebView: false,
@@ -34,6 +38,16 @@ function MobileApp() {
             bounces: false,
             overScrollMode: "never",
           }}
+        />
+        <NativeReceiptCamera
+          isVisible={nativeCameras.isReceiptCameraOpen}
+          onPhotoTaken={nativeCameras.acceptPhoto}
+          onCancel={nativeCameras.cancelReceipt}
+        />
+        <NativeQrScanner
+          isVisible={nativeCameras.isQrScannerOpen}
+          onScanned={nativeCameras.finishQrScan}
+          onCancel={() => nativeCameras.finishQrScan(null)}
         />
         <StatusBar style="light" />
       </SafeAreaView>

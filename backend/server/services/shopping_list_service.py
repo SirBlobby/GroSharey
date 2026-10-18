@@ -3,13 +3,16 @@ from server.models.group_models import StoredGroup
 from server.models.shopping_list_models import (
     AddShoppingListItemRequest,
     CreateShoppingListRequest,
+    PantryItem,
     ShoppingList,
     ShoppingListItem,
+    StoredPantryItem,
     StoredShoppingList,
     StoredShoppingListItem,
 )
 from server.models.user_models import StoredUser, User
 from server.repositories.group_repository import GroupRepository
+from server.repositories.pantry_repository import PantryRepository
 from server.repositories.shopping_list_repository import ShoppingListRepository
 from server.repositories.user_repository import UserRepository
 from server.services.audit_log_service import AuditLogService
@@ -24,6 +27,7 @@ def collect_user_ids(stored_list: StoredShoppingList, stored_group: StoredGroup 
         user_ids.add(item.requested_by_id)
         if item.crossed_off_by_id:
             user_ids.add(item.crossed_off_by_id)
+    user_ids.update(pantry_item.requested_by_id for pantry_item in stored_list.pantry)
     if stored_group:
         user_ids.update(stored_group.member_ids)
     return user_ids
@@ -35,11 +39,13 @@ class ShoppingListService:
         user_repository: UserRepository,
         group_repository: GroupRepository,
         shopping_list_repository: ShoppingListRepository,
+        pantry_repository: PantryRepository,
         audit_log_service: AuditLogService,
     ):
         self.user_repository = user_repository
         self.group_repository = group_repository
         self.shopping_list_repository = shopping_list_repository
+        self.pantry_repository = pantry_repository
         self.audit_log_service = audit_log_service
 
     def find_accessible(self, list_id: str, user_id: str) -> tuple[StoredShoppingList, StoredGroup | None]:
@@ -123,9 +129,13 @@ class ShoppingListService:
         return self.get_shopping_list(list_id, user)
 
     def set_item_crossed_off(self, list_id: str, item_id: str, is_crossed_off: bool, user: User) -> ShoppingList:
-        self.find_accessible(list_id, user.id)
+        stored_list, _ = self.find_accessible(list_id, user.id)
         if not self.shopping_list_repository.set_item_crossed_off(list_id, item_id, is_crossed_off, user.id):
             raise NotFoundError("Shopping list item", item_id)
+        if is_crossed_off:
+            self.pantry_repository.stock_items(list_id, [item for item in stored_list.items if item.id == item_id])
+        else:
+            self.pantry_repository.remove_stocked_from(list_id, item_id)
         return self.get_shopping_list(list_id, user)
 
     def remove_item(self, list_id: str, item_id: str, user: User) -> ShoppingList:
@@ -149,6 +159,7 @@ class ShoppingListService:
             group_name=stored_group.name if stored_group else None,
             members=members,
             items=[self.build_item(item, users_by_id) for item in stored_list.items],
+            pantry=[self.build_pantry_item(pantry_item, users_by_id) for pantry_item in stored_list.pantry],
             created_at=stored_list.created_at,
         )
 
@@ -165,6 +176,18 @@ class ShoppingListService:
             crossed_off_at=item.crossed_off_at,
             bought_at=item.bought_at,
             created_at=item.created_at,
+        )
+
+    def build_pantry_item(self, pantry_item: StoredPantryItem, users_by_id: dict[str, StoredUser]) -> PantryItem:
+        return PantryItem(
+            id=pantry_item.id,
+            name=pantry_item.name,
+            quantity=pantry_item.quantity,
+            store=pantry_item.store,
+            notes=pantry_item.notes,
+            requested_by=self.find_username(users_by_id, pantry_item.requested_by_id),
+            stocked_at=pantry_item.stocked_at,
+            is_running_low=pantry_item.is_running_low,
         )
 
     def find_username(self, users_by_id: dict[str, StoredUser], user_id: str) -> str:

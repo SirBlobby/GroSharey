@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, Field
 
+from server.models.dispute_models import ItemDispute
+
 
 class SplitReceiptItem(BaseModel):
     id: str
@@ -71,6 +73,7 @@ class SavedSplit(SplitResult):
     group_name: str | None = None
     created_by: str | None = None
     created_at: datetime
+    disputes: list[ItemDispute] = []
     # Who was emailed about this split when it was saved (empty when listing past splits).
     emailed_usernames: list[str] = []
     crossed_off_items: list[str] = []

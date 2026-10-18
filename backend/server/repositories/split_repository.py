@@ -1,10 +1,12 @@
 from datetime import datetime, timezone
 
+from bson import ObjectId
 from pymongo import DESCENDING
 from pymongo.database import Database
 
+from server.models.dispute_models import ItemDispute, SplitParticipants
 from server.models.group_models import StoredGroup
-from server.models.split_models import SavedSplit, SplitResult
+from server.models.split_models import PersonSplit, SavedSplit, SplitResult
 from server.models.user_models import User
 
 SPLIT_HISTORY_LIMIT = 50
@@ -25,6 +27,7 @@ def convert_document_to_split(split_document: dict) -> SavedSplit:
         group_name=split_document.get("group_name"),
         created_by=split_document.get("created_by_username", split_document["payer_username"]),
         created_at=split_document["created_at"],
+        disputes=[ItemDispute(**dispute) for dispute in split_document.get("disputes", [])],
     )
 
 
@@ -84,6 +87,65 @@ class SplitRepository:
         )
         return [convert_document_to_split(split_document) for split_document in split_documents]
 
+    def list_for_user_between(self, user_id: str, start: datetime, end: datetime) -> list[SavedSplit]:
+        split_documents = self.splits_collection.find(
+            {"participant_ids": user_id, "created_at": {"$gte": start, "$lt": end}}
+        ).sort("created_at", 1)
+        return [convert_document_to_split(split_document) for split_document in split_documents]
+
+    def sum_group_spending_since(self, group_ids: list[str], since: datetime) -> dict[str, int]:
+        totals = self.splits_collection.aggregate(
+            [
+                {"$match": {"group_id": {"$in": group_ids}, "created_at": {"$gte": since}}},
+                {"$group": {"_id": "$group_id", "total": {"$sum": "$total"}}},
+            ]
+        )
+        return {total["_id"]: round(total["total"] * 100) for total in totals}
+
+    def find_by_id(self, split_id: str) -> SavedSplit | None:
+        if not ObjectId.is_valid(split_id):
+            return None
+        split_document = self.splits_collection.find_one({"_id": ObjectId(split_id)})
+        return convert_document_to_split(split_document) if split_document else None
+
+    def find_participants(self, split_id: str) -> SplitParticipants | None:
+        if not ObjectId.is_valid(split_id):
+            return None
+        split_document = self.splits_collection.find_one(
+            {"_id": ObjectId(split_id)}, {"payer_id": 1, "created_by_id": 1, "people": 1}
+        )
+        if split_document is None:
+            return None
+        return SplitParticipants(
+            payer_id=split_document["payer_id"],
+            created_by_id=split_document.get("created_by_id", split_document["payer_id"]),
+            user_ids_by_username={person["username"]: person["user_id"] for person in split_document["people"]},
+        )
+
+    def add_dispute(self, split_id: str, dispute: ItemDispute, user_id: str) -> None:
+        dispute_document = {**dispute.model_dump(), "user_id": user_id}
+        self.splits_collection.update_one({"_id": ObjectId(split_id)}, {"$push": {"disputes": dispute_document}})
+
+    def resolve_dispute(self, split_id: str, dispute_id: str, status: str, resolved_by: str) -> None:
+        self.splits_collection.update_one(
+            {"_id": ObjectId(split_id), "disputes.id": dispute_id},
+            {
+                "$set": {
+                    "disputes.$.status": status,
+                    "disputes.$.resolved_by": resolved_by,
+                    "disputes.$.resolved_at": datetime.now(timezone.utc),
+                }
+            },
+        )
+
+    def set_person_share(self, split_id: str, user_id: str, person_split: PersonSplit) -> None:
+        person_fields = person_split.model_dump(mode="json")
+        updates = {f"people.$[person].{field}": value for field, value in person_fields.items()}
+        updates["people.$[person].owes_cents"] = round(person_split.owes * 100)
+        self.splits_collection.update_one(
+            {"_id": ObjectId(split_id)}, {"$set": updates}, array_filters=[{"person.user_id": user_id}]
+        )
+
     def rename_user(self, user_id: str, username: str) -> None:
         self.splits_collection.update_many({"payer_id": user_id}, {"$set": {"payer_username": username}})
         self.splits_collection.update_many({"created_by_id": user_id}, {"$set": {"created_by_username": username}})
@@ -93,6 +155,11 @@ class SplitRepository:
                 for person in split_document["people"]
             ]
             self.splits_collection.update_one({"_id": split_document["_id"]}, {"$set": {"people": people}})
+        self.splits_collection.update_many(
+            {"disputes.user_id": user_id},
+            {"$set": {"disputes.$[dispute].username": username}},
+            array_filters=[{"dispute.user_id": user_id}],
+        )
 
     def list_unpaid_splits(self, payer_id: str, debtor_id: str, limit: int) -> tuple[list[SavedSplit], int]:
         unpaid_filter = {

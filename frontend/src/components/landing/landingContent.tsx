@@ -1,11 +1,19 @@
 import { ReactNode } from "react";
 
 import {
+  AppearanceIcon,
   AuditLogIcon,
   BellAlertIcon,
+  CheckIcon,
+  DisputeIcon,
   EqualSplitIcon,
-  FriendsIcon,
+  GroupsIcon,
   HistoryIcon,
+  MatchItemsIcon,
+  PantryIcon,
+  ScanQrIcon,
+  ShoppingListIcon,
+  TripIcon,
   ViewReceiptIcon,
   WalletIcon,
 } from "../icons";
@@ -23,16 +31,16 @@ export type LandingFeature = {
 
 export const LANDING_STEPS: LandingStep[] = [
   {
-    title: "Scan the receipt",
-    description: "Snap a photo and groSharey reads every item, discount, and tax marker for you. Or type items in yourself.",
+    title: "Make a shared list",
+    description: "Start a group with your roommates and add what everyone needs. Each item remembers who asked for it.",
   },
   {
-    title: "Assign who shares what",
-    description: "Tap roommates onto each item, split everything equally, and pick who paid at the store.",
+    title: "Scan the receipt",
+    description: "Snap a photo and groSharey reads every item, discount, and tax marker. Pick your group and AI assigns each item to whoever asked for it.",
   },
   {
     title: "Settle up",
-    description: "Everyone sees exactly what they owe. Pay with one tap on Venmo or PayPal, in full or a little at a time.",
+    description: "Everyone sees exactly what they owe. Pay with one tap on Venmo or PayPal, and your roommate confirms they got it.",
   },
 ];
 
@@ -43,29 +51,69 @@ export const LANDING_FEATURES: LandingFeature[] = [
     description: "AI reads store receipts, expands abbreviations, and flags totals that don't add up.",
   },
   {
+    icon: <MatchItemsIcon />,
+    title: "AI item matching",
+    description: "Add a group to a split and \"GV 2% MLK\" goes to whoever wanted milk. Bought items get crossed off the list.",
+  },
+  {
+    icon: <GroupsIcon />,
+    title: "Groups and shared lists",
+    description: "One shopping list per group, with stores and notes on each item. Crossed-off items stay as history.",
+  },
+  {
+    icon: <PantryIcon />,
+    title: "Shared pantry",
+    description: "Bought items land in the pantry. Mark something running low and it goes right back on the list.",
+  },
+  {
+    icon: <TripIcon />,
+    title: "Shopping trips",
+    description: "Say \"I'm going to Trader Joe's\" and your group gets a heads up to add last-minute items.",
+  },
+  {
+    icon: <WalletIcon />,
+    title: "Group budgets",
+    description: "Set a monthly grocery budget, watch the progress bar, and get an alert before you go over.",
+  },
+  {
     icon: <EqualSplitIcon />,
     title: "Penny-exact splits",
     description: "Tax lands only on taxed items and leftover cents are shared fairly, so every split adds up.",
   },
   {
-    icon: <FriendsIcon />,
-    title: "Add roommates by QR code",
-    description: "Share your code or link and your roommates are one tap away from splitting with you.",
+    icon: <DisputeIcon />,
+    title: "Item disputes",
+    description: "Didn't get something? Flag it, and whoever made the split can take it off your share.",
   },
   {
-    icon: <WalletIcon />,
-    title: "Balances that explain themselves",
-    description: "See who owes whom at a glance, record partial payments, and keep credit when someone overpays.",
+    icon: <CheckIcon />,
+    title: "Confirmed payments",
+    description: "Partial payments and overpaying both work, and nothing counts until the person paid confirms it.",
+  },
+  {
+    icon: <ScanQrIcon />,
+    title: "Add roommates by QR code",
+    description: "Scan a friend's code right in the app, or share your own link, and you're ready to split.",
   },
   {
     icon: <HistoryIcon />,
-    title: "History with receipts",
-    description: "Every grocery run is saved with its receipt photo, so you can always check what was bought.",
+    title: "History and PDF reports",
+    description: "Every grocery run is saved with its receipt photo. Download a monthly PDF for reimbursements.",
   },
   {
     icon: <BellAlertIcon />,
     title: "Notifications",
-    description: "Get notified and emailed when a roommate adds you to a split or pays you back.",
+    description: "Get notified when you're added to a split, someone buys your item, or a roommate pays you back.",
+  },
+  {
+    icon: <ShoppingListIcon />,
+    title: "Works offline in the store",
+    description: "Bad signal in the aisle? The mobile app keeps your list and syncs what you crossed off later.",
+  },
+  {
+    icon: <AppearanceIcon />,
+    title: "Built for everyone",
+    description: "Dark mode, high contrast, text sizes, reduce motion, and color blindness friendly colors.",
   },
   {
     icon: <AuditLogIcon />,

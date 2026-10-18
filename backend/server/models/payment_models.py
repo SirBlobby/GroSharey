@@ -5,6 +5,7 @@ from typing import Literal
 from pydantic import BaseModel, Field, field_validator
 
 PaymentMethod = Literal["venmo", "paypal", "cash", "other"]
+PaymentStatus = Literal["pending", "confirmed"]
 
 
 class RecordPaymentRequest(BaseModel):
@@ -49,6 +50,8 @@ class Payment(BaseModel):
     amount: float
     method: PaymentMethod
     recorded_by: str
+    status: PaymentStatus = "confirmed"
+    confirmed_at: datetime | None = None
     created_at: datetime
     # True when the person who got paid was emailed about it (only set when recording).
     recipient_emailed: bool = False

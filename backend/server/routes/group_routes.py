@@ -1,8 +1,8 @@
 from flask import Blueprint, g, jsonify, request
 
 from server.authentication import require_authentication
-from server.dependencies import get_group_service, get_shopping_list_matching_service
-from server.models.group_models import GroupRequest
+from server.dependencies import get_group_service, get_group_trip_service, get_shopping_list_matching_service
+from server.models.group_models import GroupRequest, StartTripRequest
 from server.models.shopping_list_models import MatchItemsRequest
 
 group_blueprint = Blueprint("groups", __name__, url_prefix="/api/groups")
@@ -53,3 +53,18 @@ def match_group_items(group_id: str):
         group_id, match_request, g.current_user
     )
     return jsonify(group_item_matches.model_dump(mode="json"))
+
+
+@group_blueprint.post("/<group_id>/trip")
+@require_authentication
+def start_trip(group_id: str):
+    trip_request = StartTripRequest.model_validate(request.get_json(silent=True) or {})
+    group = get_group_trip_service().start_trip(group_id, trip_request, g.current_user)
+    return jsonify(group.model_dump(mode="json")), 201
+
+
+@group_blueprint.delete("/<group_id>/trip")
+@require_authentication
+def end_trip(group_id: str):
+    group = get_group_trip_service().end_trip(group_id, g.current_user)
+    return jsonify(group.model_dump(mode="json"))

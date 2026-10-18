@@ -8,6 +8,7 @@ import type { Friend } from "../../types";
 import SplitHistoryCard from "../history/SplitHistoryCard";
 import Pagination from "../Pagination";
 import ReceiptViewerModal from "../ReceiptViewerModal";
+import ReportExport from "./ReportExport";
 import "../../styles/history.css";
 
 type HistorySettingsProps = {
@@ -16,7 +17,7 @@ type HistorySettingsProps = {
 
 export default function HistorySettings({ people }: HistorySettingsProps) {
   const { currentUser } = useAuth();
-  const { splits, isLoading, errorMessage } = useSplitHistory();
+  const { splits, isLoading, errorMessage, replaceSplit } = useSplitHistory();
   const [viewingReceiptImageId, setViewingReceiptImageId] = useState<string | null>(null);
   const splitPages = usePagination(splits);
 
@@ -47,6 +48,7 @@ export default function HistorySettings({ people }: HistorySettingsProps) {
               peopleByUsername={peopleByUsername}
               unpaidForSplit={unpaidAmounts.get(split.id) ?? new Map()}
               onViewReceipt={setViewingReceiptImageId}
+              onSplitChange={replaceSplit}
             />
           ))}
         </ul>
@@ -58,6 +60,8 @@ export default function HistorySettings({ people }: HistorySettingsProps) {
         itemLabel="grocery runs"
         onPageChange={splitPages.setPage}
       />
+
+      <ReportExport />
 
       {viewingReceiptImageId && (
         <ReceiptViewerModal receiptImageId={viewingReceiptImageId} onClose={() => setViewingReceiptImageId(null)} />

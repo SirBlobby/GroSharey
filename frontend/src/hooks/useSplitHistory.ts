@@ -29,5 +29,9 @@ export function useSplitHistory() {
     };
   }, []);
 
-  return { splits, isLoading, errorMessage };
+  function replaceSplit(updatedSplit: SavedSplit) {
+    setSplits((currentSplits) => currentSplits.map((split) => (split.id === updatedSplit.id ? updatedSplit : split)));
+  }
+
+  return { splits, isLoading, errorMessage, replaceSplit };
 }

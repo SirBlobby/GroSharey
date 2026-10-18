@@ -16,13 +16,15 @@ async function buildRequestHeaders(): Promise<Record<string, string>> {
 
 const REQUEST_TIMEOUT_MILLISECONDS = 60000;
 
+export class NetworkError extends Error {}
+
 async function fetchWithTimeout(url: string, options: RequestInit): Promise<Response> {
   const abortController = new AbortController();
   const timeoutTimer = setTimeout(() => abortController.abort(), REQUEST_TIMEOUT_MILLISECONDS);
   try {
     return await fetch(url, { ...options, signal: abortController.signal });
   } catch {
-    throw new Error(`Couldn't reach the server at ${apiBaseUrl}. Check that the backend is running.`);
+    throw new NetworkError(`Couldn't reach the server at ${apiBaseUrl}. Check that the backend is running.`);
   } finally {
     clearTimeout(timeoutTimer);
   }
@@ -46,12 +48,22 @@ async function sendRequest<ResponseType>(path: string, options: RequestInit = {}
   return response.json() as Promise<ResponseType>;
 }
 
+async function downloadFile(path: string): Promise<Blob> {
+  const response = await fetchWithTimeout(`${apiBaseUrl}/api${path}`, { headers: await buildRequestHeaders() });
+  if (!response.ok) {
+    const errorBody: ErrorResponseBody = await response.json().catch(() => ({}));
+    throw new Error(errorBody.detail ?? `Request failed with status ${response.status}`);
+  }
+  return response.blob();
+}
+
 export function buildApiUrl(path: string): string {
   return `${apiBaseUrl}${path}`;
 }
 
 export const apiClient = {
   get: <ResponseType>(path: string) => sendRequest<ResponseType>(path),
+  download: (path: string) => downloadFile(path),
   post: <ResponseType>(path: string, body: unknown) =>
     sendRequest<ResponseType>(path, { method: "POST", body: JSON.stringify(body) }),
   put: <ResponseType>(path: string, body: unknown) =>

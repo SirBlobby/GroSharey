@@ -90,6 +90,20 @@ export const ShoppingListsIcon = () => <Icon icon="mdi:clipboard-list-outline" w
 
 export const ShoppingListIcon = () => <Icon icon="mdi:clipboard-list-outline" width="1em" aria-hidden="true" />;
 
+export const AddAgainIcon = () => <Icon icon="mdi:cart-plus" width="1em" aria-hidden="true" />;
+
+export const DisputeIcon = () => <Icon icon="mdi:flag-outline" width="1em" aria-hidden="true" />;
+
+export const PantryIcon = () => <Icon icon="mdi:fridge-outline" width="1em" aria-hidden="true" />;
+
+export const RunningLowIcon = () => <Icon icon="mdi:battery-low" width="1em" aria-hidden="true" />;
+
+export const TripIcon = () => <Icon icon="mdi:cart-arrow-right" width="1em" aria-hidden="true" />;
+
+export const DownloadIcon = () => <Icon icon="mdi:file-pdf-box" width="1em" aria-hidden="true" />;
+
+export const ScanQrIcon = () => <Icon icon="mdi:qrcode-scan" width="1em" aria-hidden="true" />;
+
 export const DeleteIcon = () => <Icon icon="mdi:trash-can-outline" width="1em" aria-hidden="true" />;
 
 export const MatchItemsIcon = () => <Icon icon="mdi:auto-fix" width="1em" aria-hidden="true" />;

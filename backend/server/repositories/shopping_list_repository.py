@@ -6,7 +6,7 @@ from pymongo.database import Database
 from pymongo.errors import DuplicateKeyError
 
 from server.errors import ConflictError
-from server.models.shopping_list_models import StoredShoppingList, StoredShoppingListItem
+from server.models.shopping_list_models import StoredPantryItem, StoredShoppingList, StoredShoppingListItem
 
 
 def convert_document_to_shopping_list(list_document: dict) -> StoredShoppingList:
@@ -16,6 +16,7 @@ def convert_document_to_shopping_list(list_document: dict) -> StoredShoppingList
         owner_id=list_document["owner_id"],
         group_id=list_document.get("group_id"),
         items=[StoredShoppingListItem(**item_document) for item_document in list_document.get("items", [])],
+        pantry=[StoredPantryItem(**pantry_document) for pantry_document in list_document.get("pantry", [])],
         created_at=list_document["created_at"],
     )
 

@@ -4,8 +4,10 @@ import { usePagination } from "../../hooks/usePagination";
 import type { Friend } from "../../types";
 import { readErrorMessage } from "../../utils";
 import FriendManagerRow from "./FriendManagerRow";
-import { AddFriendIcon } from "../icons";
+import QrFriendScanner from "./QrFriendScanner";
+import { AddFriendIcon, ScanQrIcon } from "../icons";
 import Pagination from "../Pagination";
+import "../../styles/groups.css";
 
 type FriendManagerProps = {
   friends: Friend[];
@@ -19,6 +21,7 @@ export default function FriendManager({ friends, onAddFriend, onRemoveFriend, on
   const [isAdding, setIsAdding] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
 
   const friendPages = usePagination(friends);
 
@@ -60,6 +63,9 @@ export default function FriendManager({ friends, onAddFriend, onRemoveFriend, on
       <div className="friend-manager-header">
         <h2>Friends</h2>
         <span className="friend-count">{friends.length}</span>
+        <button type="button" className="group-action group-new" onClick={() => setIsScanning(true)}>
+          <ScanQrIcon /> Scan QR code
+        </button>
       </div>
 
       <form className="add-friend-form" onSubmit={handleAdd}>
@@ -109,6 +115,18 @@ export default function FriendManager({ friends, onAddFriend, onRemoveFriend, on
         itemLabel="friends"
         onPageChange={friendPages.setPage}
       />
+
+      {isScanning && (
+        <QrFriendScanner
+          friends={friends}
+          onAddFriend={onAddFriend}
+          onViewProfile={(username) => {
+            setIsScanning(false);
+            onViewProfile(username);
+          }}
+          onClose={() => setIsScanning(false)}
+        />
+      )}
     </div>
   );
 }

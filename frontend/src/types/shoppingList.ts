@@ -14,6 +14,17 @@ export type ShoppingListItem = {
   created_at: string;
 };
 
+export type PantryItem = {
+  id: string;
+  name: string;
+  quantity: string | null;
+  store: string | null;
+  notes: string | null;
+  requested_by: string;
+  stocked_at: string;
+  is_running_low: boolean;
+};
+
 export type ShoppingList = {
   id: string;
   name: string;
@@ -22,6 +33,7 @@ export type ShoppingList = {
   group_name: string | null;
   members: PublicProfile[];
   items: ShoppingListItem[];
+  pantry: PantryItem[];
   created_at: string;
 };
 

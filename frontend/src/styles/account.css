@@ -68,8 +68,8 @@
   background: none; border: 0; padding: 0; text-align: left;
 }
 .manager-row-names { display: flex; flex-direction: column; min-width: 0; }
-.manager-row-name { font-size: 1.5rem; font-weight: 600; }
-.manager-row-handle { font-size: 1.1rem; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; }
+.manager-row-name { font-size: 1.5rem; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.manager-row-handle { font-size: 1.1rem; opacity: 0.7; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .manager-row-balance {
   flex: none; padding: 4px 10px; border-radius: var(--radius-small);
   font-size: 1.1rem; color: var(--color-on-strong);
@@ -86,4 +86,6 @@
 
 @media (max-width: 820px) {
   .manager-row { flex-wrap: wrap; }
+  .manager-row-profile { flex: 1 1 100%; }
+  .manager-row-remove { margin-left: auto; }
 }

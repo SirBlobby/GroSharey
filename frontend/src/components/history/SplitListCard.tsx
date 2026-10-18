@@ -27,7 +27,7 @@ export default function SplitListCard({
   currentUsername,
   people,
 }: SplitListCardProps) {
-  const { splits, isLoading, errorMessage } = useSplitHistory();
+  const { splits, isLoading, errorMessage, replaceSplit } = useSplitHistory();
   const [viewingReceiptImageId, setViewingReceiptImageId] = useState<string | null>(null);
 
   const includedSplits = splits.filter(includeSplit);
@@ -58,6 +58,7 @@ export default function SplitListCard({
               unpaidForSplit={unpaidAmounts.get(split.id) ?? new Map()}
               focusUsername={focusUsername}
               onViewReceipt={setViewingReceiptImageId}
+              onSplitChange={replaceSplit}
             />
           ))}
         </ul>

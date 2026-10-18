@@ -29,6 +29,7 @@ from server.services.audit_messages import (
     describe_saved_split,
 )
 from server.services.group_service import GroupService
+from server.services.group_trip_service import GroupTripService
 from server.services.notification_service import NotificationService
 from server.services.receipt_image_service import ReceiptImageService
 from server.services.shopping_list_matching_service import ShoppingListMatchingService
@@ -222,6 +223,7 @@ class SplitService:
         audit_log_service: AuditLogService,
         group_service: GroupService,
         shopping_list_matching_service: ShoppingListMatchingService,
+        group_trip_service: GroupTripService,
     ):
         self.user_repository = user_repository
         self.friendship_repository = friendship_repository
@@ -231,6 +233,7 @@ class SplitService:
         self.audit_log_service = audit_log_service
         self.group_service = group_service
         self.shopping_list_matching_service = shopping_list_matching_service
+        self.group_trip_service = group_trip_service
 
     def find_friend(self, username: str, creator: User, group: StoredGroup | None) -> StoredUser:
         stored_user = self.user_repository.find_by_username(username)
@@ -298,11 +301,13 @@ class SplitService:
             group,
         )
         self.record_saved_split(saved_split, creator, payer, user_ids_by_username)
-        crossed_off_items = (
-            self.shopping_list_matching_service.cross_off_for_split(group, split_request, saved_split, creator)
-            if group
-            else []
-        )
+        crossed_off_items = []
+        if group:
+            crossed_off_items = self.shopping_list_matching_service.cross_off_for_split(
+                group, split_request, saved_split, creator
+            )
+            self.group_trip_service.end_trip_after_split(group, creator)
+            self.group_service.alert_budget_levels(group, saved_split.total, creator)
         emailed_usernames = self.notification_service.notify_people_who_owe(saved_split, payer, friends_by_username)
         return saved_split.model_copy(
             update={"emailed_usernames": emailed_usernames, "crossed_off_items": crossed_off_items}

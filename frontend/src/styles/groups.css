@@ -59,3 +59,31 @@
   .split-group-options { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 4px; }
   .split-group-options .option-button { flex: none; font-size: 1rem; }
 }
+
+.trip-banner {
+  display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+  background: var(--color-surface); border: 3px dashed var(--color-primary); border-radius: var(--radius-medium);
+  padding: 8px 12px; font-weight: 600;
+}
+.trip-banner > svg { flex: none; font-size: 1.5rem; color: var(--color-heading); }
+.trip-banner input {
+  flex: 1 1 160px; min-width: 0; padding: 6px 8px; font: 600 1rem var(--body); color: var(--color-text);
+  background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-small);
+}
+.trip-banner input:focus { border-color: var(--color-primary); outline: none; }
+.trip-banner--active { border-style: solid; background: var(--color-surface-highlight); }
+.trip-banner-text { flex: 1 1 200px; }
+.trip-banner .error-text { flex-basis: 100%; margin: 0; }
+.trip-filter { align-self: flex-start; }
+
+@media (max-width: 720px) {
+  .trip-banner .group-action { flex: 1; justify-content: center; }
+}
+
+.budget-bar { display: flex; flex-direction: column; gap: 4px; width: 100%; font-weight: 600; font-size: 1rem; }
+.budget-bar-labels { display: flex; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+.budget-bar-track { height: 14px; background: var(--color-surface); border: 2px solid var(--color-border); border-radius: var(--radius-small); overflow: hidden; }
+.budget-bar-fill { height: 100%; background: var(--color-primary); }
+.budget-bar--close .budget-bar-fill { background: var(--color-info); }
+.budget-bar--over .budget-bar-fill { background: var(--color-danger); }
+.budget-bar--over .budget-bar-labels span:last-child { color: var(--color-danger); }

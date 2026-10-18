@@ -21,7 +21,8 @@
     "preview:web": "bunx serve frontend/dist --single",
     "test:health": "curl -s http://localhost:8000/api/health",
     "backfill:audit-log": "cd backend && uv run python -m server.maintenance.backfill_audit_log",
-    "test:genai": "cd backend && uv run python scripts/match_items.py && uv run python scripts/test_group_split.py"
+    "test:genai": "cd backend && uv run python scripts/match_items.py && uv run python scripts/test_group_split.py",
+    "test:features": "cd backend && uv run python scripts/test_group_living.py"
   },
   "devDependencies": {
     "concurrently": "^10.0.6"

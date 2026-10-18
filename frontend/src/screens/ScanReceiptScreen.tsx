@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import type { ScanStage } from '../types';
 import type { ScannedReceipt } from '../services/receipt';
 import type { useReceiptScanner } from '../hooks/useReceiptScanner';
@@ -12,11 +13,16 @@ interface Props {
   onConfirm: (receipt: ScannedReceipt) => void;
 }
 
-function describeStatus(scanner: Props['scanner'], webcam: ReturnType<typeof useWebcam>): string {
+function describeStatus(
+  scanner: Props['scanner'],
+  webcam: ReturnType<typeof useWebcam>,
+  hasDeviceCamera: boolean,
+): string {
   if (scanner.status === 'reading') return 'Reading receipt...';
   if (scanner.status === 'error') return scanner.errorMessage ?? "Couldn't read the receipt";
   if (scanner.status === 'done') return scanner.scannedReceipt?.storeName ?? 'Receipt read!';
   if (webcam.status === 'starting') return 'Starting camera...';
+  if (hasDeviceCamera) return 'Tap the shutter to open the camera';
   if (webcam.status === 'unavailable') return webcam.errorMessage ?? '';
   return '';
 }
@@ -28,6 +34,14 @@ export default function ScanReceiptScreen({ scanner, onBack, onConfirm }: Props)
   const isShowingPhoto = Boolean(scanner.imageUri) && (isReading || stage === 'review');
   const webcam = useWebcam(!hasDeviceCamera && !isShowingPhoto);
   const isShowingWebcam = webcam.status === 'starting' || webcam.status === 'ready';
+  const hasOpenedDeviceCameraRef = useRef(false);
+
+  useEffect(() => {
+    if (hasDeviceCamera && !hasOpenedDeviceCameraRef.current && scanner.status === 'idle') {
+      hasOpenedDeviceCameraRef.current = true;
+      scanner.scan('camera');
+    }
+  }, [hasDeviceCamera, scanner]);
 
   function takePhoto() {
     const capturedFrame = webcam.captureFrame();
@@ -57,7 +71,7 @@ export default function ScanReceiptScreen({ scanner, onBack, onConfirm }: Props)
             />
           )}
           {!isShowingPhoto && !isShowingWebcam && <CameraIcon />}
-          <div className="lbl">{describeStatus(scanner, webcam)}</div>
+          <div className="lbl">{describeStatus(scanner, webcam, hasDeviceCamera)}</div>
         </div>
       </div>
 

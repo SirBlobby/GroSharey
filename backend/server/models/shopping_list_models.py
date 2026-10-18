@@ -57,12 +57,26 @@ class StoredShoppingListItem(BaseModel):
     created_at: datetime
 
 
+class StoredPantryItem(BaseModel):
+    id: str
+    name: str
+    name_key: str
+    quantity: str | None = None
+    store: str | None = None
+    notes: str | None = None
+    requested_by_id: str
+    source_item_id: str | None = None
+    stocked_at: datetime
+    is_running_low: bool = False
+
+
 class StoredShoppingList(BaseModel):
     id: str
     name: str
     owner_id: str
     group_id: str | None = None
     items: list[StoredShoppingListItem]
+    pantry: list[StoredPantryItem] = []
     created_at: datetime
 
 
@@ -80,6 +94,17 @@ class ShoppingListItem(BaseModel):
     created_at: datetime
 
 
+class PantryItem(BaseModel):
+    id: str
+    name: str
+    quantity: str | None
+    store: str | None
+    notes: str | None
+    requested_by: str
+    stocked_at: datetime
+    is_running_low: bool
+
+
 class ShoppingList(BaseModel):
     id: str
     name: str
@@ -88,6 +113,7 @@ class ShoppingList(BaseModel):
     group_name: str | None
     members: list[PublicProfile]
     items: list[ShoppingListItem]
+    pantry: list[PantryItem]
     created_at: datetime
 
 

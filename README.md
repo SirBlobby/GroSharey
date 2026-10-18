@@ -1,6 +1,8 @@
 # GroSharey
 
-Monorepo template with a Python Flask backend and an Expo (React Native + React Native Web) TypeScript frontend. Both deploy to Vercel as separate projects.
+Split groceries with roommates. Scan a receipt, assign items to the people who asked for them, and everyone sees what they owe. Groups share a shopping list, and Gemini matches what was bought to who wanted it.
+
+This is a monorepo with a Python Flask backend and an Expo (React Native + React Native Web) TypeScript frontend. Both deploy to Vercel as separate projects.
 
 ## Prerequisites
 
@@ -32,7 +34,7 @@ backend/
 frontend/
   package.json                  JavaScript dependencies (bun)
   bun.lock                      Locked JavaScript versions
-  App.tsx                       App entry, shows src/WebApp.tsx on every platform
+  App.tsx                       App entry, shows src/WebApp.tsx on every platform and opens native cameras on phones
   index.ts
   tsconfig.json
   src/
@@ -42,8 +44,10 @@ frontend/
     hooks/                      Data hooks (friends, grocery runs, receipt scanning)
     services/                   Converts API responses for the screens, builds split requests
     navigation/                 Shows auth or app screens
-    linking/                    Profile QR code links
-    media/                      Image picking, cropping math, crop export, receipt photos
+    linking/                    Profile QR code links and reading scanned links
+    media/                      Image picking, cropping math, crop export, receipt photos, QR decoding
+    native/                     Native camera screens for receipts and QR codes (iOS and Android)
+    appearance/                 Text size, dark mode, high contrast, color blindness, and reduce motion settings
     screens/                    Screens
     components/                 UI components
     storage/                    Token storage (localStorage)
@@ -61,12 +65,17 @@ frontend/
 |------|--------|
 | Landing page about the project (website only, the mobile app opens at log in) | `LandingScreen.tsx`, `components/landing/` |
 | Log in and create account | `LogInScreen.tsx`, `SignUpScreen.tsx` |
-| Friends, balances, and settle up | `MainScreen.tsx` |
+| Friends, groups, balances, payment confirmations, and settle up | `MainScreen.tsx`, `components/groups/`, `components/payments/` |
+| Shopping lists, pantry, and shopping trips | `ShoppingListsScreen.tsx`, `components/lists/` |
 | Scan a receipt | `ScanReceiptScreen.tsx` |
-| Edit items and assign friends | `ManageItemsScreen.tsx` |
+| Edit items, assign friends, and pick a group | `ManageItemsScreen.tsx`, `components/manage/` |
 | Grocery run saved | `ConfirmedScreen.tsx` |
-| Settings menu with Profile, Friends, History, Appearance, Account, Audit Log, App Info, and Log Out | `SettingsScreen.tsx`, `components/settings/` |
+| Settings menu with Profile, Friends (with a QR code scanner), Groups, History (with disputes and PDF export), Appearance, Account, Audit Log, App Info, and Log Out | `SettingsScreen.tsx`, `components/settings/`, `components/history/` |
 | Another user's profile with Add Friend | `FriendProfileScreen.tsx` |
+
+The camera works differently on phones. iOS only gives web pages camera access on `https://` pages, and the app's page is served over `http://` during development. So in the mobile app, receipt scanning and the QR code scanner open native camera screens from `src/native/` (built with `expo-camera`), and the page gets the result back. The website uses the browser camera.
+
+Shopping lists keep working offline in the mobile app: crossing off and adding items are saved on the phone and sent when the connection comes back (`services/offlineShoppingLists.ts`). The website doesn't do this.
 
 Icons come from [Iconify](https://iconify.design/) through `@iconify/react` and are collected in `src/components/icons.tsx`.
 
@@ -94,6 +103,7 @@ Run from the project root.
 | `bun run test:health` | Check that the backend is running |
 | `bun run backfill:audit-log` | Add audit log entries for friendships, splits, and payments made before the audit log existed (safe to run more than once) |
 | `bun run test:genai` | Check Gemini item matching with sample items, then run a full group split against a throwaway `grosharey_genai_test` database |
+| `bun run test:features` | Check trips, budgets, the pantry, disputes, payment confirmation, and the PDF report against the throwaway test database |
 
 Copy `backend/.env.example` to `backend/.env` and `frontend/.env.example` to `frontend/.env` before running.
 
@@ -192,7 +202,7 @@ Each account has an `id` (MongoDB ObjectId), a unique `username` (3 to 30 lowerc
 
 ### QR Codes
 
-The My QR Code screen shows a QR code linking to `EXPO_PUBLIC_APP_URL/?user=<username>`. Scanning it with any phone camera opens the web app on that user's profile, after logging in if needed. The home screen can also look up a profile by username.
+The Profile settings page shows a QR code linking to `EXPO_PUBLIC_APP_URL/?user=<username>`. Scanning it with any phone camera opens the web app on that user's profile, after logging in if needed. Settings > Friends also has a Scan QR code button that reads a friend's code inside the app and adds them in one tap. Friends can be added by username or email too.
 
 ### Profile Pictures
 
@@ -235,13 +245,33 @@ Shopping lists (`/api/shopping-lists`) are stored in the `shopping_lists` collec
 
 When a split is made with a group, Gemini matches the receipt items to the open items on the group's list. `POST /api/groups/<id>/match-items` returns who each receipt item belongs to, so the app can assign people automatically. Saving the split with `group_id` crosses the matched items off the list and notifies the people who asked for them. `crossed_off_items` in the response lists what was crossed off.
 
+### Pantry, Trips, and Budgets
+
+Crossing an item off a list, by hand or through a split, stocks it in that list's pantry. Marking a pantry item "running low" puts it back on the list for the person who asked for it.
+
+A group member can start a shopping trip (`POST /api/groups/<id>/trip`). The group is notified, and the list can be filtered to items for that store. The trip ends when the shopper logs a split with the group, or after four hours.
+
+Groups can have a monthly budget. `GET /api/groups` includes `month_spent`, and members are notified when a split takes the group past 80% and 100% of the budget.
+
+### Disputes
+
+Anyone on a split can say they didn't get an item (`POST /api/splits/<id>/disputes`). The person who made or paid for the split is notified and can take the item off that person's share or keep it.
+
+### Payment Confirmation
+
+When someone records that they paid a friend, the payment stays pending until the friend confirms it (`POST /api/payments/<id>/confirm`). Pending payments don't count toward balances. Payments recorded by the person who got paid are confirmed right away.
+
+### Monthly Report
+
+`GET /api/splits/report.pdf?month=YYYY-MM` returns a PDF of that month's grocery runs and your share of each, for reimbursements. It's under Settings > History.
+
 ### Email Notifications
 
 Saving a split with `POST /api/splits` emails everyone who owes money: their items, the amount, and a link to the web app. `emailed_usernames` in the response says who was emailed. Recording a payment with `direction: "paid"` emails the person who got paid ("Alex paid you $7.07"), with what's still owed; `recipient_emailed` in the response says whether it went out. Payments recorded as `"received"` send nothing, since the person recording them already knows. If email isn't configured or sending fails, the split is still saved; the error is only logged.
 
 ### Settling Up
 
-`POST /api/payments` records money changing hands. `direction` is `"paid"` (you paid the friend) or `"received"` (the friend paid you), and either friend can record it. Amounts over what's owed are rejected as likely typos.
+`POST /api/payments` records money changing hands. `direction` is `"paid"` (you paid the friend) or `"received"` (the friend paid you), and either friend can record it. Partial payments and overpaying are allowed; paying more than you owe leaves a credit. A `"paid"` payment waits for the friend to confirm it (see Payment Confirmation).
 
 When you owe a friend who has set their Venmo or PayPal.me name, their entry in `GET /api/friends` includes `venmo_pay_url` and `paypal_pay_url`, which open the payment with the amount filled in. Opening a link doesn't record anything; record the payment afterwards with `POST /api/payments`.
 

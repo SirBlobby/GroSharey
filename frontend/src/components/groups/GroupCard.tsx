@@ -2,6 +2,7 @@ import { convertProfileToFriend } from "../../services/friends";
 import { Group } from "../../types/group";
 import Avatar from "../Avatar";
 import { DeleteIcon, EditIcon, LogOutIcon, ShoppingListIcon } from "../icons";
+import BudgetBar from "./BudgetBar";
 
 type GroupCardProps = {
   group: Group;
@@ -44,6 +45,8 @@ export default function GroupCard({
           </li>
         ))}
       </ul>
+
+      <BudgetBar group={group} />
 
       <div className="group-card-actions">
         {isOwner ? (
